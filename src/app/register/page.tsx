@@ -35,7 +35,7 @@ export default function RegisterPage() {
     institution: 'KMCT College of Engineering for Emerging Technologies and Management, Kasaragod',
     course: '',
     yearOfStudy: '1st Year',
-    privacyConsent: false,
+    privacyConsent: true,
   });
 
   const [isClosed, setIsClosed] = useState<boolean | null>(null);
@@ -120,7 +120,7 @@ export default function RegisterPage() {
       validationErrors.phone = 'Please enter a valid 10-digit Indian mobile number.';
     }
     if (!formData.course.trim()) {
-      validationErrors.course = 'Please enter your department / course (e.g. B.Tech Computer Science).';
+      validationErrors.course = 'Please enter your batch (e.g. CSE - Batch A).';
     }
     if (!formData.privacyConsent) {
       validationErrors.privacyConsent = 'You must accept the terms and privacy policy to proceed.';
@@ -421,40 +421,18 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              {/* Institution */}
-              <div>
-                <label htmlFor="institution" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                  Institution / College <span className="text-amber-500">*</span>
-                </label>
-                <div className="relative">
-                  <input
-                    id="institution"
-                    name="institution"
-                    type="text"
-                    required
-                    value={formData.institution}
-                    onChange={handleChange}
-                    className={`w-full px-4 py-3 rounded-xl bg-slate-50 border ${
-                      errors.institution ? 'border-red-500' : 'border-slate-300'
-                    } focus:border-purple-600 focus:bg-white focus:outline-none text-slate-900 text-sm transition-colors`}
-                  />
-                  <Building className="absolute right-3.5 top-3.5 w-4 h-4 text-slate-400 pointer-events-none" />
-                </div>
-                {errors.institution && <p className="text-xs text-red-500 mt-1">{errors.institution}</p>}
-              </div>
-
-              {/* Course & Year */}
+              {/* Batch & Year of Study (Strictly 1st Year) */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="course" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Course / Department <span className="text-amber-500">*</span>
+                    Batch <span className="text-amber-500">*</span>
                   </label>
                   <input
                     id="course"
                     name="course"
                     type="text"
                     required
-                    placeholder="e.g. B.Tech Computer Science / Management"
+                    placeholder="e.g. CSE - Batch A / AIML"
                     value={formData.course}
                     onChange={handleChange}
                     className={`w-full px-4 py-3 rounded-xl bg-slate-50 border ${
@@ -466,22 +444,15 @@ export default function RegisterPage() {
 
                 <div>
                   <label htmlFor="yearOfStudy" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Year of Study <span className="text-amber-500">*</span>
+                    Year of Study
                   </label>
-                  <select
-                    id="yearOfStudy"
-                    name="yearOfStudy"
-                    value={formData.yearOfStudy}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:border-purple-600 focus:bg-white focus:outline-none text-slate-900 text-sm transition-colors"
-                  >
-                    <option value="1st Year">1st Year (Primary Target Audience)</option>
-                    <option value="2nd Year">2nd Year</option>
-                    <option value="3rd Year">3rd Year</option>
-                    <option value="4th Year">4th Year</option>
-                    <option value="Postgraduate">Management / PG</option>
-                    <option value="Faculty / Other">Other</option>
-                  </select>
+                  <div className="w-full px-4 py-3 rounded-xl bg-slate-100 border border-slate-300 text-slate-900 text-sm font-semibold flex items-center justify-between select-none">
+                    <span>1st Year</span>
+                    <span className="text-[11px] bg-purple-100 text-purple-700 font-bold px-2.5 py-0.5 rounded-full border border-purple-200">
+                      1st Year Only
+                    </span>
+                  </div>
+                  <input type="hidden" name="yearOfStudy" value="1st Year" />
                 </div>
               </div>
 

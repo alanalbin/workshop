@@ -56,9 +56,8 @@ export async function POST(req: NextRequest) {
         registrationId !== 'latest'
           ? registrationId
           : `reg_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-      const timePart = Date.now().toString(36).toUpperCase();
-      const randPart = Math.random().toString(36).substring(2, 6).toUpperCase();
-      const regNumber = ticketId && ticketId !== 'ILM-PASS' && ticketId !== 'P2P-PASS' ? ticketId : `P2P-KMCT-${timePart}-${randPart}`;
+      const randomTicketNum = Math.floor(100000 + Math.random() * 900000);
+      const regNumber = ticketId && ticketId.startsWith('TKT-') ? ticketId : `TKT-${randomTicketNum}`;
 
       const candidateName =
         fullName?.trim() || payerUpiId?.trim() || (email ? email.split('@')[0] : 'Workshop Participant');
@@ -67,6 +66,7 @@ export async function POST(req: NextRequest) {
       const newReg: Registration = {
         id: cleanId,
         registrationNumber: regNumber,
+        ticketId: regNumber,
         fullName: candidateName,
         email: candidateEmail,
         normalizedEmail: candidateEmail.toLowerCase(),
@@ -74,8 +74,9 @@ export async function POST(req: NextRequest) {
         institution:
           institution?.trim() ||
           'KMCT College of Engineering for Emerging Technologies and Management, Kasaragod',
-        course: course?.trim() || 'Engineering & Management',
-        yearOfStudy: (yearOfStudy as any) || '1st Year',
+        course: course?.trim() || '1st Year Batch',
+        batch: course?.trim() || '1st Year Batch',
+        yearOfStudy: '1st Year',
         eventId: 'problem-to-possibility-kmct-2026',
         currency: 'INR',
         amountPaise: amountPaise || 10000,
@@ -115,9 +116,18 @@ export async function POST(req: NextRequest) {
     // Update registration to verified state upon UPI submission
     const eventConfig = await DataStore.getEventConfig();
     const feeInRupees = eventConfig.registrationFee || 100;
+    let confirmedTicketId = registration.registrationNumber || registration.ticketId;
+    if (!confirmedTicketId || confirmedTicketId.trim() === '' || confirmedTicketId.startsWith('reg_')) {
+      const randomTicketNum = Math.floor(100000 + Math.random() * 900000);
+      confirmedTicketId = `TKT-${randomTicketNum}`;
+    }
+
     const updated = await DataStore.updateRegistration(registration.id, {
       paymentStatus: 'verified',
       paymentMethod: 'manual_upi',
+      registrationNumber: confirmedTicketId,
+      ticketId: confirmedTicketId,
+      yearOfStudy: '1st Year',
       amountPaid: feeInRupees,
       manualUtr: utrNumber,
       adminNotes: `UPI Payment confirmed. UTR: ${utrNumber}${

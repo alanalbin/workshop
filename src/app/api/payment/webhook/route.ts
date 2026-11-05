@@ -46,7 +46,10 @@ export async function POST(req: NextRequest) {
         const email = (paymentEntity.email || notes.email || '').toLowerCase().trim();
         const fullName = notes.fullName || notes.name || email.split('@')[0] || 'Participant';
         const phone = notes.phone || paymentEntity.contact?.replace(/^\+91/, '') || '';
-        const ticketId = reg?.registrationNumber || `P2P-KMCT-${paymentId.slice(-8).toUpperCase()}`;
+        const randomTicketNum = Math.floor(100000 + Math.random() * 900000);
+        const ticketId = reg?.registrationNumber && reg.registrationNumber.startsWith('TKT-')
+          ? reg.registrationNumber
+          : `TKT-${randomTicketNum}`;
         const targetRegId = registrationId || reg?.id || `reg_${paymentEntity.created_at ? paymentEntity.created_at * 1000 : Date.now()}_${paymentId.slice(-6)}`;
 
         if (!reg) {

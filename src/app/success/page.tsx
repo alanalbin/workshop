@@ -1,28 +1,24 @@
 'use client';
 
-import React, { useEffect, useState, useRef, Suspense } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import confetti from 'canvas-confetti';
 import {
   CheckCircle2,
-  Calendar,
-  MapPin,
-  Award,
-  Download,
-  Share2,
-  ArrowRight,
-  Printer,
   Sparkles,
   AlertCircle,
-  Package,
-  Building,
-  Phone,
   User,
-  ShieldCheck,
   Lock,
   ArrowLeft,
-  Lightbulb,
+  ArrowRight,
+  Copy,
+  Check,
+  Mail,
+  Phone,
+  GraduationCap,
+  Layers,
+  CreditCard,
 } from 'lucide-react';
 import { Registration, EventConfig } from '@/types';
 import { DEFAULT_EVENT_CONFIG } from '@/lib/config/event-defaults';
@@ -35,7 +31,7 @@ function SuccessContent() {
   const [eventConfig, setEventConfig] = useState<EventConfig>(DEFAULT_EVENT_CONFIG);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const passRef = useRef<HTMLDivElement>(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (!registrationId) {
@@ -112,15 +108,11 @@ function SuccessContent() {
     loadData();
   }, [registrationId]);
 
-  const handlePrint = () => {
-    window.print();
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-transparent flex flex-col items-center justify-center p-6 text-slate-700">
         <div className="w-10 h-10 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="text-sm font-semibold">Loading your workshop pass...</p>
+        <p className="text-sm font-semibold">Loading registration details...</p>
       </div>
     );
   }
@@ -130,7 +122,7 @@ function SuccessContent() {
       <div className="min-h-screen bg-transparent flex flex-col items-center justify-center p-6 text-center">
         <div className="max-w-md bg-white rounded-2xl p-8 border border-red-200 shadow-xl">
           <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-slate-900 mb-2">Pass Not Found</h2>
+          <h2 className="text-xl font-bold text-slate-900 mb-2">Registration Not Found</h2>
           <p className="text-sm text-slate-600 mb-6">{error || 'Unable to retrieve registration details.'}</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <button
@@ -158,234 +150,160 @@ function SuccessContent() {
     );
   }
 
-  // Normalize amount: if stored in integer paise (e.g. 10000), convert to rupees (100)
+  // Normalize amount
   const rawAmount = (registration as any).amountPaid ?? (registration as any).amountPaise ?? eventConfig?.registrationFee ?? 100;
   const numAmount = typeof rawAmount === 'number' ? rawAmount : parseFloat(String(rawAmount).replace(/[^0-9.]/g, ''));
   const displayAmount = (!isNaN(numAmount) && numAmount >= 1000) ? Math.round(numAmount / 100) : (numAmount || 100);
 
   const isPaid = registration.paymentStatus === 'verified';
+  const displayTicketId = registration.registrationNumber || registration.ticketId || 'TKT-PENDING';
+
+  const handleCopyTicket = () => {
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(displayTicketId);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-transparent py-28 relative">
-      
-      <div className="max-w-4xl mx-auto px-6 relative z-10">
+      <div className="max-w-2xl mx-auto px-6 relative z-10">
         
         {isPaid ? (
-          <>
-            {/* Status Alert Banner */}
-            <div className="mb-8 p-4 rounded-2xl bg-emerald-50 border border-emerald-300 flex items-center gap-3.5 shadow-md print:hidden">
-              <div className="w-10 h-10 rounded-xl bg-emerald-100 border border-emerald-200 flex items-center justify-center shrink-0">
-                <CheckCircle2 className="w-7 h-7 text-emerald-600" />
+          <div className="space-y-6">
+            
+            {/* Payment Verified & Seat Confirmed Header */}
+            <div className="bg-white/90 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-emerald-200 shadow-xl text-center relative overflow-hidden">
+              <div className="w-16 h-16 rounded-2xl bg-emerald-100 border border-emerald-200 flex items-center justify-center mx-auto mb-4 text-emerald-600 shadow-xs">
+                <CheckCircle2 className="w-9 h-9" />
+              </div>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
+                Payment Verified &amp; Seat Confirmed
+              </span>
+              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-3">
+                Registration Confirmed!
+              </h1>
+              <p className="text-sm text-slate-600 mt-2 max-w-md mx-auto">
+                Thank you, <strong>{registration.fullName}</strong>. Your seat for the offline workshop <strong>&quot;From Problem to Possibility&quot;</strong> at KMCT Kasaragod has been reserved.
+              </p>
+            </div>
+
+            {/* Confirmed Ticket ID Display */}
+            <div className="bg-white/90 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border-2 border-purple-300 shadow-xl text-center relative overflow-hidden">
+              <span className="text-xs uppercase font-extrabold tracking-widest text-purple-700 block mb-2">
+                Your Confirmed Ticket ID
+              </span>
+              <div className="inline-flex items-center justify-center gap-3 bg-purple-50/80 border border-purple-200 px-6 py-3.5 rounded-2xl shadow-inner">
+                <span className="text-2xl sm:text-4xl font-mono font-black text-slate-950 tracking-wider select-all">
+                  {displayTicketId}
+                </span>
+                <button
+                  type="button"
+                  onClick={handleCopyTicket}
+                  className="p-2.5 rounded-xl bg-white hover:bg-purple-100 border border-purple-200 text-purple-700 transition-all cursor-pointer shadow-xs active:scale-95"
+                  title="Copy Ticket ID"
+                >
+                  {copied ? (
+                    <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-600 px-1">
+                      <Check className="w-4 h-4" /> Copied
+                    </span>
+                  ) : (
+                    <Copy className="w-4 h-4" />
+                  )}
+                </button>
+              </div>
+              <p className="text-xs text-slate-500 mt-2.5">
+                Keep this Ticket ID for your records and event check-in.
+              </p>
+            </div>
+
+            {/* Prominent Passes Notice Banner */}
+            <div className="bg-gradient-to-r from-amber-500/15 via-orange-500/15 to-purple-500/15 border-2 border-amber-400 rounded-3xl p-6 sm:p-7 shadow-lg flex items-start gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-amber-100 border border-amber-300 flex items-center justify-center shrink-0 text-amber-700">
+                <Sparkles className="w-6 h-6" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-slate-900">Payment Verified &amp; Seat Confirmed!</h2>
-                <p className="text-xs text-emerald-800 mt-0.5">
-                  Your official workshop pass for <strong>From Problem to Possibility</strong> is generated below. A confirmation has been dispatched to{' '}
-                  <strong className="text-slate-900">{registration.email}</strong>.
+                <h3 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
+                  Passes will be sent to you shortly
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-700 mt-1.5 leading-relaxed">
+                  Your official workshop pass, venue entry barcode, and team orientation schedule will be sent to your registered email address (<strong>{registration.email}</strong>) and mobile number shortly before the event.
                 </p>
               </div>
             </div>
 
-            {/* Printable Pass Container */}
-            <div
-              ref={passRef}
-              className="rounded-3xl bg-white border-2 border-purple-200 p-8 shadow-xl relative overflow-hidden print:border-black print:bg-white print:text-black"
-            >
-              {/* Top Pass Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-6 print:border-gray-300 relative z-10">
-                <div className="flex items-center gap-3.5">
-                  <div className="w-12 h-12 rounded-2xl bg-purple-100 border border-purple-200 flex items-center justify-center text-purple-700 shrink-0">
-                    <Lightbulb className="w-7 h-7" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-purple-700 print:text-purple-900">
-                        IIC Quarter 1 Activity
-                      </span>
-                      <span className="text-slate-300 print:hidden">•</span>
-                      <span className="text-[11px] text-slate-500 font-medium hidden sm:inline">
-                        Host: KMCTCEEM
-                      </span>
-                    </div>
-                    <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-wider mt-0.5 print:text-black">
-                      PROBLEM TO POSSIBILITY PASS
-                    </h1>
-                    <p className="text-xs text-slate-600 mt-0.5 print:text-gray-600">
-                      KMCT College of Engineering for Emerging Technologies and Management, Kasaragod
-                    </p>
-                  </div>
+            {/* Candidate Details Card */}
+            <div className="bg-white/90 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xl space-y-4">
+              <h3 className="text-xs uppercase font-extrabold tracking-wider text-purple-700 border-b border-slate-200 pb-3 flex items-center gap-2">
+                <User className="w-4 h-4 text-purple-600" />
+                <span>Student Details</span>
+              </h3>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+                  <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold block">Full Name</span>
+                  <p className="text-sm font-bold text-slate-900 mt-0.5">{registration.fullName}</p>
                 </div>
 
-                <div className="flex items-center gap-4 self-start sm:self-center">
-                  <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-purple-50 border border-purple-200 print:border-gray-300">
-                    <span className="text-[11px] font-bold text-purple-700">KMCTCEEM</span>
-                    <div className="h-4 w-px bg-purple-200 print:bg-gray-300" />
-                    <span className="text-[11px] font-bold text-amber-600">IIC Activity</span>
-                  </div>
-
-                  <div className="w-16 h-16 bg-white p-1.5 rounded-xl border border-slate-200 flex items-center justify-center shrink-0 shadow-xs">
-                    <img
-                      src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(
-                        `P2P-PASS:${registration.registrationNumber}:${registration.fullName}`
-                      )}`}
-                      alt="Ticket QR Code"
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Prominent Straight Ticket ID Bar */}
-              <div className="my-5 px-5 py-3.5 rounded-2xl bg-purple-50/70 border border-purple-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs relative z-10 print:bg-gray-100 print:border-black">
-                <div className="flex items-center gap-2.5 overflow-x-auto">
-                  <span className="text-xs uppercase tracking-wider font-mono font-bold text-purple-700 print:text-purple-900 whitespace-nowrap">
-                    Official Ticket ID:
-                  </span>
-                  <span className="text-base sm:text-lg font-mono font-black text-slate-900 tracking-wider print:text-black select-all whitespace-nowrap">
-                    {registration.registrationNumber || 'P2P-KMCT-VERIFIED'}
-                  </span>
+                <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+                  <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold block">Email Address</span>
+                  <p className="text-sm font-bold text-slate-900 mt-0.5 truncate">{registration.email}</p>
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-[11px] font-bold text-emerald-700 print:text-emerald-800 print:border-emerald-800">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>Seat Confirmed (1/70)</span>
-                  </span>
-                </div>
-              </div>
-
-              {/* Pass Content Details */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 py-4 text-xs">
-                <div>
-                  <span className="text-[10px] text-slate-500 uppercase tracking-wider block font-semibold">Participant</span>
-                  <p className="text-sm font-bold text-slate-900 mt-0.5 print:text-black">{registration.fullName}</p>
-                  <p className="text-slate-600 mt-0.5 truncate">{registration.email}</p>
+                <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+                  <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold block">Mobile Number</span>
+                  <p className="text-sm font-bold text-slate-900 mt-0.5 font-mono">+91 {registration.phone}</p>
                 </div>
 
-                <div>
-                  <span className="text-[10px] text-slate-500 uppercase tracking-wider block font-semibold">Department / Branch</span>
-                  <p className="text-sm font-bold text-slate-900 mt-0.5 print:text-black">{registration.course}</p>
-                  <p className="text-slate-600 mt-0.5">{registration.yearOfStudy}</p>
+                <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+                  <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold block">Batch</span>
+                  <p className="text-sm font-bold text-slate-900 mt-0.5">{registration.course}</p>
                 </div>
 
-                <div>
-                  <span className="text-[10px] text-slate-500 uppercase tracking-wider block font-semibold">Resource Person</span>
-                  <p className="text-sm font-bold text-slate-900 mt-0.5 print:text-black">Mr. Muhammed Shayiz K P</p>
-                  <p className="text-slate-600 mt-0.5 truncate">Sr. Software Engineer, Doodleblue</p>
+                <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+                  <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold block">Year of Study</span>
+                  <p className="text-sm font-bold text-purple-700 mt-0.5">1st Year</p>
                 </div>
 
-                <div>
-                  <span className="text-[10px] text-slate-500 uppercase tracking-wider block font-semibold">Amount Paid</span>
-                  <p className="text-sm font-black text-purple-700 mt-0.5 print:text-black">₹{displayAmount}</p>
-                  <p className="text-emerald-600 mt-0.5 font-semibold">Payment Verified</p>
-                </div>
-              </div>
-
-              {/* Schedule, Venue & Logistics Footer Strip */}
-              <div className="mt-4 pt-5 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-                <div>
-                  <span className="text-[10px] text-slate-500 uppercase tracking-wider block font-semibold">Date</span>
-                  <p className="text-xs font-bold text-slate-900 mt-0.5 print:text-black">
-                    Wednesday, 11th November 2026
-                  </p>
-                </div>
-                <div>
-                  <span className="text-[10px] text-slate-500 uppercase tracking-wider block font-semibold">Timing</span>
-                  <p className="text-xs font-bold text-slate-900 mt-0.5 print:text-black">
-                    09:30 AM – 04:00 PM (Full Day)
-                  </p>
-                </div>
-                <div>
-                  <span className="text-[10px] text-slate-500 uppercase tracking-wider block font-semibold">Venue</span>
-                  <p className="text-xs font-bold text-slate-900 mt-0.5 truncate print:text-black">
-                    College Seminar Hall, KMCTCEEM
+                <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+                  <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold block">Amount Paid</span>
+                  <p className="text-sm font-black text-emerald-600 mt-0.5">
+                    ₹{displayAmount} (Verified)
                   </p>
                 </div>
               </div>
-
-              {/* Guaranteed Deliverables Reminder */}
-              <div className="mt-8 pt-6 border-t border-slate-200 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-600 print:border-gray-300 print:text-gray-600 font-medium">
-                <div className="flex items-center gap-2">
-                  <Award className="w-4 h-4 text-purple-600" />
-                  <span>Official IIC Activity Certificate</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Package className="w-4 h-4 text-purple-600" />
-                  <span>Chart Paper Prototyping Kit &amp; Worksheets</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  <span>Refreshments (Morning Tea &amp; Canteen Samosas) Included</span>
-                </div>
-              </div>
-
             </div>
 
-            {/* Action Controls */}
-            <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 print:hidden">
-              <button
-                onClick={handlePrint}
-                className="w-full sm:w-auto px-6 py-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-md"
-              >
-                <Printer className="w-4 h-4" />
-                <span>Print or Save Pass (PDF)</span>
-              </button>
-
+            {/* Return Button */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
               <Link
                 href="/"
-                className="w-full sm:w-auto px-6 py-3 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold text-center transition-colors shadow-xs"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold uppercase tracking-wider transition-all shadow-md active:scale-95 cursor-pointer"
               >
-                Return to Homepage
+                <ArrowLeft className="w-4 h-4" />
+                <span>Return to Homepage</span>
               </Link>
             </div>
 
-            {/* Next Steps Guidance */}
-            <div className="mt-12 bg-white rounded-2xl p-7 border border-slate-200 shadow-xl space-y-4">
-              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
-                Important Next Steps for Participants
-              </h3>
-              <ul className="space-y-2.5 text-xs text-slate-600 leading-relaxed">
-                <li className="flex items-start gap-2.5">
-                  <span className="w-5 h-5 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center shrink-0 text-[10px] font-bold">1</span>
-                  <span>Keep your Ticket ID (<strong>{registration.registrationNumber}</strong>) handy on your mobile device for desk entry.</span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <span className="w-5 h-5 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center shrink-0 text-[10px] font-bold">2</span>
-                  <span>Arrive at the College Seminar Hall before 09:30 AM on Wednesday, 11th November 2026 for team formation and materials collection.</span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <span className="w-5 h-5 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center shrink-0 text-[10px] font-bold">3</span>
-                  <span>All chart papers, sketch pens, and empathy worksheets will be provided at the workshop venue.</span>
-                </li>
-              </ul>
-
-              <div className="pt-4 border-t border-slate-200 flex flex-wrap items-center justify-between text-xs text-slate-500 gap-2">
-                <div>
-                  <span className="font-medium text-slate-800">Proposed by:</span> Mr. Abdul Mujeeb MS (IIC Coordinator)
-                </div>
-                <div>
-                  <span className="text-emerald-700 font-semibold">Approved by Principal on 4th November 2026</span>
-                </div>
-              </div>
-            </div>
-          </>
+          </div>
         ) : (
-          /* TICKET LOCKED: ONLY ISSUED AFTER PAYMENT */
-          <div className="bg-white rounded-3xl p-8 sm:p-12 border border-slate-200 text-center shadow-xl relative overflow-hidden">
+          /* Payment Required Card if accessed directly without paying */
+          <div className="bg-white/90 backdrop-blur-xl rounded-3xl p-8 sm:p-12 border border-slate-200 text-center shadow-xl relative overflow-hidden">
             <div className="w-16 h-16 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center mx-auto mb-5 text-amber-600 shadow-xs">
               <Lock className="w-8 h-8" />
             </div>
 
             <span className="text-xs uppercase font-extrabold tracking-widest text-amber-700 bg-amber-50 border border-amber-200 px-4 py-1.5 rounded-full shadow-2xs">
-              Payment Required to Unlock Ticket
+              Payment Required to Unlock Ticket ID
             </span>
 
             <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mt-4 tracking-tight">
-              Workshop Pass is Locked
+              Workshop Seat Pending Payment
             </h2>
 
             <p className="mt-2.5 text-slate-600 text-sm max-w-lg mx-auto leading-relaxed">
-              Official workshop passes and IIC participation certificates are issued exclusively after payment verification. Please complete your registration payment of ₹{displayAmount} to activate and view your pass.
+              Your registration details have been submitted. Please complete the registration fee payment of ₹{displayAmount} to generate your confirmed Ticket ID.
             </p>
 
             <div className="my-7 max-w-md mx-auto p-5 rounded-2xl bg-slate-50 border border-slate-200 text-left space-y-2.5">
@@ -398,10 +316,12 @@ function SuccessContent() {
                 <span className="text-slate-900 font-mono">{registration.email}</span>
               </div>
               <div className="flex justify-between text-xs">
-                <span className="text-slate-500">Pass &amp; Ticket ID:</span>
-                <span className="text-amber-700 font-semibold flex items-center gap-1">
-                  <Lock className="w-3 h-3" /> Issued upon payment
-                </span>
+                <span className="text-slate-500">Batch:</span>
+                <span className="text-slate-900 font-semibold">{registration.course}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-slate-500">Year of Study:</span>
+                <span className="text-purple-700 font-semibold">1st Year</span>
               </div>
               <div className="flex justify-between text-xs pt-2.5 border-t border-slate-200 items-center">
                 <span className="text-slate-500 font-medium">Amount Due:</span>

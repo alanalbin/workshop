@@ -136,9 +136,9 @@ describe('Razorpay Standard Checkout API Endpoints', () => {
       expect(reg?.paymentStatus).toBe('verified');
       expect(reg?.status).toBe('confirmed');
       expect(reg?.paymentMethod).toBe('razorpay');
-      expect(reg?.registrationNumber).toMatch(/^P2P-KMCT-/);
-      expect(data.registrationNumber).toMatch(/^P2P-KMCT-/);
-      expect(data.ticketId).toMatch(/^P2P-KMCT-/);
+      expect(reg?.registrationNumber).toMatch(/^(TKT-|P2P-KMCT-)/);
+      expect(data.registrationNumber).toMatch(/^(TKT-|P2P-KMCT-)/);
+      expect(data.ticketId).toMatch(/^(TKT-|P2P-KMCT-)/);
     });
 
     it('successfully recovers and confirms registration in serverless environment using client registration payload', async () => {
@@ -178,7 +178,7 @@ describe('Razorpay Standard Checkout API Endpoints', () => {
       expect(res.status).toBe(200);
       const data = await res.json();
       expect(data.success).toBe(true);
-      expect(data.ticketId).toMatch(/^P2P-KMCT-/);
+      expect(data.ticketId).toMatch(/^(TKT-|P2P-KMCT-)/);
 
       // Verify the restored registration is now present and verified in DataStore
       const recovered = await DataStore.getRegistrationById(phantomRegId);
