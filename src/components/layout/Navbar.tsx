@@ -49,31 +49,31 @@ export default function Navbar() {
         <nav className="hidden md:flex items-center gap-6">
           <a
             href="/#about"
-            className="text-xs uppercase font-semibold tracking-wider text-slate-600 hover:text-purple-700 transition-colors"
+            className="text-xs uppercase font-bold tracking-wider text-slate-800 hover:text-purple-700 transition-colors"
           >
             Overview
           </a>
           <a
             href="/#speaker"
-            className="text-xs uppercase font-semibold tracking-wider text-slate-600 hover:text-purple-700 transition-colors"
+            className="text-xs uppercase font-bold tracking-wider text-slate-800 hover:text-purple-700 transition-colors"
           >
             Resource Person
           </a>
           <a
             href="/#workshop"
-            className="text-xs uppercase font-semibold tracking-wider text-slate-600 hover:text-purple-700 transition-colors"
+            className="text-xs uppercase font-bold tracking-wider text-slate-800 hover:text-purple-700 transition-colors"
           >
             Agenda
           </a>
           <a
             href="/#benefits"
-            className="text-xs uppercase font-semibold tracking-wider text-slate-600 hover:text-purple-700 transition-colors"
+            className="text-xs uppercase font-bold tracking-wider text-slate-800 hover:text-purple-700 transition-colors"
           >
             Outcomes
           </a>
           <a
             href="/#faq"
-            className="text-xs uppercase font-semibold tracking-wider text-slate-600 hover:text-purple-700 transition-colors"
+            className="text-xs uppercase font-bold tracking-wider text-slate-800 hover:text-purple-700 transition-colors"
           >
             FAQ
           </a>
@@ -81,11 +81,11 @@ export default function Navbar() {
             href="https://www.kmct.org"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs font-semibold tracking-tight text-slate-600 hover:text-purple-700 flex items-center gap-1.5 transition-all px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 group"
+            className="text-xs font-bold tracking-tight text-slate-800 hover:text-purple-700 flex items-center gap-1.5 transition-all px-2.5 py-1.5 rounded-lg bg-white/80 hover:bg-white border border-slate-300 shadow-2xs group"
             title="KMCT College of Engineering for Emerging Technologies and Management"
           >
             <span>kmct.org</span>
-            <ArrowUpRight className="w-3 h-3 text-slate-400 group-hover:text-purple-600 group-hover:translate-x-0.5 transition-all" />
+            <ArrowUpRight className="w-3 h-3 text-slate-500 group-hover:text-purple-600 group-hover:translate-x-0.5 transition-all" />
           </a>
         </nav>
 

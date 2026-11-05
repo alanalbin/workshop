@@ -113,7 +113,7 @@ export default function BenefitsSection({ benefits }: BenefitsSectionProps) {
                         {item.title}
                       </h3>
 
-                      <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                      <p className="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed">
                         {item.description}
                       </p>
                     </div>

@@ -42,6 +42,7 @@ export default function AuthModal() {
     isAuthModalOpen,
     closeAuthModal,
     signInWithGoogle,
+    loginAsDemoUser,
     signOut,
   } = useAuth();
 
@@ -102,11 +103,33 @@ export default function AuthModal() {
 
         {/* Error Notice */}
         {error && (
-          <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-start gap-2">
-            <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <p>{error}</p>
+          <div className="mb-4 p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs space-y-2">
+            <div className="flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="font-semibold">{error}</p>
+              </div>
             </div>
+
+            {error.includes('not authorized in Firebase') && (
+              <div className="pt-2 border-t border-red-200 space-y-2">
+                <p className="text-[11px] text-slate-700">
+                  Add <code className="px-1 py-0.5 rounded bg-red-100 font-mono text-red-800">workshop-khaki-zeta.vercel.app</code> in <strong>Firebase Console &gt; Auth &gt; Settings &gt; Authorized domains</strong>.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    loginAsDemoUser({ displayName: 'Registered Participant' });
+                    closeAuthModal();
+                    router.push('/register');
+                  }}
+                  className="w-full py-2 px-3 rounded-xl bg-purple-100 hover:bg-purple-200 border border-purple-300 text-purple-800 font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-purple-600" />
+                  <span>Continue with Direct Registration</span>
+                </button>
+              </div>
+            )}
           </div>
         )}
 

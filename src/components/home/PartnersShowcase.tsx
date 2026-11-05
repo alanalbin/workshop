@@ -127,7 +127,7 @@ export default function PartnersShowcase() {
                     <h3 className="text-base font-bold text-slate-900 group-hover:text-purple-700 transition-colors">
                       {partner.name}
                     </h3>
-                    <p className="mt-2 text-xs text-slate-600 leading-relaxed">
+                    <p className="mt-2 text-xs text-slate-700 font-medium leading-relaxed">
                       {partner.description}
                     </p>
                   </div>

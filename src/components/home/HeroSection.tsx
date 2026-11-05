@@ -331,8 +331,8 @@ export default function HeroSection({ event }: HeroSectionProps) {
                       <Target className="w-4 h-4" />
                     </div>
                     <div>
-                      <h4 className="text-sm font-semibold text-slate-900">Problem Identification &amp; Empathy</h4>
-                      <p className="text-xs text-slate-600 mt-0.5 leading-relaxed">
+                      <h4 className="text-sm font-bold text-slate-900">Problem Identification &amp; Empathy</h4>
+                      <p className="text-xs text-slate-700 font-medium mt-0.5 leading-relaxed">
                         Discover real-world issues with empathy worksheets &amp; symptom sorting games.
                       </p>
                     </div>
@@ -343,8 +343,8 @@ export default function HeroSection({ event }: HeroSectionProps) {
                       <Zap className="w-4 h-4" />
                     </div>
                     <div>
-                      <h4 className="text-sm font-semibold text-slate-900">Structured Ideation Sprint</h4>
-                      <p className="text-xs text-slate-600 mt-0.5 leading-relaxed">
+                      <h4 className="text-sm font-bold text-slate-900">Structured Ideation Sprint</h4>
+                      <p className="text-xs text-slate-700 font-medium mt-0.5 leading-relaxed">
                         Crazy 8s, Yes-And, Worst-Idea reversal &amp; impact-feasibility matrix.
                       </p>
                     </div>
@@ -355,8 +355,8 @@ export default function HeroSection({ event }: HeroSectionProps) {
                       <Package className="w-4 h-4" />
                     </div>
                     <div>
-                      <h4 className="text-sm font-semibold text-slate-900">Hand-Drawn Prototype Poster</h4>
-                      <p className="text-xs text-slate-600 mt-0.5 leading-relaxed">
+                      <h4 className="text-sm font-bold text-slate-900">Hand-Drawn Prototype Poster</h4>
+                      <p className="text-xs text-slate-700 font-medium mt-0.5 leading-relaxed">
                         Visualize solutions on chart paper with storyboards and low-fidelity mockups.
                       </p>
                     </div>
@@ -367,8 +367,8 @@ export default function HeroSection({ event }: HeroSectionProps) {
                       <Award className="w-4 h-4" />
                     </div>
                     <div>
-                      <h4 className="text-sm font-semibold text-slate-900">Pitch Structure &amp; Presentation</h4>
-                      <p className="text-xs text-slate-600 mt-0.5 leading-relaxed">
+                      <h4 className="text-sm font-bold text-slate-900">Pitch Structure &amp; Presentation</h4>
+                      <p className="text-xs text-slate-700 font-medium mt-0.5 leading-relaxed">
                         Deliver short pitch to the panel and receive IIC activity certificate.
                       </p>
                     </div>

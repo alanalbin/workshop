@@ -95,7 +95,7 @@ export default function AboutSection() {
                       <h3 className="text-base font-bold text-slate-900 mb-2 leading-snug">
                         {obj.title}
                       </h3>
-                      <p className="text-xs text-slate-600 leading-relaxed">
+                      <p className="text-xs text-slate-700 font-medium leading-relaxed">
                         {obj.description}
                       </p>
                     </div>
@@ -147,7 +147,7 @@ export default function AboutSection() {
                     <p className="text-xs text-slate-500">
                       Co-founder, Shine Technologies, Kannur
                     </p>
-                    <p className="mt-3 text-xs sm:text-sm text-slate-600 leading-relaxed">
+                    <p className="mt-3 text-xs sm:text-sm text-slate-700 font-medium leading-relaxed">
                       Bringing high-impact engineering experience and startup leadership to mentor KMCT students through end-to-end design thinking, empathy discovery, problem-solving, and pitch execution.
                     </p>
                   </div>

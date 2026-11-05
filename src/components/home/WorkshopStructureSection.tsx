@@ -210,12 +210,12 @@ export default function WorkshopStructureSection() {
                       </div>
 
                       {/* Description */}
-                      <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mt-2.5">
+                      <p className="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed mt-2.5">
                         {item.description}
                       </p>
                     </div>
 
-                    <div className="mt-5 pt-3.5 border-t border-slate-200/80 flex items-center justify-between text-[11px] text-slate-500">
+                    <div className="mt-5 pt-3.5 border-t border-slate-200/80 flex items-center justify-between text-[11px] text-slate-600 font-medium">
                       <span>Venue: College Seminar Hall</span>
                       <span className="text-emerald-600 font-semibold flex items-center gap-1">
                         <CheckCircle className="w-3.5 h-3.5" />

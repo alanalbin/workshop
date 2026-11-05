@@ -81,7 +81,7 @@ export default function FaqSection({ faq }: FaqSectionProps) {
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                     >
-                      <div className="px-6 sm:px-7 pb-6 pt-2 text-sm text-slate-600 leading-relaxed border-t border-slate-100 bg-slate-50/60">
+                      <div className="px-6 sm:px-7 pb-6 pt-2 text-sm text-slate-800 font-medium leading-relaxed border-t border-slate-100 bg-slate-50/60">
                         <p>{item.answer}</p>
                       </div>
                     </motion.div>
