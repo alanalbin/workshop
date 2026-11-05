@@ -84,9 +84,13 @@ export const PaymentService = {
     }
 
     const currency = params.currency || 'INR';
-    const receipt =
-      params.receipt ||
-      (params.registrationId ? `rcpt_${params.registrationId.slice(-12)}` : `rcpt_${Date.now()}`);
+    const receipt = (
+      params.receipt && params.receipt.trim().length > 0
+        ? params.receipt.trim()
+        : params.registrationId
+        ? `rcpt_${params.registrationId.slice(-20)}`
+        : `rcpt_${Date.now()}`
+    ).slice(0, 40);
 
     try {
       let regNotes: Record<string, string> = {};

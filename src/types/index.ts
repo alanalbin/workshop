@@ -65,6 +65,7 @@ export interface EventConfig {
   razorpayKeyId?: string;
   upiId: string;
   upiMerchantName: string;
+  googleSheetWebhookUrl?: string;
   
   // Contacts
   officialContact: EventContact;

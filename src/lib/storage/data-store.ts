@@ -135,10 +135,13 @@ export const DataStore = {
     }
     try {
       const local = readLocalDb();
-      return {
-        ...DEFAULT_EVENT_CONFIG,
-        ...(local?.eventConfig || {}),
-      };
+      if (local?.eventConfig && local.eventConfig.id === DEFAULT_EVENT_CONFIG.id) {
+        return {
+          ...DEFAULT_EVENT_CONFIG,
+          ...local.eventConfig,
+        };
+      }
+      return DEFAULT_EVENT_CONFIG;
     } catch {
       return DEFAULT_EVENT_CONFIG;
     }
@@ -270,10 +273,11 @@ export const DataStore = {
     return (
       local.registrations.find(
         (r) =>
-          r.id === cleanId ||
-          (Boolean(r.registrationNumber) && r.registrationNumber.toLowerCase() === cleanLower) ||
-          r.email?.toLowerCase() === cleanLower ||
-          r.phone === cleanId
+          (r.id === cleanId ||
+            (Boolean(r.registrationNumber) && r.registrationNumber.toLowerCase() === cleanLower) ||
+            r.email?.toLowerCase() === cleanLower ||
+            r.phone === cleanId) &&
+          (r.eventId === DEFAULT_EVENT_CONFIG.id || !r.eventId)
       ) || null
     );
   },
@@ -288,6 +292,7 @@ export const DataStore = {
           const snapshot = await adminDb
             .collection('registrations')
             .where('normalizedEmail', '==', normalized)
+            .where('eventId', '==', DEFAULT_EVENT_CONFIG.id)
             .limit(1)
             .get();
           if (!snapshot.empty) {
@@ -299,7 +304,13 @@ export const DataStore = {
       }
     }
     const local = readLocalDb();
-    return local.registrations.find((r) => r.normalizedEmail === normalized || r.email.toLowerCase() === normalized) || null;
+    return (
+      local.registrations.find(
+        (r) =>
+          (r.normalizedEmail === normalized || r.email.toLowerCase() === normalized) &&
+          (r.eventId === DEFAULT_EVENT_CONFIG.id || !r.eventId)
+      ) || null
+    );
   },
 
   async updateRegistration(id: string, updates: Partial<Registration>): Promise<Registration | null> {

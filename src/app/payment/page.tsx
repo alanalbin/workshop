@@ -263,13 +263,36 @@ function PaymentContent() {
 
       // 2. Ensure Razorpay client checkout script is loaded
       if (typeof (window as any).Razorpay === 'undefined') {
-        const script = document.createElement('script');
-        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-        script.async = true;
-        document.body.appendChild(script);
-        await new Promise((resolve, reject) => {
-          script.onload = resolve;
-          script.onerror = () => reject(new Error('Failed to load Razorpay SDK'));
+        let script = document.querySelector('script[src*="checkout.razorpay.com"]') as HTMLScriptElement;
+        if (!script) {
+          script = document.createElement('script');
+          script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+          script.async = true;
+          document.body.appendChild(script);
+        }
+        await new Promise<void>((resolve, reject) => {
+          const checkTimer = setInterval(() => {
+            if (typeof (window as any).Razorpay !== 'undefined') {
+              clearInterval(checkTimer);
+              resolve();
+            }
+          }, 100);
+          script.onload = () => {
+            clearInterval(checkTimer);
+            resolve();
+          };
+          script.onerror = () => {
+            clearInterval(checkTimer);
+            reject(new Error('Failed to load Razorpay SDK. Please check your connection.'));
+          };
+          setTimeout(() => {
+            clearInterval(checkTimer);
+            if (typeof (window as any).Razorpay !== 'undefined') {
+              resolve();
+            } else {
+              reject(new Error('Timeout loading Razorpay SDK. Please check your internet connection.'));
+            }
+          }, 6000);
         });
       }
 
@@ -284,8 +307,8 @@ function PaymentContent() {
         key: keyId,
         amount: orderData.amount,
         currency: orderData.currency || 'INR',
-        name: 'FROM PROBLEM TO POSSIBILITY',
-        description: 'Workshop Pass & IIC Activity Certificate',
+        name: 'KMCT College of Engineering • IIC',
+        description: 'From Problem to Possibility Pass (₹100)',
         order_id: orderData.order_id,
         prefill: {
           name: activeReg.fullName,
@@ -294,9 +317,10 @@ function PaymentContent() {
         },
         notes: {
           registrationId: activeReg.id,
+          workshop: 'From Problem to Possibility',
         },
         theme: {
-          color: '#7c3aed',
+          color: '#0284c7',
         },
         modal: {
           ondismiss: function () {

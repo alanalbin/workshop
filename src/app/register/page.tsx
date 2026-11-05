@@ -83,6 +83,7 @@ export default function RegisterPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [existingVerifiedId, setExistingVerifiedId] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -105,6 +106,7 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setServerError(null);
+    setExistingVerifiedId(null);
 
     // Basic frontend checks before sending
     const validationErrors: Record<string, string> = {};
@@ -143,7 +145,11 @@ export default function RegisterPage() {
 
       if (!res.ok) {
         if (data.alreadyRegistered && data.isPaid) {
-          router.push(`/success?registrationId=${data.registrationId}`);
+          setExistingVerifiedId(data.registrationId);
+          setServerError(
+            `A confirmed registration already exists for ${formData.email} with Ticket ID: ${data.registrationNumber || 'Verified'}.`
+          );
+          setIsSubmitting(false);
           return;
         }
         if (data.errors) {
@@ -158,28 +164,28 @@ export default function RegisterPage() {
         return;
       }
 
-      // Success or existing pending registration -> proceed to payment page
+      // Success or existing pending registration -> clear old tokens and proceed to payment
       if (typeof window !== 'undefined' && data.registrationId) {
+        sessionStorage.removeItem('p2p_registration_id');
+        localStorage.removeItem('p2p_last_registration_id');
+        localStorage.removeItem('p2p_registration_cache');
+
         sessionStorage.setItem('p2p_registration_id', data.registrationId);
         localStorage.setItem('p2p_last_registration_id', data.registrationId);
 
-        if (data.registration) {
-          localStorage.setItem('p2p_registration_cache', JSON.stringify(data.registration));
-        } else {
-          const record = {
-            id: data.registrationId,
-            registrationNumber: '',
-            ...formData,
-            status: 'pending',
-            paymentStatus: 'unpaid',
-            amountPaid: 100,
-            amountPaise: 10000,
-          };
-          localStorage.setItem('p2p_registration_cache', JSON.stringify(record));
-        }
+        const record = {
+          id: data.registrationId,
+          registrationNumber: '',
+          ...formData,
+          status: 'pending',
+          paymentStatus: 'unpaid',
+          amountPaid: 100,
+          amountPaise: 10000,
+        };
+        localStorage.setItem('p2p_registration_cache', JSON.stringify(record));
       }
 
-      router.push(`/payment?registrationId=${data.registrationId}&autoOpen=true`);
+      router.push(`/payment?registrationId=${encodeURIComponent(data.registrationId)}&autoOpen=true`);
     } catch {
       setServerError('A network error occurred. Please try submitting again.');
       setIsSubmitting(false);
@@ -328,9 +334,22 @@ export default function RegisterPage() {
           <div className="lg:col-span-7 bg-white/85 backdrop-blur-xl rounded-2xl p-8 border border-white/80 shadow-2xl shadow-sky-950/10">
             
             {serverError && (
-              <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 flex items-start gap-3 text-sm text-red-700 shadow-xs">
-                <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
-                <p>{serverError}</p>
+              <div className="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-300 flex flex-col gap-2.5 text-xs text-amber-900 shadow-xs">
+                <div className="flex items-start gap-2.5">
+                  <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                  <p className="font-medium leading-relaxed">{serverError}</p>
+                </div>
+                {existingVerifiedId && (
+                  <div className="pt-2 border-t border-amber-200 flex items-center gap-2">
+                    <Link
+                      href={`/success?registrationId=${existingVerifiedId}`}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-700 hover:bg-amber-800 text-white font-bold text-xs uppercase tracking-wider transition-all"
+                    >
+                      <span>View Confirmed Pass</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+                )}
               </div>
             )}
 

@@ -1,18 +1,42 @@
 import { NextResponse } from 'next/server';
 import { syncAllMissingCapturedPaymentsToSheet } from '@/lib/seats/live-seats';
+import { DataStore } from '@/lib/storage/data-store';
+import { syncCandidateToGoogleSheet } from '@/lib/sheets/google-sheets';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export async function GET() {
   try {
-    const result = await syncAllMissingCapturedPaymentsToSheet();
+    // 1. Sync any captured payments directly from Razorpay API
+    let rzpSynced = 0;
+    try {
+      const rzpResult = await syncAllMissingCapturedPaymentsToSheet();
+      rzpSynced = rzpResult.syncedCount || 0;
+    } catch (rzpErr) {
+      console.warn('Razorpay to Sheets sync note:', rzpErr);
+    }
+
+    // 2. Sync from verified registrations in DataStore
+    const all = await DataStore.listRegistrations();
+    const verified = all.filter((r) => r.paymentStatus === 'verified');
+    let localSynced = 0;
+    for (const reg of verified) {
+      try {
+        const res = await syncCandidateToGoogleSheet(reg);
+        if (res.success) localSynced++;
+      } catch (err) {
+        console.warn('Sync candidate error:', err);
+      }
+    }
+
     return NextResponse.json(
       {
-        ...result,
-        message: result.syncedCount > 0
-          ? `Successfully synced ${result.syncedCount} missing candidate(s) to Google Sheets.`
-          : 'Google Sheet is already completely up to date with all Razorpay payments.',
+        success: true,
+        verifiedCount: verified.length,
+        rzpSynced,
+        localSynced,
+        message: `Google Sheets sync executed. Verified candidates: ${verified.length}.`,
       },
       {
         headers: {

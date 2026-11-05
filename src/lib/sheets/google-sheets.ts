@@ -65,7 +65,8 @@ export const DEFAULT_WEBHOOK_URL = `https://script.google.com/macros/s/${GOOGLE_
  */
 export async function syncCandidateToGoogleSheet(
   registration: Registration,
-  payment?: PaymentRecord | Partial<PaymentRecord> | null
+  payment?: PaymentRecord | Partial<PaymentRecord> | null,
+  overrideWebhookUrl?: string
 ): Promise<{ success: boolean; error?: string }> {
   // CRITICAL: ONLY add candidate details to Google Sheet AFTER payment is completed & verified!
   if (registration.paymentStatus !== 'verified') {
@@ -91,7 +92,7 @@ export async function syncCandidateToGoogleSheet(
     return { success: true };
   }
 
-  const webhookUrl = process.env.GOOGLE_SHEET_WEBHOOK_URL || DEFAULT_WEBHOOK_URL;
+  const webhookUrl = overrideWebhookUrl || process.env.GOOGLE_SHEET_WEBHOOK_URL || DEFAULT_WEBHOOK_URL;
 
   const formatted = formatCandidateForSheet(registration, payment);
   const utrVal = registration.manualUtr || formatted.transactionOrUtr;

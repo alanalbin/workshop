@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useRef, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   CheckCircle2,
@@ -29,6 +29,7 @@ import { Registration, EventConfig } from '@/types';
 import { DEFAULT_EVENT_CONFIG } from '@/lib/config/event-defaults';
 
 function SuccessContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const registrationId = searchParams.get('registrationId');
 
@@ -72,6 +73,13 @@ function SuccessContent() {
         }
 
         if (!resolvedReg) throw new Error('Registration could not be found.');
+
+        // ENFORCEMENT: First payment, then only the passes!
+        // Unpaid or pending registrations cannot access passes and are sent to payment
+        if (resolvedReg.paymentStatus !== 'verified') {
+          router.replace(`/payment?registrationId=${encodeURIComponent(resolvedReg.id)}&autoOpen=true`);
+          return;
+        }
 
         // Sanitize amountPaid to ₹100 if stored in paise (e.g. 10000)
         if (resolvedReg) {

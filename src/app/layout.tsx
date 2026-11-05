@@ -82,7 +82,7 @@ export default function RootLayout({
         />
         <Script
           src="https://checkout.razorpay.com/v1/checkout.js"
-          strategy="lazyOnload"
+          strategy="afterInteractive"
         />
       </head>
       <body className={`min-h-screen flex flex-col bg-transparent text-slate-900 ${spaceGrotesk.className} selection:bg-sky-600 selection:text-white antialiased relative`}>
