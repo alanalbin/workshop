@@ -66,24 +66,24 @@ const PARTNERS: Partner[] = [
 
 export default function PartnersShowcase() {
   return (
-    <section className="relative py-20 bg-[#dfe5ec]/60 border-y border-slate-300 overflow-hidden z-10">
+    <section className="relative py-20 bg-white/40 backdrop-blur-md border-y border-white/60 overflow-hidden z-10">
       
       {/* Subtle backdrop ambient glows */}
-      <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[300px] bg-purple-500/5 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-[500px] h-[300px] bg-amber-500/5 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[300px] bg-sky-500/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-[500px] h-[300px] bg-amber-500/10 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 sm:px-10 relative z-20">
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-50 border border-purple-200 text-xs font-bold text-purple-700 uppercase tracking-widest mb-3.5 shadow-xs">
-            <Sparkles className="w-3.5 h-3.5 text-purple-600" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-50 border border-sky-200 text-xs font-bold text-sky-800 uppercase tracking-widest mb-3.5 shadow-2xs backdrop-blur-xs">
+            <Sparkles className="w-3.5 h-3.5 text-sky-600" />
             <span>Institutional Affiliations &amp; Ecosystem</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-950 tracking-tight">
             Backed by Premier Innovation Bodies
           </h2>
-          <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">
+          <p className="mt-3 text-sm sm:text-base text-slate-700 font-medium leading-relaxed max-w-2xl mx-auto">
             The workshop <strong>FROM PROBLEM TO POSSIBILITY</strong> is organized by the <strong>Institution’s Innovation Council (IIC)</strong> at <strong>KMCT College of Engineering for Emerging Technologies and Management, Kasaragod</strong>, in synergy with <strong>Kerala Startup Mission (KSUM)</strong> and <strong>IEDC</strong>.
           </p>
         </div>
@@ -100,7 +100,7 @@ export default function PartnersShowcase() {
               className="h-full"
             >
               <TouchInteractiveTilt maxTilt={8} glareOpacity={0.15} className="h-full">
-                <div className="rounded-2xl p-6 border border-slate-300 hover:border-purple-400 bg-white transition-all duration-300 flex flex-col justify-between h-full group shadow-xs hover:shadow-md">
+                <div className="rounded-2xl p-6 border border-white/80 hover:border-sky-300 bg-white/85 backdrop-blur-xl transition-all duration-300 flex flex-col justify-between h-full group shadow-md hover:shadow-xl">
                   
                   <div>
                     {/* Badge & Category Header */}
@@ -108,13 +108,13 @@ export default function PartnersShowcase() {
                       <span className={`text-[10px] font-mono uppercase tracking-wider px-2.5 py-1 rounded-md border font-bold ${partner.badgeColor}`}>
                         {partner.badge}
                       </span>
-                      <span className="text-[11px] text-slate-500 font-medium">
+                      <span className="text-[11px] text-slate-600 font-semibold">
                         {partner.category}
                       </span>
                     </div>
 
                     {/* Logo Box */}
-                    <div className="w-full h-24 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center p-4 mb-5 shadow-2xs group-hover:border-purple-200 transition-all">
+                    <div className="w-full h-24 rounded-xl bg-white/70 border border-slate-200/80 flex items-center justify-center p-4 mb-5 shadow-2xs group-hover:border-sky-200 transition-all">
                       <img
                         src={partner.logo}
                         alt={partner.name}

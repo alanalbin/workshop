@@ -18,10 +18,10 @@ export default function FaqSection({ faq }: FaqSectionProps) {
   };
 
   return (
-    <section id="faq" className="pt-20 pb-16 bg-[#e8ecf2] border-t border-slate-300 relative z-10 overflow-hidden">
+    <section id="faq" className="pt-20 pb-16 bg-white/40 backdrop-blur-md border-t border-white/60 relative z-10 overflow-hidden">
       
       {/* Background glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-purple-500/5 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-sky-500/10 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="max-w-4xl mx-auto px-6 sm:px-10 relative z-20">
         
@@ -33,13 +33,13 @@ export default function FaqSection({ faq }: FaqSectionProps) {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <span className="text-xs uppercase font-extrabold tracking-widest text-purple-700 bg-purple-50 border border-purple-200 px-4 py-1.5 rounded-full shadow-xs">
+          <span className="text-xs uppercase font-extrabold tracking-widest text-sky-800 bg-sky-50 border border-sky-200 px-4 py-1.5 rounded-full shadow-2xs backdrop-blur-xs">
             Answers &amp; Clarity
           </span>
-          <h2 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight mt-4">
+          <h2 className="text-3xl sm:text-5xl font-black text-slate-950 tracking-tight mt-4">
             Frequently Asked Questions
           </h2>
-          <p className="mt-3.5 text-slate-600 text-base max-w-xl mx-auto">
+          <p className="mt-3.5 text-slate-700 font-medium text-base max-w-xl mx-auto">
             Everything you need to know about the FROM PROBLEM TO POSSIBILITY workshop passes, agenda, deliverables, and certificates at KMCT Kasaragod.
           </p>
         </motion.div>
@@ -55,20 +55,20 @@ export default function FaqSection({ faq }: FaqSectionProps) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-30px' }}
                 transition={{ duration: 0.4, delay: idx * 0.06 }}
-                className="bg-white rounded-2xl border border-slate-300 hover:border-purple-400 overflow-hidden transition-all duration-300 shadow-xs"
+                className="bg-white/85 backdrop-blur-xl rounded-2xl border border-white/80 hover:border-sky-300 overflow-hidden transition-all duration-300 shadow-md"
               >
                 <button
                   onClick={() => toggle(item.id)}
-                  className="w-full px-6 sm:px-7 py-5 flex items-center justify-between text-left gap-4 hover:bg-slate-50/50 transition-colors cursor-pointer"
+                  className="w-full px-6 sm:px-7 py-5 flex items-center justify-between text-left gap-4 hover:bg-white/50 transition-colors cursor-pointer"
                   aria-expanded={isOpen}
                 >
-                  <span className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-3.5">
-                    <div className="w-8 h-8 rounded-xl bg-purple-50 border border-purple-200 flex items-center justify-center shrink-0 text-purple-700 shadow-xs">
+                  <span className="text-base sm:text-lg font-bold text-slate-950 flex items-center gap-3.5">
+                    <div className="w-8 h-8 rounded-xl bg-sky-50 border border-sky-200 flex items-center justify-center shrink-0 text-sky-700 shadow-xs">
                       <HelpCircle className="w-4 h-4" />
                     </div>
                     <span>{item.question}</span>
                   </span>
-                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-transform duration-300 shrink-0 ${isOpen ? 'rotate-180 bg-purple-100 text-purple-800' : 'bg-slate-100 text-slate-600'}`}>
+                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-transform duration-300 shrink-0 ${isOpen ? 'rotate-180 bg-sky-100 text-sky-900' : 'bg-slate-100 text-slate-600'}`}>
                     <ChevronDown className="w-4 h-4" />
                   </div>
                 </button>

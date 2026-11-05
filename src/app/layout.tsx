@@ -7,6 +7,7 @@ import Footer from '@/components/layout/Footer';
 import { AuthProvider } from '@/context/AuthContext';
 import AuthModal from '@/components/auth/AuthModal';
 import ScrollProgressBar from '@/components/ui/ScrollProgressBar';
+import BackgroundCanvas3D from '@/components/background-3d/BackgroundCanvas3D';
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -50,7 +51,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#05030a',
+  themeColor: '#68b8d7',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
@@ -62,7 +63,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`dark scroll-smooth ${spaceGrotesk.variable}`} data-scroll-behavior="smooth">
+    <html lang="en" className={`scroll-smooth ${spaceGrotesk.variable}`} data-scroll-behavior="smooth">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -70,12 +71,23 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
           rel="stylesheet"
         />
+        {/* Vanta Clouds & Three.js r134 Runtime Scripts */}
+        <Script
+          src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"
+          strategy="beforeInteractive"
+        />
+        <Script
+          src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.clouds.min.js"
+          strategy="afterInteractive"
+        />
         <Script
           src="https://checkout.razorpay.com/v1/checkout.js"
           strategy="lazyOnload"
         />
       </head>
-      <body className={`min-h-screen flex flex-col bg-[#e8ecf2] text-slate-800 ${spaceGrotesk.className} selection:bg-purple-600 selection:text-white antialiased relative`}>
+      <body className={`min-h-screen flex flex-col bg-transparent text-slate-900 ${spaceGrotesk.className} selection:bg-sky-600 selection:text-white antialiased relative`}>
+        {/* Full-Page Interactive 3D Vanta Clouds Background */}
+        <BackgroundCanvas3D />
         <ScrollProgressBar />
         <AuthProvider>
           <Navbar />

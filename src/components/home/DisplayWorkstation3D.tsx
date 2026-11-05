@@ -33,19 +33,19 @@ export default function DisplayWorkstation3D() {
   }, []);
 
   return (
-    <section className="py-20 sm:py-28 relative overflow-hidden bg-[#e8ecf2] border-t border-slate-300">
+    <section className="py-20 sm:py-28 relative overflow-hidden bg-white/40 backdrop-blur-md border-t border-white/60">
       <div className="max-w-6xl mx-auto px-6 relative z-10">
         
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-50 border border-purple-200 text-xs font-bold uppercase tracking-wider text-purple-700 mb-3 shadow-xs">
-            <Cpu className="w-3.5 h-3.5 text-purple-600 animate-pulse" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-50 border border-sky-200 text-xs font-bold uppercase tracking-wider text-sky-800 mb-3 shadow-2xs backdrop-blur-xs">
+            <Cpu className="w-3.5 h-3.5 text-sky-600 animate-pulse" />
             <span>Ideation Studio Workstation</span>
           </div>
-          <h2 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight">
+          <h2 className="text-3xl sm:text-5xl font-black text-slate-950 tracking-tight">
             Interactive Ideation Platform
           </h2>
-          <p className="mt-3 text-slate-600 text-sm sm:text-base leading-relaxed">
+          <p className="mt-3 text-slate-700 font-medium text-sm sm:text-base leading-relaxed">
             Hands-on problem discovery, Crazy 8s sprint engine, and pitch deck simulator for 1st-year engineering &amp; management students.
           </p>
         </div>

@@ -57,10 +57,10 @@ export default function BenefitsSection({ benefits }: BenefitsSectionProps) {
   ];
 
   return (
-    <section id="benefits" className="py-24 bg-[#e8ecf2] border-t border-slate-300 relative overflow-hidden z-10">
+    <section id="benefits" className="py-24 bg-white/40 backdrop-blur-md border-t border-white/60 relative overflow-hidden z-10">
       
       {/* Background radial glow */}
-      <div className="absolute top-1/3 right-10 w-[550px] h-[350px] bg-purple-500/5 rounded-full blur-[130px] pointer-events-none" />
+      <div className="absolute top-1/3 right-10 w-[550px] h-[350px] bg-sky-500/10 rounded-full blur-[130px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 sm:px-10 relative z-20">
         
@@ -72,13 +72,13 @@ export default function BenefitsSection({ benefits }: BenefitsSectionProps) {
           transition={{ duration: 0.6 }}
           className="max-w-3xl"
         >
-          <span className="text-xs uppercase font-extrabold tracking-widest text-purple-700 bg-purple-50 border border-purple-200 px-4 py-1.5 rounded-full shadow-xs">
+          <span className="text-xs uppercase font-extrabold tracking-widest text-sky-800 bg-sky-50 border border-sky-200 px-4 py-1.5 rounded-full shadow-2xs backdrop-blur-xs">
             Tangible Deliverables &amp; Outcomes
           </span>
-          <h2 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight mt-4">
+          <h2 className="text-3xl sm:text-5xl font-black text-slate-950 tracking-tight mt-4">
             Expected Learning Outcomes
           </h2>
-          <p className="mt-3.5 text-slate-600 text-base sm:text-lg leading-relaxed">
+          <p className="mt-3.5 text-slate-700 font-medium text-base sm:text-lg leading-relaxed">
             By the end of the workshop, each student team will walk away with real, physical and pitch-ready deliverables designed to jumpstart their innovation journey.
           </p>
         </motion.div>
@@ -96,20 +96,20 @@ export default function BenefitsSection({ benefits }: BenefitsSectionProps) {
                 transition={{ type: 'spring', stiffness: 220, damping: 22, delay: idx * 0.07 }}
               >
                 <TouchInteractiveTilt maxTilt={7} glareOpacity={0.12} className="h-full">
-                  <div className="bg-white rounded-3xl p-7 sm:p-8 border border-slate-300 hover:border-purple-400 flex flex-col justify-between transition-all duration-300 shadow-sm hover:shadow-md h-full">
+                  <div className="bg-white/85 backdrop-blur-xl rounded-3xl p-7 sm:p-8 border border-white/80 hover:border-sky-300 flex flex-col justify-between transition-all duration-300 shadow-lg shadow-sky-950/5 hover:shadow-2xl h-full">
                     <div>
                       <div className="flex items-center justify-between mb-5">
-                        <div className="w-12 h-12 rounded-2xl bg-purple-50 border border-purple-200 flex items-center justify-center p-2.5 shadow-xs text-purple-700">
+                        <div className="w-12 h-12 rounded-2xl bg-sky-50 border border-sky-200 flex items-center justify-center p-2.5 shadow-xs text-sky-700">
                           <Icon className="w-6 h-6" />
                         </div>
 
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-50 border border-purple-200 text-[11px] font-bold text-purple-700">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-purple-600" />
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-50 border border-sky-200 text-[11px] font-bold text-sky-800">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-sky-600" />
                           <span>{item.highlight}</span>
                         </span>
                       </div>
 
-                      <h3 className="text-lg font-bold text-slate-900 group-hover:text-purple-700 transition-colors mb-2">
+                      <h3 className="text-lg font-bold text-slate-950 group-hover:text-sky-700 transition-colors mb-2">
                         {item.title}
                       </h3>
 

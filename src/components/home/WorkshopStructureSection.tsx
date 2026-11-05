@@ -131,10 +131,10 @@ const AGENDA: AgendaItem[] = [
 
 export default function WorkshopStructureSection() {
   return (
-    <section id="workshop" className="py-24 bg-[#dfe5ec]/50 relative overflow-hidden z-10 border-t border-slate-300">
+    <section id="workshop" className="py-24 bg-white/40 backdrop-blur-md relative overflow-hidden z-10 border-t border-white/60">
       
       {/* Glow aura */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-purple-500/5 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-sky-500/10 rounded-full blur-[150px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 sm:px-10 relative z-20">
         
@@ -146,13 +146,13 @@ export default function WorkshopStructureSection() {
           transition={{ duration: 0.6 }}
           className="text-center max-w-3xl mx-auto"
         >
-          <span className="text-xs uppercase font-extrabold tracking-widest text-purple-700 bg-purple-50 border border-purple-200 px-4 py-1.5 rounded-full shadow-xs">
+          <span className="text-xs uppercase font-extrabold tracking-widest text-sky-800 bg-sky-50 border border-sky-200 px-4 py-1.5 rounded-full shadow-2xs backdrop-blur-xs">
             Proposed Agenda • 11th November 2026
           </span>
-          <h2 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight mt-4">
+          <h2 className="text-3xl sm:text-5xl font-black text-slate-950 tracking-tight mt-4">
             Hands-on Activity-Driven Schedule
           </h2>
-          <p className="mt-3.5 text-slate-600 text-base sm:text-lg">
+          <p className="mt-3.5 text-slate-700 font-medium text-base sm:text-lg">
             A comprehensive, interactive schedule engineered to take 1st-year students from an abstract problem to a physical prototype and pitch-ready innovation.
           </p>
         </motion.div>
@@ -172,21 +172,21 @@ export default function WorkshopStructureSection() {
               >
                 <TouchInteractiveTilt maxTilt={6} glareOpacity={0.12}>
                   <div
-                    className={`rounded-3xl p-6 sm:p-7 border transition-all duration-300 shadow-sm hover:shadow-md h-full flex flex-col justify-between ${
+                    className={`rounded-3xl p-6 sm:p-7 border transition-all duration-300 shadow-md hover:shadow-xl backdrop-blur-xl h-full flex flex-col justify-between ${
                       isBreak
-                        ? 'bg-amber-50/80 border-amber-300 hover:border-amber-400'
-                        : 'bg-white border-slate-300 hover:border-purple-400'
+                        ? 'bg-amber-50/85 border-amber-300/80 hover:border-amber-400'
+                        : 'bg-white/85 border-white/80 hover:border-sky-300'
                     }`}
                   >
                     <div>
                       {/* Time and Tag Header */}
                       <div className="flex items-center justify-between mb-4">
-                        <span className="text-xs font-mono font-bold px-3 py-1 rounded-xl bg-slate-50 border border-slate-300 text-slate-800 shadow-2xs flex items-center gap-1.5">
-                          <Clock className="w-3.5 h-3.5 text-purple-600" />
+                        <span className="text-xs font-mono font-bold px-3 py-1 rounded-xl bg-white/90 border border-slate-200 text-slate-900 shadow-2xs flex items-center gap-1.5">
+                          <Clock className="w-3.5 h-3.5 text-sky-600" />
                           <span>{item.time}</span>
                         </span>
                         <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
-                          isBreak ? 'bg-amber-100 border-amber-300 text-amber-800' : 'bg-purple-100 border-purple-200 text-purple-700'
+                          isBreak ? 'bg-amber-100/90 border-amber-300 text-amber-900' : 'bg-sky-50 border-sky-200 text-sky-900'
                         }`}>
                           {item.tag}
                         </span>
@@ -195,15 +195,15 @@ export default function WorkshopStructureSection() {
                       {/* Title & Icon */}
                       <div className="flex items-start gap-3.5 mb-2.5">
                         <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-xs ${
-                          isBreak ? 'bg-amber-100 border border-amber-300 text-amber-700' : 'bg-purple-100 border border-purple-200 text-purple-700'
+                          isBreak ? 'bg-amber-100 border border-amber-300 text-amber-800' : 'bg-sky-50 border border-sky-200 text-sky-700'
                         }`}>
                           <Icon className="w-5 h-5" />
                         </div>
                         <div>
-                          <h3 className="text-base sm:text-lg font-bold text-slate-900 leading-snug">
+                          <h3 className="text-base sm:text-lg font-bold text-slate-950 leading-snug">
                             {item.title}
                           </h3>
-                          <p className="text-xs font-semibold text-purple-700 mt-0.5">
+                          <p className="text-xs font-semibold text-sky-800 mt-0.5">
                             Format / Output: {item.format}
                           </p>
                         </div>

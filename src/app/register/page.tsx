@@ -189,7 +189,7 @@ export default function RegisterPage() {
 
   if (isClosed === true) {
     return (
-      <div className="min-h-screen bg-[#e8ecf2] py-36 relative">
+      <div className="min-h-screen bg-transparent py-36 relative">
         <div className="max-w-xl mx-auto px-6 relative z-10 text-center">
           <div className="bg-white rounded-3xl p-8 sm:p-10 border border-slate-200 shadow-xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold uppercase tracking-wider mb-6">
@@ -246,7 +246,7 @@ export default function RegisterPage() {
 
   if (authLoading || !user) {
     return (
-      <div className="min-h-screen bg-[#e8ecf2] py-36 flex flex-col items-center justify-center px-6 text-center">
+      <div className="min-h-screen bg-transparent py-36 flex flex-col items-center justify-center px-6 text-center">
         <div className="w-16 h-16 rounded-2xl bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-700 mb-4 shadow-xs">
           <Lightbulb className="w-8 h-8" />
         </div>
@@ -274,10 +274,10 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#e8ecf2] py-28 relative">
+    <div className="min-h-screen bg-transparent py-28 relative">
       
       {/* Background Glows */}
-      <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-purple-500/5 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-sky-500/10 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto px-6 relative z-10">
         
@@ -326,7 +326,7 @@ export default function RegisterPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           
           {/* Left Column: Registration Form */}
-          <div className="lg:col-span-7 bg-white rounded-2xl p-8 border border-slate-200 shadow-xl">
+          <div className="lg:col-span-7 bg-white/85 backdrop-blur-xl rounded-2xl p-8 border border-white/80 shadow-2xl shadow-sky-950/10">
             
             {serverError && (
               <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 flex items-start gap-3 text-sm text-red-700 shadow-xs">
@@ -513,7 +513,7 @@ export default function RegisterPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-amber-500 via-orange-600 to-purple-600 hover:opacity-95 text-white font-bold text-sm shadow-md shadow-orange-500/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                  className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-sky-600 via-indigo-600 to-amber-500 hover:opacity-95 text-white font-bold text-sm shadow-md shadow-sky-600/25 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                 >
                   {isSubmitting ? (
                     <>
@@ -536,7 +536,7 @@ export default function RegisterPage() {
           <div className="lg:col-span-5 space-y-6">
             
             {/* Pass Summary Card */}
-            <div className="bg-white rounded-2xl p-7 border border-slate-200 shadow-xl">
+            <div className="bg-white/85 backdrop-blur-xl rounded-2xl p-7 border border-white/80 shadow-2xl shadow-sky-950/10">
               <h2 className="text-base font-bold text-slate-900 uppercase tracking-wider mb-4 border-b border-slate-200 pb-3">
                 Registration Summary
               </h2>

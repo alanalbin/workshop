@@ -32,15 +32,15 @@ export default function Navbar() {
   }, []);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-[#e8ecf2]/90 backdrop-blur-xl border-b border-slate-300/80 shadow-xs">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-white/60 shadow-xs">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         
         {/* Brand Wordmark (Logo removed per user specification) */}
         <Link href="/" className="flex flex-col group">
-          <span className="font-extrabold text-sm sm:text-base tracking-wider text-slate-900 uppercase group-hover:text-purple-600 transition-colors">
+          <span className="font-extrabold text-sm sm:text-base tracking-wider text-slate-950 uppercase group-hover:text-sky-600 transition-colors">
             PROBLEM TO POSSIBILITY
           </span>
-          <span className="text-[10px] text-slate-500 font-medium tracking-tight">
+          <span className="text-[10px] text-slate-600 font-semibold tracking-tight">
             KMCT Kasaragod • IIC Quarter 1 Workshop
           </span>
         </Link>
@@ -49,31 +49,31 @@ export default function Navbar() {
         <nav className="hidden md:flex items-center gap-6">
           <a
             href="/#about"
-            className="text-xs uppercase font-bold tracking-wider text-slate-800 hover:text-purple-700 transition-colors"
+            className="text-xs uppercase font-bold tracking-wider text-slate-800 hover:text-sky-700 transition-colors"
           >
             Overview
           </a>
           <a
             href="/#speaker"
-            className="text-xs uppercase font-bold tracking-wider text-slate-800 hover:text-purple-700 transition-colors"
+            className="text-xs uppercase font-bold tracking-wider text-slate-800 hover:text-sky-700 transition-colors"
           >
             Resource Person
           </a>
           <a
             href="/#workshop"
-            className="text-xs uppercase font-bold tracking-wider text-slate-800 hover:text-purple-700 transition-colors"
+            className="text-xs uppercase font-bold tracking-wider text-slate-800 hover:text-sky-700 transition-colors"
           >
             Agenda
           </a>
           <a
             href="/#benefits"
-            className="text-xs uppercase font-bold tracking-wider text-slate-800 hover:text-purple-700 transition-colors"
+            className="text-xs uppercase font-bold tracking-wider text-slate-800 hover:text-sky-700 transition-colors"
           >
             Outcomes
           </a>
           <a
             href="/#faq"
-            className="text-xs uppercase font-bold tracking-wider text-slate-800 hover:text-purple-700 transition-colors"
+            className="text-xs uppercase font-bold tracking-wider text-slate-800 hover:text-sky-700 transition-colors"
           >
             FAQ
           </a>
@@ -81,11 +81,11 @@ export default function Navbar() {
             href="https://www.kmct.org"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs font-bold tracking-tight text-slate-800 hover:text-purple-700 flex items-center gap-1.5 transition-all px-2.5 py-1.5 rounded-lg bg-white/80 hover:bg-white border border-slate-300 shadow-2xs group"
+            className="text-xs font-bold tracking-tight text-slate-800 hover:text-sky-700 flex items-center gap-1.5 transition-all px-2.5 py-1.5 rounded-lg bg-white/90 hover:bg-white border border-slate-200/90 shadow-2xs group"
             title="KMCT College of Engineering for Emerging Technologies and Management"
           >
             <span>kmct.org</span>
-            <ArrowUpRight className="w-3 h-3 text-slate-500 group-hover:text-purple-600 group-hover:translate-x-0.5 transition-all" />
+            <ArrowUpRight className="w-3 h-3 text-slate-500 group-hover:text-sky-600 group-hover:translate-x-0.5 transition-all" />
           </a>
         </nav>
 
@@ -97,10 +97,10 @@ export default function Navbar() {
                 <img
                   src={user.photoURL}
                   alt={user.displayName || 'User'}
-                  className="w-6 h-6 rounded-full border border-purple-500/50 object-cover"
+                  className="w-6 h-6 rounded-full border border-sky-500/50 object-cover"
                 />
               ) : (
-                <div className="w-6 h-6 rounded-full bg-purple-600 text-white text-[10px] font-bold flex items-center justify-center">
+                <div className="w-6 h-6 rounded-full bg-sky-600 text-white text-[10px] font-bold flex items-center justify-center">
                   {(user.displayName || user.phoneNumber || user.email || 'U').charAt(0).toUpperCase()}
                 </div>
               )}
@@ -118,9 +118,9 @@ export default function Navbar() {
           ) : (
             <Link
               href="/login"
-              className="px-3.5 py-2 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="px-3.5 py-2 rounded-full bg-white/90 hover:bg-white border border-slate-200 text-slate-800 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
             >
-              <LogIn className="w-3.5 h-3.5 text-purple-600" />
+              <LogIn className="w-3.5 h-3.5 text-sky-600" />
               <span>Sign In</span>
             </Link>
           )}
@@ -136,7 +136,7 @@ export default function Navbar() {
           ) : (
             <Link
               href={user ? "/register" : "/login?redirect=/register"}
-              className="px-5 py-2 rounded-full bg-gradient-to-r from-amber-500 via-orange-600 to-purple-600 hover:opacity-95 text-white text-xs font-bold uppercase tracking-wider transition-all shadow-md shadow-orange-500/20"
+              className="px-5 py-2 rounded-full bg-gradient-to-r from-sky-600 via-indigo-600 to-amber-500 hover:opacity-95 text-white text-xs font-bold uppercase tracking-wider transition-all shadow-md shadow-sky-600/25"
             >
               Register (₹100)
             </Link>
@@ -156,7 +156,7 @@ export default function Navbar() {
 
       {/* Mobile Menu Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-[#e8ecf2]/95 backdrop-blur-2xl border-b border-slate-300 px-6 py-6 space-y-4 shadow-xl">
+        <div className="md:hidden bg-white/95 backdrop-blur-2xl border-b border-slate-200 px-6 py-6 space-y-4 shadow-xl">
           {/* User Sign In / Profile status on mobile */}
           {user ? (
             <div className="p-3 rounded-xl bg-purple-50 border border-purple-200 flex items-center justify-between">

@@ -44,10 +44,10 @@ export default function AboutSection() {
   ];
 
   return (
-    <section id="about" className="py-24 bg-[#e8ecf2] border-t border-slate-300 relative overflow-hidden z-10">
+    <section id="about" className="py-24 bg-white/40 backdrop-blur-md border-t border-white/60 relative overflow-hidden z-10">
       
       {/* Subtle backdrop glow */}
-      <div className="absolute top-1/2 left-0 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 left-0 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 sm:px-10 relative z-20">
         
@@ -59,17 +59,17 @@ export default function AboutSection() {
           transition={{ duration: 0.6 }}
           className="max-w-3xl"
         >
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-50 border border-purple-200 text-xs font-bold text-purple-700 uppercase tracking-widest mb-4 shadow-xs">
-            <Building2 className="w-3.5 h-3.5 text-purple-600" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-50 border border-sky-200 text-xs font-bold text-sky-800 uppercase tracking-widest mb-4 shadow-2xs backdrop-blur-xs">
+            <Building2 className="w-3.5 h-3.5 text-sky-600" />
             <span>Proposal &amp; Mission Overview</span>
           </div>
-          <h2 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight leading-tight">
+          <h2 className="text-3xl sm:text-5xl font-black text-slate-950 tracking-tight leading-tight">
             From Problem to Possibility <br />
-            <span className="text-gradient-vibrant bg-gradient-to-r from-purple-700 via-indigo-600 to-amber-600 bg-clip-text text-transparent">
+            <span className="text-gradient-vibrant bg-gradient-to-r from-slate-950 via-sky-800 to-amber-600 bg-clip-text text-transparent">
               KMCT College of Engineering, Kasaragod.
             </span>
           </h2>
-          <p className="mt-5 text-base sm:text-lg text-slate-600 leading-relaxed">
+          <p className="mt-5 text-base sm:text-lg text-slate-700 font-medium leading-relaxed">
             Organized under the <strong>Institution&apos;s Innovation Council (IIC) Quarter 1 Activities</strong> (1st September – 30th November), focusing on the thrust area of <em>Inspiration, Motivation, and Ideation</em>. Designed to foster critical thinking, systematic problem identification, and human-centered design capabilities among our students.
           </p>
         </motion.div>
@@ -87,12 +87,12 @@ export default function AboutSection() {
                 transition={{ type: 'spring', stiffness: 220, damping: 22, delay: idx * 0.08 }}
               >
                 <TouchInteractiveTilt maxTilt={8} glareOpacity={0.15} className="h-full">
-                  <div className="bg-white rounded-3xl p-7 border border-slate-300 hover:border-purple-400 hover:shadow-lg transition-all duration-300 shadow-sm h-full flex flex-col justify-between">
+                  <div className="bg-white/85 backdrop-blur-xl rounded-3xl p-7 border border-white/80 hover:border-sky-300 hover:shadow-xl transition-all duration-300 shadow-lg shadow-sky-950/5 h-full flex flex-col justify-between">
                     <div>
-                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-50 to-amber-50 border border-purple-200 flex items-center justify-center text-purple-700 mb-5 p-2.5 shadow-xs">
+                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-sky-50 to-amber-50 border border-sky-200 flex items-center justify-center text-sky-700 mb-5 p-2.5 shadow-xs">
                         <Icon className="w-6 h-6" />
                       </div>
-                      <h3 className="text-base font-bold text-slate-900 mb-2 leading-snug">
+                      <h3 className="text-base font-bold text-slate-950 mb-2 leading-snug">
                         {obj.title}
                       </h3>
                       <p className="text-xs text-slate-700 font-medium leading-relaxed">
@@ -116,8 +116,8 @@ export default function AboutSection() {
           className="mt-14"
         >
           <TouchInteractiveTilt maxTilt={5} glareOpacity={0.15}>
-            <div className="rounded-3xl bg-white border border-slate-300 p-8 sm:p-10 relative overflow-hidden backdrop-blur-2xl shadow-xl">
-              <div className="absolute top-0 right-0 w-80 h-80 bg-purple-500/5 rounded-full blur-3xl pointer-events-none" />
+            <div className="rounded-3xl bg-white/85 border border-white/80 p-8 sm:p-10 relative overflow-hidden backdrop-blur-2xl shadow-2xl shadow-sky-950/10">
+              <div className="absolute top-0 right-0 w-80 h-80 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
               
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 relative z-10">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">

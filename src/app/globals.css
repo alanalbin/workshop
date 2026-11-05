@@ -5,29 +5,30 @@
 }
 
 :root {
-  /* Modern Refined Light-Dim / Soft Slate Palette (Slightly Darker Than White) */
-  --bg-primary: #e8edf2;
-  --bg-secondary: #dfe5ec;
-  --bg-surface: #ffffff;
-  --bg-surface-elevated: #f1f4f8;
-  --bg-card: rgba(255, 255, 255, 0.95);
+  /* Dynamic Atmospheric Sky & Frosted Cloud Palette (Matching Vanta Clouds & Possibility Theme) */
+  --bg-primary: transparent;
+  --bg-secondary: rgba(240, 246, 252, 0.7);
+  --bg-surface: rgba(255, 255, 255, 0.88);
+  --bg-surface-elevated: rgba(255, 255, 255, 0.95);
+  --bg-card: rgba(255, 255, 255, 0.85);
   
-  --accent-purple-light: #9333ea;
-  --accent-purple: #7c3aed;
-  --accent-purple-deep: #4c1d95;
-  --accent-violet: #6d28d9;
-  --accent-magenta: #a855f7;
+  --accent-sky-light: #38bdf8;
+  --accent-sky: #0284c7;
+  --accent-indigo: #4338ca;
+  --accent-amber: #d97706;
+  --accent-orange: #ea580c;
   
-  --border-subtle: rgba(203, 213, 225, 0.9);
-  --border-active: rgba(147, 51, 234, 0.5);
+  --border-subtle: rgba(255, 255, 255, 0.75);
+  --border-active: rgba(2, 132, 199, 0.5);
   
-  --text-primary: #0a0f1d;
+  /* Ultra-Crisp, High-Contrast Text Colors */
+  --text-primary: #090d16;
   --text-secondary: #1e293b;
-  --text-muted: #475569;
-  --text-dim: #64748b;
+  --text-muted: #334155;
+  --text-dim: #475569;
   
-  --glow-purple: rgba(124, 58, 237, 0.08);
-  --glow-violet: rgba(147, 51, 234, 0.1);
+  --glow-sky: rgba(2, 132, 199, 0.12);
+  --glow-amber: rgba(217, 119, 6, 0.12);
 }
 
 html {
@@ -41,70 +42,75 @@ body {
   font-family: var(--font-space-grotesk), 'Space Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   overflow-x: hidden;
   min-height: 100vh;
-  selection-background-color: var(--accent-purple);
+  selection-background-color: var(--accent-sky);
   selection-color: #ffffff;
 }
 
 ::selection {
-  background: #7c3aed;
+  background: #0284c7;
   color: #ffffff;
 }
 
-/* Custom Scrollbar for Soft Slate Theme */
+/* Custom Scrollbar for Atmospheric Sky Theme */
 ::-webkit-scrollbar {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #dfe5ec;
+  background: rgba(224, 242, 254, 0.5);
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #94a3b8;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #64748b;
 }
 
-/* Soft Slate Mesh & Subtle Depth */
-.purple-mesh-bg {
-  background: radial-gradient(circle at 50% 0%, rgba(124, 58, 237, 0.06) 0%, rgba(232, 236, 242, 0) 70%),
-              radial-gradient(circle at 85% 30%, rgba(245, 158, 11, 0.05) 0%, rgba(232, 236, 242, 0) 50%),
-              radial-gradient(circle at 15% 60%, rgba(99, 102, 241, 0.05) 0%, rgba(232, 236, 242, 0) 60%),
-              #e8ecf2;
-}
-
+/* Translucent Frosted Glass Card */
 .glass-card {
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(203, 213, 225, 0.9);
-  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.08);
 }
 
 .glass-card-hover {
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .glass-card-hover:hover {
-  border-color: rgba(147, 51, 234, 0.35);
-  box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.1);
+  border-color: rgba(2, 132, 199, 0.4);
+  box-shadow: 0 15px 35px -5px rgba(2, 132, 199, 0.14);
   transform: translateY(-2px);
 }
 
 .text-gradient-purple {
-  background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 45%, #7c3aed 100%);
+  background: linear-gradient(135deg, #090d16 0%, #1e3a8a 50%, #4338ca 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .text-gradient-vibrant {
-  background: linear-gradient(135deg, #0f172a 0%, #6d28d9 45%, #ea580c 100%);
+  background: linear-gradient(135deg, #090d16 0%, #1e3a8a 35%, #0284c7 65%, #d97706 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-sky {
+  background: linear-gradient(135deg, #0f172a 0%, #0369a1 50%, #0284c7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-amber {
+  background: linear-gradient(135deg, #9a3412 0%, #ea580c 50%, #f59e0b 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .border-glow {
-  border: 1px solid rgba(147, 51, 234, 0.2);
-  box-shadow: 0 0 20px rgba(147, 51, 234, 0.06);
+  border: 1px solid rgba(2, 132, 199, 0.3);
+  box-shadow: 0 0 25px rgba(2, 132, 199, 0.12);
 }
 
 @keyframes ripple {

@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import BackgroundCanvas3D from '@/components/background-3d/BackgroundCanvas3D';
 import BeamIntroLoading from '@/components/intro/BeamIntroLoading';
 
 export default function HomeExperienceManager() {
@@ -22,9 +21,6 @@ export default function HomeExperienceManager() {
           onComplete={() => setPlayIntro(false)}
         />
       )}
-
-      {/* Interactive Light 3D Canvas Background */}
-      <BackgroundCanvas3D onReplayIntro={handleReplayIntro} />
     </>
   );
 }

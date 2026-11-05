@@ -71,8 +71,8 @@ export default function AuthModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="relative w-full max-w-md bg-white border border-slate-300 rounded-3xl shadow-2xl overflow-hidden text-slate-800 p-6 sm:p-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="relative w-full max-w-md bg-white/90 backdrop-blur-2xl border border-white/80 rounded-3xl shadow-2xl overflow-hidden text-slate-800 p-6 sm:p-8">
         
         {/* Close Button */}
         <button
@@ -86,12 +86,12 @@ export default function AuthModal() {
         {/* Header */}
         <div className="text-center mb-6">
           <div className="flex justify-center mb-3">
-            <div className="w-12 h-12 rounded-xl bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-700 shadow-xs">
+            <div className="w-12 h-12 rounded-xl bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-700 shadow-xs">
               <Sparkles className="w-6 h-6" />
             </div>
           </div>
 
-          <h2 className="text-2xl font-black tracking-tight text-slate-900">
+          <h2 className="text-2xl font-black tracking-tight text-slate-950">
             {user ? 'Welcome Back!' : 'Sign In with Google'}
           </h2>
           <p className="text-xs text-slate-600 mt-1.5">
@@ -123,9 +123,9 @@ export default function AuthModal() {
                     closeAuthModal();
                     router.push('/register');
                   }}
-                  className="w-full py-2 px-3 rounded-xl bg-purple-100 hover:bg-purple-200 border border-purple-300 text-purple-800 font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                  className="w-full py-2 px-3 rounded-xl bg-sky-50 hover:bg-sky-100 border border-sky-300 text-sky-900 font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-purple-600" />
+                  <Sparkles className="w-3.5 h-3.5 text-sky-600" />
                   <span>Continue with Direct Registration</span>
                 </button>
               </div>

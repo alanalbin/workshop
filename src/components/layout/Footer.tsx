@@ -6,21 +6,21 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-[#dfe5ec] border-t border-slate-300 text-slate-700 text-xs">
+    <footer className="bg-white/70 backdrop-blur-xl border-t border-white/60 text-slate-700 text-xs shadow-xs">
       <div className="max-w-7xl mx-auto px-6 pt-10 pb-6">
         
         {/* Partner Logos Strip */}
-        <div className="mb-8 pb-6 border-b border-slate-300">
+        <div className="mb-8 pb-6 border-b border-slate-200/80">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 text-center sm:text-left">
             <div>
-              <p className="text-[10px] font-mono uppercase tracking-widest text-purple-700 font-bold">
+              <p className="text-[10px] font-mono uppercase tracking-widest text-sky-800 font-bold">
                 Institutional Affiliations & Approvals
               </p>
-              <h4 className="text-base font-bold text-slate-900 mt-0.5">
+              <h4 className="text-base font-bold text-slate-950 mt-0.5">
                 KMCT College of Engineering • Institution’s Innovation Council (IIC)
               </h4>
             </div>
-            <span className="text-[11px] text-slate-500 font-mono">
+            <span className="text-[11px] text-slate-600 font-mono">
               IIC Quarter 1 Activities (Inspiration, Motivation & Ideation)
             </span>
           </div>
@@ -31,35 +31,35 @@ export default function Footer() {
               href="https://www.kmct.org"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-3 rounded-xl bg-white border border-slate-200 hover:border-purple-300 transition-all flex flex-col items-center justify-center h-20 shadow-xs group"
+              className="p-3 rounded-xl bg-white/90 border border-slate-200 hover:border-sky-300 transition-all flex flex-col items-center justify-center h-20 shadow-2xs group"
               title="KMCT College of Engineering for Emerging Technologies and Management, Kasaragod"
             >
               <img src="/logos/kmct-college.png" alt="KMCT College" className="h-6 w-auto max-w-[130px] object-contain group-hover:scale-105 transition-transform" />
-              <span className="text-[9px] text-slate-500 mt-1.5 font-medium">Host Institution</span>
+              <span className="text-[9px] text-slate-600 mt-1.5 font-medium">Host Institution</span>
             </a>
 
             {/* IIC Logo */}
-            <div className="p-3 rounded-xl bg-white border border-slate-200 flex flex-col items-center justify-center h-20 shadow-xs">
+            <div className="p-3 rounded-xl bg-white/90 border border-slate-200 flex flex-col items-center justify-center h-20 shadow-2xs">
               <img src="/logos/iic-logo.svg" alt="IIC" className="h-8 w-auto object-contain" />
-              <span className="text-[9px] text-orange-600 mt-1 font-medium">IIC (MoE Initiative)</span>
+              <span className="text-[9px] text-orange-700 mt-1 font-semibold">IIC (MoE Initiative)</span>
             </div>
 
             {/* Kerala Startup Mission */}
-            <div className="p-3 rounded-xl bg-white border border-slate-200 flex flex-col items-center justify-center h-20 shadow-xs">
+            <div className="p-3 rounded-xl bg-white/90 border border-slate-200 flex flex-col items-center justify-center h-20 shadow-2xs">
               <img src="/logos/ksum-logo.svg" alt="KSUM" className="h-8 w-auto object-contain" />
-              <span className="text-[9px] text-sky-600 mt-1 font-medium">Kerala Startup Mission</span>
+              <span className="text-[9px] text-sky-700 mt-1 font-semibold">Kerala Startup Mission</span>
             </div>
 
             {/* IEDC */}
-            <div className="p-3 rounded-xl bg-white border border-slate-200 flex flex-col items-center justify-center h-20 shadow-xs">
+            <div className="p-3 rounded-xl bg-white/90 border border-slate-200 flex flex-col items-center justify-center h-20 shadow-2xs">
               <img src="/logos/iedc-logo.svg" alt="IEDC" className="h-8 w-auto object-contain" />
-              <span className="text-[9px] text-pink-600 mt-1 font-medium">IEDC Centre</span>
+              <span className="text-[9px] text-pink-700 mt-1 font-semibold">IEDC Centre</span>
             </div>
 
             {/* AICTE */}
-            <div className="p-3 rounded-xl bg-white border border-slate-200 flex flex-col items-center justify-center h-20 shadow-xs col-span-2 sm:col-span-4 lg:col-span-1">
+            <div className="p-3 rounded-xl bg-white/90 border border-slate-200 flex flex-col items-center justify-center h-20 shadow-2xs col-span-2 sm:col-span-4 lg:col-span-1">
               <img src="/logos/aicte-logo.svg" alt="AICTE" className="h-8 w-auto object-contain" />
-              <span className="text-[9px] text-amber-600 mt-1 font-medium">AICTE Approved</span>
+              <span className="text-[9px] text-amber-700 mt-1 font-semibold">AICTE Approved</span>
             </div>
           </div>
         </div>
@@ -68,13 +68,13 @@ export default function Footer() {
           
           {/* Col 1: Brand & Mission (Logo removed) */}
           <div className="md:col-span-1 space-y-3">
-            <span className="font-extrabold text-sm tracking-wider text-slate-900 uppercase block">
+            <span className="font-extrabold text-sm tracking-wider text-slate-950 uppercase block">
               FROM PROBLEM TO POSSIBILITY
             </span>
-            <p className="text-slate-600 leading-relaxed text-xs">
+            <p className="text-slate-700 leading-relaxed text-xs font-medium">
               A hands-on, activity-driven offline workshop on Problem Solving, Ideation &amp; Pitching conducted at KMCT College of Engineering for Emerging Technologies and Management, Kasaragod under Institution&apos;s Innovation Council (IIC).
             </p>
-            <p className="text-[11px] text-purple-700 font-semibold">
+            <p className="text-[11px] text-sky-800 font-bold">
               Resource Person: Mr. Muhammed Shayiz K P
             </p>
           </div>

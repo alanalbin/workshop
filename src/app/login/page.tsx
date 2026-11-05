@@ -73,7 +73,7 @@ function LoginContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#e8ecf2] py-20 sm:py-24 relative flex items-center justify-center px-4">
+    <div className="min-h-screen bg-transparent py-20 sm:py-24 relative flex items-center justify-center px-4">
       {/* Background Ambient Glows */}
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[380px] bg-purple-500/5 rounded-full blur-[140px] pointer-events-none" />
 
@@ -95,17 +95,17 @@ function LoginContent() {
         </div>
 
         {/* Card Box */}
-        <div className="bg-white border border-slate-200 rounded-3xl shadow-xl overflow-hidden text-slate-800 p-6 sm:p-9 relative">
+        <div className="bg-white/85 backdrop-blur-xl border border-white/80 rounded-3xl shadow-2xl shadow-sky-950/10 overflow-hidden text-slate-800 p-6 sm:p-9 relative">
           
           {/* Header Badge */}
           <div className="text-center mb-7 relative z-10">
             <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 rounded-2xl bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-700 shadow-xs">
+              <div className="w-16 h-16 rounded-2xl bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-700 shadow-xs">
                 <Sparkles className="w-8 h-8" />
               </div>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-950">
               {user ? 'Welcome Back!' : 'Sign In to Register'}
             </h1>
             <p className="text-xs sm:text-sm text-slate-600 mt-2 max-w-sm mx-auto">
@@ -299,7 +299,7 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#e8ecf2] flex items-center justify-center">
+        <div className="min-h-screen bg-transparent flex items-center justify-center">
           <div className="w-8 h-8 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
         </div>
       }

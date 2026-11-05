@@ -16,10 +16,10 @@ export default function EventDetailsSection({ event }: EventDetailsSectionProps)
   const isClosed = Boolean(event.registrationsClosed);
 
   return (
-    <section className="py-24 bg-[#dfe5ec]/50 border-t border-slate-300 relative z-10 overflow-hidden">
+    <section className="py-24 bg-white/40 backdrop-blur-md border-t border-white/60 relative z-10 overflow-hidden">
       
       {/* Background glow */}
-      <div className="absolute top-1/2 left-1/3 w-[650px] h-[350px] bg-purple-500/5 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/3 w-[650px] h-[350px] bg-sky-500/10 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 sm:px-10 relative z-20">
         
@@ -31,13 +31,13 @@ export default function EventDetailsSection({ event }: EventDetailsSectionProps)
           transition={{ duration: 0.6 }}
           className="text-center max-w-2xl mx-auto mb-16"
         >
-          <span className="text-xs uppercase font-extrabold tracking-widest text-purple-700 bg-purple-50 border border-purple-200 px-4 py-1.5 rounded-full shadow-xs">
+          <span className="text-xs uppercase font-extrabold tracking-widest text-sky-800 bg-sky-50 border border-sky-200 px-4 py-1.5 rounded-full shadow-2xs backdrop-blur-xs">
             Key Logistics &amp; Parameters
           </span>
-          <h2 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight mt-4">
+          <h2 className="text-3xl sm:text-5xl font-black text-slate-950 tracking-tight mt-4">
             Workshop Information
           </h2>
-          <p className="mt-3.5 text-slate-600 text-base">
+          <p className="mt-3.5 text-slate-700 font-medium text-base">
             Approved parameters, timing schedule, and institutional coordinator contacts.
           </p>
         </motion.div>
@@ -53,10 +53,10 @@ export default function EventDetailsSection({ event }: EventDetailsSectionProps)
             transition={{ duration: 0.5, delay: 0.05 }}
           >
             <TouchInteractiveTilt maxTilt={7} glareOpacity={0.12} className="h-full">
-              <div className="rounded-2xl p-7 sm:p-8 border border-slate-300 hover:border-purple-400 bg-white space-y-6 shadow-sm hover:shadow-md transition-all h-full flex flex-col justify-between">
+              <div className="rounded-3xl p-7 sm:p-8 border border-white/80 hover:border-sky-300 bg-white/85 backdrop-blur-xl space-y-6 shadow-lg shadow-sky-950/5 hover:shadow-2xl transition-all h-full flex flex-col justify-between">
                 <div>
-                  <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2.5 mb-5">
-                    <div className="w-9 h-9 rounded-lg bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-700 shadow-xs">
+                  <h3 className="text-lg font-bold text-slate-950 flex items-center gap-2.5 mb-5">
+                    <div className="w-9 h-9 rounded-xl bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-700 shadow-xs">
                       <Calendar className="w-5 h-5" />
                     </div>
                     <span>Date &amp; Schedule</span>
