@@ -23,6 +23,7 @@ import {
   Clock,
   FileText,
   BadgeCheck,
+  Send,
 } from 'lucide-react';
 import { Registration, EventConfig } from '@/types';
 import { DEFAULT_EVENT_CONFIG } from '@/lib/config/event-defaults';
@@ -162,13 +163,12 @@ function SuccessContent() {
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-black uppercase tracking-wider text-emerald-800">
-                      Payment Verified &amp; Confirmed
+                      Payment Verified (₹100) • Seat Confirmed
                     </span>
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   </div>
-                  <p className="text-xs text-slate-700 font-medium mt-0.5">
-                    Official Delegate Pass for <strong className="text-slate-950">{registration.fullName}</strong>. Receipt dispatched to{' '}
-                    <span className="font-mono text-slate-900">{registration.email}</span>.
+                  <p className="text-xs text-slate-800 font-semibold mt-1">
+                    This pass will be sent to your WhatsApp and email shortly. Registration Price: <strong className="text-slate-950">₹100</strong>.
                   </p>
                 </div>
               </div>
@@ -190,6 +190,20 @@ function SuccessContent() {
               ref={passRef}
               className="rounded-3xl bg-white border border-slate-300 p-8 sm:p-10 shadow-2xl shadow-slate-950/10 relative overflow-hidden print:border-black print:p-6 print:shadow-none print:m-0"
             >
+              {/* WhatsApp & Email Dispatch Notice Banner */}
+              <div className="mb-6 p-4 rounded-2xl bg-sky-50 border border-sky-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs print:hidden">
+                <div className="flex items-center gap-2.5 text-sky-950 font-semibold">
+                  <div className="w-8 h-8 rounded-xl bg-white border border-sky-200 flex items-center justify-center shrink-0 text-sky-700 shadow-2xs">
+                    <Send className="w-4 h-4" />
+                  </div>
+                  <span>This pass will be sent to your WhatsApp and email shortly.</span>
+                </div>
+                <div className="flex items-center gap-2 self-start sm:self-center">
+                  <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Price:</span>
+                  <span className="text-sm font-black text-slate-950">₹100 Paid</span>
+                </div>
+              </div>
+
               {/* Institutional Header Strip */}
               <div className="border-b border-slate-200 pb-6 print:border-black">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -312,14 +326,14 @@ function SuccessContent() {
 
                 <div>
                   <span className="text-[10px] text-slate-500 uppercase tracking-widest block font-bold">
-                    Fee Status
+                    Price
                   </span>
                   <p className="text-sm font-black text-slate-950 mt-1 print:text-black">
-                    ₹{displayAmount} Paid
+                    ₹100 Paid
                   </p>
                   <p className="text-emerald-700 text-[11px] mt-0.5 font-bold flex items-center gap-1">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>Payment Verified ({registration.paymentMethod || 'Razorpay'})</span>
+                    <span>Razorpay Verified</span>
                   </p>
                 </div>
               </div>
@@ -334,7 +348,7 @@ function SuccessContent() {
                     <span className="w-4 h-4 rounded-full bg-sky-100 text-sky-800 font-bold flex items-center justify-center text-[9px] shrink-0 mt-0.5">
                       1
                     </span>
-                    <span>Please present your Ticket ID ({ticketNumber}) at the reception desk for badge check-in.</span>
+                    <span>This pass will be sent to your WhatsApp and email shortly. Please present your Ticket ID ({ticketNumber}) for check-in.</span>
                   </li>
                   <li className="flex items-start gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-200">
                     <span className="w-4 h-4 rounded-full bg-sky-100 text-sky-800 font-bold flex items-center justify-center text-[9px] shrink-0 mt-0.5">
@@ -398,7 +412,7 @@ function SuccessContent() {
             </h2>
 
             <p className="mt-2.5 text-slate-600 text-sm max-w-lg mx-auto leading-relaxed">
-              Official workshop passes and IIC participation certificates are issued exclusively after payment verification. Please complete your registration payment of ₹{displayAmount} with Razorpay to activate and receive your pass.
+              The registration price is ₹100. Upon payment verification, your official workshop pass will be generated and sent to your WhatsApp and email shortly.
             </p>
 
             <div className="my-7 max-w-md mx-auto p-5 rounded-2xl bg-slate-50 border border-slate-200 text-left space-y-2.5">
