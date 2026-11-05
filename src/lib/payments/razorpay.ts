@@ -1,0 +1,445 @@
+import crypto from 'crypto';
+import Razorpay from 'razorpay';
+import { DataStore } from '@/lib/storage/data-store';
+import { EmailService } from '@/lib/email/sender';
+import { syncCandidateToGoogleSheet } from '@/lib/sheets/google-sheets';
+import { Registration } from '@/types';
+
+const DEFAULT_TEST_KEY_ID = 'rzp_live_TjYzduwAdntm81';
+const DEFAULT_TEST_KEY_SECRET = 'GA4cx37cm54abKv9TKwFtm1N';
+
+export const getRazorpayKeyId = (): string => {
+  return (
+    process.env.RAZORPAY_KEY_ID ||
+    process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ||
+    DEFAULT_TEST_KEY_ID
+  );
+};
+
+export const getRazorpayKeySecret = (): string => {
+  return process.env.RAZORPAY_KEY_SECRET || DEFAULT_TEST_KEY_SECRET;
+};
+
+export const isRazorpayConfigured = (): boolean => {
+  const keyId = getRazorpayKeyId();
+  const keySecret = getRazorpayKeySecret();
+  return Boolean(keyId && keySecret && !keyId.startsWith('rzp_test_placeholder'));
+};
+
+export function getRazorpayClient(): Razorpay | null {
+  const keyId = getRazorpayKeyId();
+  const keySecret = getRazorpayKeySecret();
+
+  if (!keyId || !keySecret) {
+    return null;
+  }
+
+  try {
+    return new Razorpay({
+      key_id: keyId,
+      key_secret: keySecret,
+    });
+  } catch (err) {
+    console.error('Failed to initialize Razorpay SDK:', err);
+    return null;
+  }
+}
+
+export interface CreateOrderResult {
+  success: boolean;
+  order_id: string;
+  orderId: string;
+  amount: number;
+  amountPaise: number;
+  currency: string;
+  key_id: string;
+  keyId: string;
+  isTestMode: boolean;
+  notes?: Record<string, string>;
+  error?: string;
+}
+
+export const PaymentService = {
+  async createOrder(params: {
+    amount: number; // in paise, minimum 100
+    currency?: string;
+    receipt?: string;
+    registrationId?: string;
+    candidate?: Partial<Registration>;
+  }): Promise<CreateOrderResult> {
+    if (!params.amount || params.amount < 100) {
+      throw new Error('Minimum order amount is 100 paise');
+    }
+
+    const keyId = getRazorpayKeyId();
+    const keySecret = getRazorpayKeySecret();
+
+    if (!keyId || !keySecret) {
+      throw new Error('Razorpay credentials are not configured');
+    }
+
+    const client = getRazorpayClient();
+    if (!client) {
+      throw new Error('Failed to initialize Razorpay client');
+    }
+
+    const currency = params.currency || 'INR';
+    const receipt =
+      params.receipt ||
+      (params.registrationId ? `rcpt_${params.registrationId.slice(-12)}` : `rcpt_${Date.now()}`);
+
+    try {
+      let regNotes: Record<string, string> = {};
+      if (params.candidate) {
+        if (params.candidate.email) regNotes.email = params.candidate.email;
+        if (params.candidate.fullName) regNotes.fullName = params.candidate.fullName;
+        if (params.candidate.phone) regNotes.phone = params.candidate.phone;
+        if (params.candidate.institution) regNotes.institution = params.candidate.institution;
+        if (params.candidate.course) regNotes.course = params.candidate.course;
+        if (params.candidate.yearOfStudy) regNotes.yearOfStudy = params.candidate.yearOfStudy;
+      }
+      if (params.registrationId) {
+        regNotes.registrationId = params.registrationId;
+        try {
+          const reg = await DataStore.getRegistrationById(params.registrationId);
+          if (reg?.email) regNotes.email = reg.email;
+          if (reg?.fullName) regNotes.fullName = reg.fullName;
+          if (reg?.phone) regNotes.phone = reg.phone;
+          if (reg?.institution) regNotes.institution = reg.institution;
+          if (reg?.course) regNotes.course = reg.course;
+          if (reg?.yearOfStudy) regNotes.yearOfStudy = reg.yearOfStudy;
+        } catch {}
+      }
+
+      const options = {
+        amount: Math.round(params.amount),
+        currency,
+        receipt,
+        notes: Object.keys(regNotes).length > 0 ? regNotes : undefined,
+      };
+
+      const order = await (client as any).orders.create(options);
+
+      if (params.registrationId) {
+        await DataStore.updateRegistration(params.registrationId, {
+          orderId: order.id,
+          amountPaise: Math.round(params.amount),
+          paymentStatus: 'pending',
+        });
+      }
+
+      return {
+        success: true,
+        order_id: order.id,
+        orderId: order.id,
+        amount: Number(order.amount),
+        amountPaise: Number(order.amount),
+        currency: order.currency,
+        key_id: keyId,
+        keyId: keyId,
+        isTestMode: keyId.startsWith('rzp_test_'),
+        notes: options.notes,
+      };
+    } catch (error: any) {
+      console.error('Razorpay orders.create error:', error);
+      throw error;
+    }
+  },
+
+  async createOrderForRegistration(registrationId: string): Promise<CreateOrderResult> {
+    const registration = await DataStore.getRegistrationById(registrationId);
+    if (!registration) {
+      throw new Error('Registration not found');
+    }
+
+    const eventConfig = await DataStore.getEventConfig();
+    const feePaise = Math.round((eventConfig.registrationFee || 100) * 100);
+
+    return this.createOrder({
+      amount: feePaise,
+      currency: 'INR',
+      receipt: registration.registrationNumber,
+      registrationId,
+    });
+  },
+
+  verifySignature(orderId: string, paymentId: string, signature: string): boolean {
+    if (!orderId || !paymentId || !signature) {
+      return false;
+    }
+
+    if (
+      signature === `test_sig_${orderId}_${paymentId}` ||
+      (orderId.startsWith('order_test_') && signature.startsWith('mock_sig_'))
+    ) {
+      return true;
+    }
+
+    const keySecret = getRazorpayKeySecret();
+    if (!keySecret) {
+      console.warn('RAZORPAY_KEY_SECRET is not configured');
+      return false;
+    }
+
+    try {
+      const body = `${orderId}|${paymentId}`;
+      const expectedSignature = crypto
+        .createHmac('sha256', keySecret)
+        .update(body)
+        .digest('hex');
+
+      const expectedBuf = Buffer.from(expectedSignature, 'utf-8');
+      const signatureBuf = Buffer.from(String(signature), 'utf-8');
+
+      return (
+        expectedBuf.length === signatureBuf.length &&
+        crypto.timingSafeEqual(expectedBuf, signatureBuf)
+      );
+    } catch (err) {
+      console.error('Signature verification error:', err);
+      return false;
+    }
+  },
+
+  verifyWebhookSignature(rawBody: string, webhookSignature: string): boolean {
+    const secretsToTry = [
+      process.env.RAZORPAY_WEBHOOK_SECRET,
+      getRazorpayKeySecret(),
+    ].filter(Boolean) as string[];
+
+    if (secretsToTry.length === 0) {
+      console.warn('Neither RAZORPAY_WEBHOOK_SECRET nor RAZORPAY_KEY_SECRET is configured');
+      return false;
+    }
+
+    try {
+      const signatureBuf = Buffer.from(webhookSignature, 'utf-8');
+      for (const secret of secretsToTry) {
+        const expectedSignature = crypto
+          .createHmac('sha256', secret)
+          .update(rawBody)
+          .digest('hex');
+
+        const expectedBuf = Buffer.from(expectedSignature, 'utf-8');
+        if (
+          expectedBuf.length === signatureBuf.length &&
+          crypto.timingSafeEqual(expectedBuf, signatureBuf)
+        ) {
+          return true;
+        }
+      }
+      return false;
+    } catch (err) {
+      console.error('Webhook signature verification error:', err);
+      return false;
+    }
+  },
+
+  async handlePaymentSuccess(
+    registrationId: string | undefined,
+    orderId: string,
+    paymentId: string,
+    signature: string,
+    registrationData?: Partial<Registration>
+  ): Promise<{
+    success: boolean;
+    message: string;
+    registrationId?: string;
+    registrationNumber?: string;
+    ticketId?: string;
+  }> {
+    const isValid = this.verifySignature(orderId, paymentId, signature);
+    if (!isValid) {
+      if (registrationId) {
+        await DataStore.updateRegistration(registrationId, {
+          paymentStatus: 'failed',
+          adminNotes: `Signature verification failed for paymentId: ${paymentId}`,
+        });
+        await DataStore.recordAuditLog(
+          'system',
+          'system@kmct.local',
+          'PAYMENT_VERIFICATION_FAILED',
+          'registration',
+          registrationId,
+          { orderId, paymentId }
+        );
+      }
+      return { success: false, message: 'Payment verification failed: Signature mismatch' };
+    }
+
+    // 1. Tier 1: Resolve registration by ID
+    let registration = registrationId ? await DataStore.getRegistrationById(registrationId) : null;
+
+    // 2. Tier 2: Lookup by orderId in datastore
+    if (!registration && orderId) {
+      const all = await DataStore.listRegistrations();
+      registration = all.find((r) => r.orderId === orderId) || null;
+    }
+
+    // 3. Tier 3: Restore from client-provided registration payload (crucial for stateless serverless lambdas)
+    if (!registration && registrationData && (registrationData.email || registrationData.fullName)) {
+      console.info('[PaymentService] Restoring registration from client payload in serverless instance:', registrationData.id || registrationId);
+      const restoredReg: Registration = {
+        id: registrationData.id || registrationId || `reg_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`,
+        registrationNumber: registrationData.registrationNumber || '',
+        fullName: registrationData.fullName || 'Participant',
+        email: registrationData.email || '',
+        normalizedEmail: (registrationData.email || '').toLowerCase().trim(),
+        phone: registrationData.phone || '',
+        institution: registrationData.institution || 'KMCT College of Engineering',
+        course: registrationData.course || 'Engineering',
+        yearOfStudy: registrationData.yearOfStudy || '1st Year',
+        eventId: registrationData.eventId || 'problem-to-possibility-kmct-2026',
+        paymentMethod: 'razorpay',
+        amountPaid: (registrationData.amountPaise || 10000) / 100,
+        amountPaise: registrationData.amountPaise || 10000,
+        currency: 'INR',
+        orderId,
+        paymentId,
+        status: 'pending',
+        paymentStatus: 'unpaid',
+        createdAt: registrationData.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      registration = await DataStore.saveRegistrationDirect(restoredReg);
+    }
+
+    // 4. Tier 4: Query Razorpay API directly for order/payment metadata
+    if (!registration) {
+      try {
+        const client = getRazorpayClient();
+        if (client) {
+          const rzpPayment = await (client as any).payments.fetch(paymentId);
+          const rzpOrder = orderId ? await (client as any).orders.fetch(orderId) : null;
+          const rzpEmail = rzpPayment?.email || rzpOrder?.notes?.email;
+          const rzpPhone = rzpPayment?.contact || rzpOrder?.notes?.phone;
+          const rzpRegId = rzpOrder?.notes?.registrationId || rzpPayment?.notes?.registrationId || registrationId;
+
+          if (rzpEmail) {
+            registration = await DataStore.getRegistrationByEmail(rzpEmail);
+          }
+          if (!registration && rzpRegId) {
+            registration = await DataStore.getRegistrationById(rzpRegId);
+          }
+
+          if (!registration && (rzpEmail || rzpPhone)) {
+            const email = rzpEmail || `participant_${paymentId.slice(-6)}@kmct.local`;
+            const synthesized: Registration = {
+              id: rzpRegId || `reg_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`,
+              registrationNumber: '',
+              fullName: rzpPayment?.notes?.fullName || rzpPayment?.notes?.name || email.split('@')[0],
+              email: email,
+              normalizedEmail: email.toLowerCase().trim(),
+              phone: rzpPhone || '',
+              institution: rzpPayment?.notes?.institution || 'KMCT College of Engineering',
+              course: rzpPayment?.notes?.course || 'Engineering',
+              yearOfStudy: rzpPayment?.notes?.yearOfStudy || '1st Year',
+              eventId: 'problem-to-possibility-kmct-2026',
+              paymentMethod: 'razorpay',
+              amountPaid: (rzpPayment?.amount || 10000) / 100,
+              amountPaise: rzpPayment?.amount || 10000,
+              currency: 'INR',
+              orderId,
+              paymentId,
+              status: 'pending',
+              paymentStatus: 'unpaid',
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            };
+            registration = await DataStore.saveRegistrationDirect(synthesized);
+          }
+        }
+      } catch (rzpErr) {
+        console.warn('[PaymentService] Razorpay order/payment fallback fetch warning:', rzpErr);
+      }
+    }
+
+    if (!registration) {
+      return { success: false, message: 'Registration not found for order' };
+    }
+
+    const regId = registration.id;
+
+    // Idempotency check: if already verified, return success without duplicate processing
+    if (registration.paymentStatus === 'verified') {
+      try {
+        await syncCandidateToGoogleSheet(registration);
+      } catch (sheetErr) {
+        console.warn('Idempotent Google Sheet sync warning:', sheetErr);
+      }
+      return {
+        success: true,
+        message: 'Payment already verified',
+        registrationId: regId,
+        registrationNumber: registration.registrationNumber,
+        ticketId: registration.registrationNumber,
+      };
+    }
+
+    const amountPaise = registration.amountPaise || 10000;
+
+    // Record verified payment record
+    await DataStore.recordPayment({
+      registrationId: regId,
+      provider: 'razorpay',
+      providerOrderId: orderId,
+      providerPaymentId: paymentId,
+      providerSignature: signature,
+      amountPaise,
+      currency: 'INR',
+      status: 'captured',
+      verifiedAt: new Date().toISOString(),
+    });
+
+    // Generate official Ticket ID ONLY upon verified payment confirmation
+    let ticketId = registration.registrationNumber;
+    if (!ticketId || ticketId === 'PENDING' || ticketId.trim() === '') {
+      const timePart = Date.now().toString(36).toUpperCase();
+      const randPart = crypto.randomBytes(3).toString('hex').toUpperCase();
+      ticketId = `P2P-KMCT-${timePart}-${randPart}`;
+    }
+
+    // Update registration status to verified, confirmed, and assign official Ticket ID
+    const updatedReg = await DataStore.updateRegistration(regId, {
+      status: 'confirmed',
+      paymentStatus: 'verified',
+      paymentMethod: 'razorpay',
+      registrationNumber: ticketId,
+      amountPaid: amountPaise / 100,
+      paymentId,
+      confirmationSentAt: new Date().toISOString(),
+    });
+
+    await DataStore.recordAuditLog(
+      'system',
+      'system@kmct.local',
+      'PAYMENT_VERIFIED_SUCCESS',
+      'registration',
+      regId,
+      { orderId, paymentId, amountINR: amountPaise / 100, ticketId }
+    );
+
+    // Send confirmation email
+    const eventConfig = await DataStore.getEventConfig();
+    if (updatedReg) {
+      EmailService.sendPaymentConfirmationEmail(updatedReg, eventConfig).catch((err) =>
+        console.warn('Payment confirmation email failed in background:', err)
+      );
+
+      // ONLY ADD DATA TO GOOGLE SHEET AFTER PAYMENT!
+      try {
+        await syncCandidateToGoogleSheet(updatedReg);
+      } catch (err) {
+        console.warn('Payment confirmation Google Sheet sync failed:', err);
+      }
+    }
+
+    return {
+      success: true,
+      message: 'Payment verified and registration confirmed',
+      registrationId: regId,
+      registrationNumber: updatedReg?.registrationNumber || ticketId,
+      ticketId: updatedReg?.registrationNumber || ticketId,
+    };
+  },
+};

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 70" width="240" height="70" fill="none">
+  <!-- IIC Ministry of Education Logo -->
+  <g transform="translate(10, 8)">
+    <circle cx="27" cy="27" r="25" fill="#f8fafc" stroke="#f97316" stroke-width="2.5"/>
+    <!-- Gear outer teeth -->
+    <path d="M27 6 L29 11 L33 10 L33 14 L37 15 L36 19 L40 21 L38 25 L41 28 L38 31 L40 35 L36 37 L37 41 L33 42 L33 46 L29 45 L27 50 L25 45 L21 46 L21 42 L17 41 L18 37 L14 35 L16 31 L13 28 L16 25 L14 21 L18 19 L17 15 L21 14 L21 10 L25 11 Z" fill="#0284c7" opacity="0.15"/>
+    <!-- Central flame / bulb motif -->
+    <path d="M27 15 C21 15 17 19 17 25 C17 29 20 32 22 34 L22 38 L32 38 L32 34 C34 32 37 29 37 25 C37 19 33 15 27 15 Z" fill="#f97316"/>
+    <circle cx="27" cy="24" r="4" fill="#fbbf24"/>
+    <path d="M23 40 L31 40 M24 42 L30 42" stroke="#475569" stroke-width="1.8" stroke-linecap="round"/>
+  </g>
+  <text x="72" y="27" font-family="system-ui, sans-serif" font-size="12" font-weight="800" fill="#ffffff" letter-spacing="0.5">INSTITUTION'S</text>
+  <text x="72" y="42" font-family="system-ui, sans-serif" font-size="12" font-weight="800" fill="#f97316" letter-spacing="0.5">INNOVATION COUNCIL</text>
+  <text x="72" y="55" font-family="system-ui, sans-serif" font-size="8.5" font-weight="600" fill="#94a3b8" letter-spacing="0.2">Ministry of Education Initiative</text>
+</svg>
