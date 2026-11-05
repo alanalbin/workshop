@@ -30,21 +30,19 @@ export const registrationFormSchema = z.object({
     .string()
     .trim()
     .optional()
-    .default('KMCT College of Engineering for Emerging Technologies and Management, Kasaragod'),
+    .transform((val) => (val && val.length >= 2 ? val : 'KMCT College of Engineering for Emerging Technologies and Management, Kasaragod')),
   course: z
     .string()
     .trim()
-    .min(1, { message: 'Please enter your batch.' })
-    .max(100, { message: 'Batch cannot exceed 100 characters.' }),
-  batch: z.string().trim().optional(),
-  yearOfStudy: z.string().optional().default('1st Year'),
-  privacyConsent: z
-    .boolean()
+    .min(2, { message: 'Please specify your department or degree program.' })
+    .max(100, { message: 'Course name cannot exceed 100 characters.' }),
+  yearOfStudy: z
+    .string()
     .optional()
-    .default(true)
-    .refine((val) => val === true, {
-      message: 'You must accept the privacy policy and terms to proceed.',
-    }),
+    .default('1st Year'),
+  privacyConsent: z.boolean().refine((val) => val === true, {
+    message: 'You must accept the privacy policy and terms to proceed.',
+  }),
 });
 
 export type RegistrationFormData = z.infer<typeof registrationFormSchema>;

@@ -240,7 +240,7 @@ export const DataStore = {
             return doc.data() as Registration;
           }
           // Query by ticket registrationNumber if valid ticket prefix
-          if (cleanId.startsWith('TKT-') || cleanId.startsWith('P2P-') || cleanId.startsWith('ILM-')) {
+          if (cleanId.startsWith('ILM-')) {
             const numSnap = await adminDb
               .collection('registrations')
               .where('registrationNumber', '==', cleanId)

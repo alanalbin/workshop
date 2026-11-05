@@ -70,22 +70,69 @@ async function fetchSheetCandidates(): Promise<SheetCandidate[]> {
     const rows: SheetCandidate[] = [];
     const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
 
-    for (let i = 0; i < lines.length; i++) {
+    let idCol = 1;
+    let nameCol = 2;
+    let emailCol = 3;
+    let phoneCol = 4;
+    let courseCol = 5;
+    let yearCol = 6;
+    let statusCol = 7;
+    let methodCol = 8;
+    let utrCol = 9;
+    let amountCol = 10;
+
+    let startIndex = 0;
+    if (lines.length > 0) {
+      const headerCols = parseCsvLine(lines[0]);
+      const isHeader = headerCols.some((c) => /email|registration|timestamp|phone|candidate/i.test(c));
+      if (isHeader) {
+        startIndex = 1;
+        headerCols.forEach((col, idx) => {
+          const c = col.toLowerCase();
+          if (c.includes('registration') || c.includes('ticket') || c.includes('pass id')) idCol = idx;
+          else if (c.includes('full name') || c.includes('candidate name') || c === 'name') nameCol = idx;
+          else if (c.includes('email')) emailCol = idx;
+          else if (c.includes('phone') || c.includes('mobile') || c.includes('whatsapp')) phoneCol = idx;
+          else if (c.includes('course') || c.includes('dept') || c.includes('department')) courseCol = idx;
+          else if (c.includes('year')) yearCol = idx;
+          else if (c.includes('status')) statusCol = idx;
+          else if (c.includes('method')) methodCol = idx;
+          else if (c.includes('utr') || c.includes('transaction')) utrCol = idx;
+          else if (c.includes('amount') || c.includes('fee')) amountCol = idx;
+        });
+      }
+    }
+
+    for (let i = startIndex; i < lines.length; i++) {
       const cols = parseCsvLine(lines[i]);
-      if (cols.length >= 5 && (cols[1]?.startsWith('P2P-') || cols[1]?.startsWith('ILM-'))) {
+      if (cols.length < 3) continue;
+
+      let regNum = cols[idCol] || '';
+      if (!regNum || (!regNum.startsWith('P2P-') && !regNum.startsWith('ILM-') && !regNum.startsWith('TKT-'))) {
+        const found = cols.find((c) => c.startsWith('P2P-') || c.startsWith('ILM-') || c.startsWith('TKT-'));
+        if (found) regNum = found;
+      }
+
+      let email = (cols[emailCol] || '').toLowerCase().trim();
+      if (!email || !email.includes('@')) {
+        const found = cols.find((c) => c.includes('@'));
+        if (found) email = found.toLowerCase().trim();
+      }
+
+      if (regNum || (email && email.includes('@'))) {
         rows.push({
           timestamp: cols[0] || '',
-          registrationNumber: cols[1],
-          fullName: cols[2] || '',
-          email: (cols[3] || '').toLowerCase().trim(),
-          phone: cols[4] || '',
-          institution: cols[5] || '',
-          course: cols[6] || '',
-          yearOfStudy: cols[7] || '',
-          paymentStatus: cols[8] || 'CONFIRMED / PAID',
-          paymentMethod: cols[9] || 'razorpay',
-          utr: cols[10] || '',
-          amountINR: Number(cols[11]) || 100,
+          registrationNumber: regNum || `P2P-KMCT-SHEET-${i}`,
+          fullName: cols[nameCol] || email.split('@')[0] || 'Workshop Participant',
+          email: email,
+          phone: cols[phoneCol] || '',
+          institution: 'KMCT College of Engineering for Emerging Technologies and Management, Kasaragod',
+          course: cols[courseCol] || 'Engineering',
+          yearOfStudy: cols[yearCol] || '1st Year',
+          paymentStatus: cols[statusCol] || 'CONFIRMED / PAID',
+          paymentMethod: cols[methodCol] || 'razorpay',
+          utr: cols[utrCol] || '',
+          amountINR: Number(cols[amountCol]) || 100,
         });
       }
     }

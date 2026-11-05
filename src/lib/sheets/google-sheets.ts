@@ -1,6 +1,9 @@
 import { Registration, PaymentRecord } from '@/types';
 
-export const GOOGLE_SHEET_ID = '146f_VkQ6NnYNmxkTjVtBD22y5JzXRQi3zvxO3QwI5O4';
+export const GOOGLE_SHEET_ID =
+  process.env.GOOGLE_SHEETS_SHEET_ID ||
+  process.env.GOOGLE_SHEET_ID ||
+  '1ooc3SoHQbKIeCFhaNGm5_qoRSKuC41PDVp_tcodRi4Q';
 export const GOOGLE_SHEET_URL = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/edit?usp=sharing`;
 
 export interface CandidateRow {
@@ -100,17 +103,23 @@ export async function syncCandidateToGoogleSheet(
     UTR: utrVal,
     transactionId: utrVal,
     transactionOrUtr: utrVal,
-    'Transaction / UTR Number': utrVal,
+    'Timestamp': formatted.timestamp,
+    'Registration ID': formatted.registrationNumber,
     'Registration Number': formatted.registrationNumber,
     'Full Name': formatted.fullName,
     'Email Address': formatted.email,
+    'Email': formatted.email,
     'Phone Number': formatted.phone,
-    'Institution / College': formatted.institution,
+    'Phone': formatted.phone,
     'Course / Department': formatted.course,
+    'Course': formatted.course,
     'Year of Study': formatted.yearOfStudy,
+    'Year': formatted.yearOfStudy,
     'Payment Status': formatted.paymentStatus,
     'Payment Method': formatted.paymentMethod,
+    'Transaction / UTR Number': utrVal,
     'Amount (INR)': formatted.amountINR,
+    'Amount': formatted.amountINR,
   };
 
   try {

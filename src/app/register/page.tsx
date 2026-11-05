@@ -12,7 +12,6 @@ import {
   ArrowLeft,
   Loader2,
   AlertCircle,
-  Building,
   CheckCircle2,
   Phone,
   LogIn,
@@ -35,7 +34,7 @@ export default function RegisterPage() {
     institution: 'KMCT College of Engineering for Emerging Technologies and Management, Kasaragod',
     course: '',
     yearOfStudy: '1st Year',
-    privacyConsent: true,
+    privacyConsent: false,
   });
 
   const [isClosed, setIsClosed] = useState<boolean | null>(null);
@@ -120,7 +119,7 @@ export default function RegisterPage() {
       validationErrors.phone = 'Please enter a valid 10-digit Indian mobile number.';
     }
     if (!formData.course.trim()) {
-      validationErrors.course = 'Please enter your batch (e.g. CSE - Batch A).';
+      validationErrors.course = 'Please enter your department / course (e.g. B.Tech Computer Science).';
     }
     if (!formData.privacyConsent) {
       validationErrors.privacyConsent = 'You must accept the terms and privacy policy to proceed.';
@@ -421,38 +420,40 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              {/* Batch & Year of Study (Strictly 1st Year) */}
+              {/* Course & Year of Study */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="course" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Batch <span className="text-amber-500">*</span>
+                    Course / Department <span className="text-amber-500">*</span>
                   </label>
                   <input
                     id="course"
                     name="course"
                     type="text"
                     required
-                    placeholder="e.g. CSE - Batch A / AIML"
+                    placeholder="e.g. B.Tech Computer Science / Management"
                     value={formData.course}
                     onChange={handleChange}
                     className={`w-full px-4 py-3 rounded-xl bg-slate-50 border ${
                       errors.course ? 'border-red-500' : 'border-slate-300'
-                    } focus:border-purple-600 focus:bg-white focus:outline-none text-slate-900 text-sm transition-colors`}
+                    } focus:border-sky-600 focus:bg-white focus:outline-none text-slate-900 text-sm transition-colors`}
                   />
                   {errors.course && <p className="text-xs text-red-500 mt-1">{errors.course}</p>}
                 </div>
 
                 <div>
                   <label htmlFor="yearOfStudy" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Year of Study
+                    Year of Study <span className="text-amber-500">*</span>
                   </label>
-                  <div className="w-full px-4 py-3 rounded-xl bg-slate-100 border border-slate-300 text-slate-900 text-sm font-semibold flex items-center justify-between select-none">
-                    <span>1st Year</span>
-                    <span className="text-[11px] bg-purple-100 text-purple-700 font-bold px-2.5 py-0.5 rounded-full border border-purple-200">
-                      1st Year Only
-                    </span>
-                  </div>
-                  <input type="hidden" name="yearOfStudy" value="1st Year" />
+                  <select
+                    id="yearOfStudy"
+                    name="yearOfStudy"
+                    value={formData.yearOfStudy}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:border-sky-600 focus:bg-white focus:outline-none text-slate-900 text-sm transition-colors cursor-default"
+                  >
+                    <option value="1st Year">1st Year</option>
+                  </select>
                 </div>
               </div>
 
@@ -534,12 +535,6 @@ export default function RegisterPage() {
                   <span className="text-sm font-semibold text-slate-900">Total Amount</span>
                   <span className="text-3xl font-black text-slate-900">₹100</span>
                 </div>
-              </div>
-
-              {/* Verified note */}
-              <div className="mt-5 p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 leading-relaxed">
-                <p className="font-bold text-amber-800 mb-0.5">Approved Fee Structure:</p>
-                The ₹100 registration fee covers full full-day workshop access, chart paper &amp; marker prototyping kits, morning tea with fresh canteen samosas, and official IIC certificate.
               </div>
             </div>
 

@@ -391,11 +391,12 @@ export const PaymentService = {
       verifiedAt: new Date().toISOString(),
     });
 
-    // Generate official random Ticket ID ONLY upon verified payment confirmation
-    let ticketId = registration.registrationNumber || registration.ticketId;
-    if (!ticketId || ticketId === 'PENDING' || ticketId.trim() === '' || ticketId.startsWith('reg_')) {
-      const randomTicketNum = Math.floor(100000 + Math.random() * 900000);
-      ticketId = `TKT-${randomTicketNum}`;
+    // Generate official Ticket ID ONLY upon verified payment confirmation
+    let ticketId = registration.registrationNumber;
+    if (!ticketId || ticketId === 'PENDING' || ticketId.trim() === '') {
+      const timePart = Date.now().toString(36).toUpperCase();
+      const randPart = crypto.randomBytes(3).toString('hex').toUpperCase();
+      ticketId = `P2P-KMCT-${timePart}-${randPart}`;
     }
 
     // Update registration status to verified, confirmed, and assign official Ticket ID
@@ -404,8 +405,6 @@ export const PaymentService = {
       paymentStatus: 'verified',
       paymentMethod: 'razorpay',
       registrationNumber: ticketId,
-      ticketId: ticketId,
-      yearOfStudy: '1st Year',
       amountPaid: amountPaise / 100,
       paymentId,
       confirmationSentAt: new Date().toISOString(),

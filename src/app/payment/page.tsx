@@ -36,7 +36,8 @@ function PaymentContent() {
   const [quickFullName, setQuickFullName] = useState('');
   const [quickEmail, setQuickEmail] = useState('');
   const [quickPhone, setQuickPhone] = useState('');
-  const [quickCourse, setQuickCourse] = useState('');
+  const [quickInstitution, setQuickInstitution] = useState('KMCT College of Engineering');
+  const [quickCourse, setQuickCourse] = useState('Computer Science & Engineering');
 
   // Lookup existing registration state
   const [lookupQuery, setLookupQuery] = useState('');
@@ -197,11 +198,6 @@ function PaymentContent() {
           setIsProcessing(false);
           return;
         }
-        if (!quickCourse.trim()) {
-          setPaymentError('Please enter your batch above.');
-          setIsProcessing(false);
-          return;
-        }
 
         const regRes = await fetch('/api/register', {
           method: 'POST',
@@ -210,10 +206,9 @@ function PaymentContent() {
             fullName: quickFullName.trim(),
             email: quickEmail.trim().toLowerCase(),
             phone: cleanedPhone.slice(-10),
-            institution: 'KMCT College of Engineering for Emerging Technologies and Management, Kasaragod',
-            course: quickCourse.trim(),
-            batch: quickCourse.trim(),
-            yearOfStudy: '1st Year',
+            institution: quickInstitution.trim() || 'KMCT College of Engineering',
+            course: quickCourse.trim() || 'Engineering & Technology',
+            yearOfStudy: '3rd Year',
             privacyConsent: true,
           }),
         });
@@ -477,12 +472,8 @@ function PaymentContent() {
                     const verifyData = await verifyRes.json();
                     if (verifyRes.ok && verifyData.success) {
                       if (typeof window !== 'undefined') {
-                        const randomTicketNum = Math.floor(100000 + Math.random() * 900000);
-                        const assignedTicket = verifyData.registrationNumber || verifyData.ticketId || `TKT-${randomTicketNum}`;
                         const confirmed = {
                           ...activeReg,
-                          registrationNumber: assignedTicket,
-                          ticketId: assignedTicket,
                           paymentStatus: 'verified',
                           status: 'confirmed',
                           amountPaid: fee,
@@ -537,7 +528,7 @@ function PaymentContent() {
                   {registration.email} • +91 {registration.phone}
                 </p>
                 <p className="text-xs text-purple-700 mt-0.5 font-medium">
-                  Batch: <strong>{registration.course}</strong> • 1st Year Only
+                  {registration.course} • {registration.institution}
                 </p>
               </div>
 
@@ -557,7 +548,7 @@ function PaymentContent() {
                   <span>Participant Details</span>
                 </h3>
                 <p className="text-xs text-slate-600 mt-0.5">
-                  Enter your details to register and proceed directly to payment.
+                  Provide your details to register and proceed to Razorpay payment.
                 </p>
               </div>
               <button
@@ -574,12 +565,12 @@ function PaymentContent() {
             {showLookupBox && (
               <form onSubmit={handleLookup} className="p-3.5 rounded-2xl bg-purple-50/60 border border-purple-200 space-y-2">
                 <span className="text-xs font-semibold text-slate-700 block">
-                  Search by Ticket ID (TKT-...) or Email:
+                  Search by Ticket ID (ILM-KMCT-...) or Email:
                 </span>
                 <div className="flex gap-2">
                   <input
                     type="text"
-                    placeholder="e.g. TKT-... or your@email.com"
+                    placeholder="e.g. ILM-KMCT-... or your@email.com"
                     value={lookupQuery}
                     onChange={(e) => setLookupQuery(e.target.value)}
                     className="flex-1 px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs font-mono focus:border-purple-600 focus:outline-none shadow-2xs"
@@ -599,7 +590,7 @@ function PaymentContent() {
               </form>
             )}
 
-            {/* Participant Input Fields: Name, Email, Phone, Batch, 1st Year Only */}
+            {/* Quick Participant Input Fields */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               <div>
                 <label className="block text-[11px] font-semibold text-slate-700 uppercase tracking-wider mb-1">
@@ -646,28 +637,15 @@ function PaymentContent() {
 
               <div>
                 <label className="block text-[11px] font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                  Batch <span className="text-purple-600">*</span>
+                  Year of Study <span className="text-sky-600">*</span>
                 </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. CSE - Batch A"
-                  value={quickCourse}
-                  onChange={(e) => setQuickCourse(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs focus:border-purple-600 focus:outline-none shadow-2xs"
-                />
-              </div>
-
-              <div className="sm:col-span-2">
-                <label className="block text-[11px] font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                  Year of Study
-                </label>
-                <div className="w-full px-3.5 py-2 rounded-xl bg-slate-100 border border-slate-300 text-slate-900 text-xs font-semibold flex items-center justify-between select-none">
-                  <span>1st Year</span>
-                  <span className="text-[10px] bg-purple-100 text-purple-700 font-bold px-2 py-0.5 rounded-full border border-purple-200">
-                    1st Year Only
-                  </span>
-                </div>
+                <select
+                  disabled
+                  value="1st Year"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 border border-slate-300 text-slate-900 text-xs cursor-not-allowed font-medium shadow-2xs"
+                >
+                  <option value="1st Year">1st Year</option>
+                </select>
               </div>
             </div>
           </div>
@@ -734,12 +712,12 @@ function PaymentContent() {
             type="button"
             onClick={handleRazorpayPayment}
             disabled={isProcessing}
-            className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold text-base uppercase tracking-wider shadow-lg shadow-purple-600/30 transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2.5 group hover:scale-[1.01] active:scale-[0.99]"
+            className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-sky-600 via-indigo-600 to-amber-500 hover:opacity-95 text-white font-black text-base uppercase tracking-wider shadow-lg shadow-sky-600/25 transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2.5 group hover:scale-[1.01] active:scale-[0.99]"
           >
             {isProcessing ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
-                <span>Processing Razorpay Checkout...</span>
+                <span>Opening Razorpay Checkout...</span>
               </>
             ) : (
               <>

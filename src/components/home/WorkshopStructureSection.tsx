@@ -181,10 +181,17 @@ export default function WorkshopStructureSection() {
                     <div>
                       {/* Time and Tag Header */}
                       <div className="flex items-center justify-between mb-4">
-                        <span className="text-xs font-mono font-bold px-3 py-1 rounded-xl bg-white/90 border border-slate-200 text-slate-900 shadow-2xs flex items-center gap-1.5">
-                          <Clock className="w-3.5 h-3.5 text-sky-600" />
-                          <span>{item.time}</span>
-                        </span>
+                        {!isBreak ? (
+                          <span className="text-xs font-mono font-bold px-3 py-1 rounded-xl bg-white/90 border border-slate-200 text-slate-900 shadow-2xs flex items-center gap-1.5">
+                            <Clock className="w-3.5 h-3.5 text-sky-600" />
+                            <span>{item.time}</span>
+                          </span>
+                        ) : (
+                          <span className="text-xs font-semibold px-3 py-1 rounded-xl bg-amber-100/90 border border-amber-300 text-amber-900 flex items-center gap-1.5">
+                            <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                            <span>Scheduled Break</span>
+                          </span>
+                        )}
                         <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
                           isBreak ? 'bg-amber-100/90 border-amber-300 text-amber-900' : 'bg-sky-50 border-sky-200 text-sky-900'
                         }`}>

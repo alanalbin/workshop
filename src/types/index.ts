@@ -85,14 +85,12 @@ export type PaymentMethod = 'razorpay' | 'manual_upi' | 'none';
 export interface Registration {
   id: string;
   registrationNumber: string;
-  ticketId?: string;
   fullName: string;
   email: string;
   normalizedEmail: string;
   phone: string;
   institution: string;
   course: string;
-  batch?: string;
   yearOfStudy: string;
   eventId: string;
   status: RegistrationStatus;

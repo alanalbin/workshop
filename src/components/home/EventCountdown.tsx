@@ -134,42 +134,66 @@ export default function EventCountdown({ targetDate, isCompleted = false, classN
 
   const isFinished = isCompleted || timeLeft.isEnded;
 
+  if (isFinished) {
+    return (
+      <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-50/90 border border-emerald-300 text-emerald-800 shadow-xs ${className}`}>
+        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+        <span className="text-xs font-bold uppercase tracking-wider">Event Live / Concluded</span>
+      </div>
+    );
+  }
+
   const units = [
-    { label: 'Days', val: String(isFinished ? 0 : timeLeft.days).padStart(2, '0') },
-    { label: 'Hours', val: String(isFinished ? 0 : timeLeft.hours).padStart(2, '0') },
-    { label: 'Mins', val: String(isFinished ? 0 : timeLeft.minutes).padStart(2, '0') },
-    { label: 'Secs', val: String(isFinished ? 0 : timeLeft.seconds).padStart(2, '0'), isSec: true },
+    { label: 'Days', val: String(timeLeft.days).padStart(2, '0') },
+    { label: 'Hours', val: String(timeLeft.hours).padStart(2, '0') },
+    { label: 'Mins', val: String(timeLeft.minutes).padStart(2, '0') },
+    { label: 'Secs', val: String(timeLeft.seconds).padStart(2, '0'), isSec: true },
   ];
 
   return (
-    <div className={`flex items-center gap-2 sm:gap-2.5 ${className}`}>
+    <div className={`inline-flex items-center gap-1.5 sm:gap-2 p-1.5 rounded-2xl bg-white/70 border border-sky-200/90 backdrop-blur-xl shadow-md shadow-sky-950/5 ${className}`}>
       {units.map((item, idx) => (
-        <div
-          key={idx}
-          className={`flex flex-col items-center justify-center min-w-[54px] sm:min-w-[62px] py-2 px-1.5 rounded-xl backdrop-blur-md shadow-inner transition-all duration-300 ${
-            isFinished
-              ? 'bg-emerald-950/20 border border-emerald-500/30 shadow-emerald-950/10'
-              : item.isSec
-              ? 'bg-purple-950/40 border border-purple-600/60 shadow-purple-900/20'
-              : 'bg-purple-950/40 border border-purple-700/40 hover:border-purple-500/60'
-          }`}
-        >
-          <span
-            suppressHydrationWarning
-            className={`text-lg sm:text-xl font-black font-mono tabular-nums tracking-tight transition-colors ${
-              isFinished ? 'text-emerald-400' : 'text-white'
+        <React.Fragment key={idx}>
+          <div
+            className={`flex flex-col items-center justify-center min-w-[50px] sm:min-w-[56px] py-2 px-1.5 rounded-xl bg-white/95 border transition-all duration-300 shadow-2xs relative overflow-hidden ${
+              item.isSec
+                ? 'border-sky-300 ring-1 ring-sky-400/20'
+                : 'border-slate-200/90 hover:border-sky-300'
             }`}
           >
-            {item.val}
-          </span>
-          <span
-            className={`text-[10px] uppercase font-bold tracking-wider mt-0.5 ${
-              isFinished ? 'text-emerald-400/80' : 'text-purple-400/80'
-            }`}
-          >
-            {item.label}
-          </span>
-        </div>
+            {/* Top accent bar */}
+            <div
+              className={`h-0.5 w-full absolute top-0 inset-x-0 ${
+                item.isSec
+                  ? 'bg-gradient-to-r from-amber-400 to-sky-500'
+                  : 'bg-gradient-to-r from-sky-400 to-indigo-500'
+              }`}
+            />
+
+            <div className="flex items-center gap-0.5 mt-0.5">
+              <span
+                suppressHydrationWarning
+                className="text-lg sm:text-xl font-black font-mono tabular-nums tracking-tight text-slate-950 leading-tight"
+              >
+                {item.val}
+              </span>
+              {item.isSec && (
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse ml-0.5 shrink-0" />
+              )}
+            </div>
+
+            <span className="text-[9px] font-extrabold uppercase tracking-widest text-sky-800 leading-none mt-1">
+              {item.label}
+            </span>
+          </div>
+
+          {/* Colon divider between cards */}
+          {idx < units.length - 1 && (
+            <span className="text-slate-400 font-extrabold text-sm select-none -mx-0.5 pb-2">
+              :
+            </span>
+          )}
+        </React.Fragment>
       ))}
     </div>
   );
