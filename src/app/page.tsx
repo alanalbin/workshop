@@ -3,7 +3,6 @@ import { DataStore } from '@/lib/storage/data-store';
 import { DEFAULT_EVENT_CONFIG } from '@/lib/config/event-defaults';
 import HeroSection from '@/components/home/HeroSection';
 import HomeExperienceManager from '@/components/home/HomeExperienceManager';
-import Workshop3DStudio from '@/components/home/Workshop3DStudio';
 import PartnersShowcase from '@/components/home/PartnersShowcase';
 import AboutSection from '@/components/home/AboutSection';
 import WorkshopStructureSection from '@/components/home/WorkshopStructureSection';
@@ -32,11 +31,6 @@ export default async function HomePage() {
 
       {/* Hero Section */}
       <HeroSection event={event} />
-
-      {/* Interactive 3D Workshop Innovation Studio */}
-      <Scroll3DPopup delay={0.05}>
-        <Workshop3DStudio />
-      </Scroll3DPopup>
 
       {/* Institutional & Organizing Partners Showcase */}
       <Scroll3DPopup delay={0.05}>
