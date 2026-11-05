@@ -66,7 +66,7 @@ const PARTNERS: Partner[] = [
 
 export default function PartnersShowcase() {
   return (
-    <section className="relative py-20 bg-white border-y border-slate-200 overflow-hidden z-10">
+    <section className="relative py-20 bg-[#dfe5ec]/60 border-y border-slate-300 overflow-hidden z-10">
       
       {/* Subtle backdrop ambient glows */}
       <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[300px] bg-purple-500/5 rounded-full blur-[140px] pointer-events-none" />
@@ -100,7 +100,7 @@ export default function PartnersShowcase() {
               className="h-full"
             >
               <TouchInteractiveTilt maxTilt={8} glareOpacity={0.15} className="h-full">
-                <div className="rounded-2xl p-6 border border-slate-200 hover:border-purple-300 bg-slate-50/70 hover:bg-white transition-all duration-300 flex flex-col justify-between h-full group shadow-xs hover:shadow-md">
+                <div className="rounded-2xl p-6 border border-slate-300 hover:border-purple-400 bg-white transition-all duration-300 flex flex-col justify-between h-full group shadow-xs hover:shadow-md">
                   
                   <div>
                     {/* Badge & Category Header */}
@@ -114,7 +114,7 @@ export default function PartnersShowcase() {
                     </div>
 
                     {/* Logo Box */}
-                    <div className="w-full h-24 rounded-xl bg-white border border-slate-200 flex items-center justify-center p-4 mb-5 shadow-xs group-hover:border-purple-200 transition-all">
+                    <div className="w-full h-24 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center p-4 mb-5 shadow-2xs group-hover:border-purple-200 transition-all">
                       <img
                         src={partner.logo}
                         alt={partner.name}

@@ -35,7 +35,7 @@ export default function BackgroundCanvas3D({ onReplayIntro }: BackgroundCanvas3D
 
     // 2. Scene & Subtle Light Atmosphere
     const scene = new THREE.Scene();
-    const gloomFogColor = 0xf8fafc;
+    const gloomFogColor = 0xe8ecf2;
     scene.fog = new THREE.FogExp2(gloomFogColor, isMobile ? 0.0034 : 0.0024);
 
     // 3. Camera
@@ -668,7 +668,7 @@ export default function BackgroundCanvas3D({ onReplayIntro }: BackgroundCanvas3D
   if (!webglSupported) {
     return (
       <div
-        className="fixed inset-0 pointer-events-none z-0 bg-[#f8fafc]"
+        className="fixed inset-0 pointer-events-none z-0 bg-[#e8ecf2]"
         aria-hidden="true"
       />
     );

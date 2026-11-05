@@ -131,7 +131,7 @@ const AGENDA: AgendaItem[] = [
 
 export default function WorkshopStructureSection() {
   return (
-    <section id="workshop" className="py-24 bg-white relative overflow-hidden z-10 border-t border-slate-200">
+    <section id="workshop" className="py-24 bg-[#dfe5ec]/50 relative overflow-hidden z-10 border-t border-slate-300">
       
       {/* Glow aura */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-purple-500/5 rounded-full blur-[150px] pointer-events-none" />
@@ -174,14 +174,14 @@ export default function WorkshopStructureSection() {
                   <div
                     className={`rounded-3xl p-6 sm:p-7 border transition-all duration-300 shadow-sm hover:shadow-md h-full flex flex-col justify-between ${
                       isBreak
-                        ? 'bg-amber-50/60 border-amber-200 hover:border-amber-300'
-                        : 'bg-slate-50/70 border-slate-200 hover:border-purple-300 hover:bg-white'
+                        ? 'bg-amber-50/80 border-amber-300 hover:border-amber-400'
+                        : 'bg-white border-slate-300 hover:border-purple-400'
                     }`}
                   >
                     <div>
                       {/* Time and Tag Header */}
                       <div className="flex items-center justify-between mb-4">
-                        <span className="text-xs font-mono font-bold px-3 py-1 rounded-xl bg-white border border-slate-200 text-slate-800 shadow-xs flex items-center gap-1.5">
+                        <span className="text-xs font-mono font-bold px-3 py-1 rounded-xl bg-slate-50 border border-slate-300 text-slate-800 shadow-2xs flex items-center gap-1.5">
                           <Clock className="w-3.5 h-3.5 text-purple-600" />
                           <span>{item.time}</span>
                         </span>

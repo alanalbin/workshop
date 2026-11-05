@@ -189,7 +189,7 @@ export default function RegisterPage() {
 
   if (isClosed === true) {
     return (
-      <div className="min-h-screen bg-[#f8fafc] py-36 relative">
+      <div className="min-h-screen bg-[#e8ecf2] py-36 relative">
         <div className="max-w-xl mx-auto px-6 relative z-10 text-center">
           <div className="bg-white rounded-3xl p-8 sm:p-10 border border-slate-200 shadow-xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold uppercase tracking-wider mb-6">
@@ -246,7 +246,7 @@ export default function RegisterPage() {
 
   if (authLoading || !user) {
     return (
-      <div className="min-h-screen bg-[#f8fafc] py-36 flex flex-col items-center justify-center px-6 text-center">
+      <div className="min-h-screen bg-[#e8ecf2] py-36 flex flex-col items-center justify-center px-6 text-center">
         <div className="w-16 h-16 rounded-2xl bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-700 mb-4 shadow-xs">
           <Lightbulb className="w-8 h-8" />
         </div>
@@ -274,7 +274,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] py-28 relative">
+    <div className="min-h-screen bg-[#e8ecf2] py-28 relative">
       
       {/* Background Glows */}
       <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-purple-500/5 rounded-full blur-[140px] pointer-events-none" />

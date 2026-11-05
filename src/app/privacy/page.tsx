@@ -4,7 +4,7 @@ import { ArrowLeft, ShieldCheck } from 'lucide-react';
 
 export default function PrivacyPolicyPage() {
   return (
-    <div className="min-h-screen bg-[#f8fafc] py-28 relative">
+    <div className="min-h-screen bg-[#e8ecf2] py-28 relative">
       <div className="max-w-4xl mx-auto px-6 relative z-10">
         
         <Link
@@ -15,7 +15,7 @@ export default function PrivacyPolicyPage() {
           <span>Back to Workshop Home</span>
         </Link>
 
-        <div className="bg-white rounded-3xl p-8 sm:p-12 border border-slate-200 shadow-xl space-y-8">
+        <div className="bg-white rounded-3xl p-8 sm:p-12 border border-slate-300 shadow-xl space-y-8">
           <div>
             <span className="inline-flex items-center gap-1.5 text-xs uppercase font-bold tracking-widest text-purple-700 bg-purple-50 border border-purple-200 px-3.5 py-1 rounded-full">
               <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />

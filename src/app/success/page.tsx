@@ -118,7 +118,7 @@ function SuccessContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f8fafc] flex flex-col items-center justify-center p-6 text-slate-700">
+      <div className="min-h-screen bg-[#e8ecf2] flex flex-col items-center justify-center p-6 text-slate-700">
         <div className="w-10 h-10 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mb-4" />
         <p className="text-sm font-semibold">Loading your workshop pass...</p>
       </div>
@@ -127,7 +127,7 @@ function SuccessContent() {
 
   if (error || !registration) {
     return (
-      <div className="min-h-screen bg-[#f8fafc] flex flex-col items-center justify-center p-6 text-center">
+      <div className="min-h-screen bg-[#e8ecf2] flex flex-col items-center justify-center p-6 text-center">
         <div className="max-w-md bg-white rounded-2xl p-8 border border-red-200 shadow-xl">
           <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-slate-900 mb-2">Pass Not Found</h2>
@@ -166,7 +166,7 @@ function SuccessContent() {
   const isPaid = registration.paymentStatus === 'verified';
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] py-28 relative">
+    <div className="min-h-screen bg-[#e8ecf2] py-28 relative">
       
       <div className="max-w-4xl mx-auto px-6 relative z-10">
         
@@ -430,7 +430,7 @@ export default function RegistrationSuccessPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center">
+        <div className="min-h-screen bg-[#e8ecf2] flex items-center justify-center">
           <div className="w-8 h-8 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
         </div>
       }

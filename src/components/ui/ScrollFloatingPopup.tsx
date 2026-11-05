@@ -77,7 +77,7 @@ export default function ScrollFloatingPopup({ fee = 100, registrationsClosed }: 
             <div className="absolute -inset-0.5 bg-gradient-to-r from-amber-500/30 via-orange-500/30 to-purple-500/30 rounded-2xl blur-md opacity-50 group-hover:opacity-80 transition-opacity duration-500 pointer-events-none" />
 
             {/* Light Glassmorphic Main Card */}
-            <div className="relative rounded-2xl bg-white/95 border border-slate-200 p-4 sm:p-5 backdrop-blur-xl shadow-2xl flex flex-col gap-3">
+            <div className="relative rounded-2xl bg-white/95 border border-slate-300 p-4 sm:p-5 backdrop-blur-xl shadow-2xl flex flex-col gap-3">
               
               {/* Header row: Live status badge + Dismiss button */}
               <div className="flex items-center justify-between gap-3">

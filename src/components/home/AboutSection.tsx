@@ -44,7 +44,7 @@ export default function AboutSection() {
   ];
 
   return (
-    <section id="about" className="py-24 bg-slate-50/80 border-t border-slate-200 relative overflow-hidden z-10">
+    <section id="about" className="py-24 bg-[#e8ecf2] border-t border-slate-300 relative overflow-hidden z-10">
       
       {/* Subtle backdrop glow */}
       <div className="absolute top-1/2 left-0 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl pointer-events-none" />
@@ -87,7 +87,7 @@ export default function AboutSection() {
                 transition={{ type: 'spring', stiffness: 220, damping: 22, delay: idx * 0.08 }}
               >
                 <TouchInteractiveTilt maxTilt={8} glareOpacity={0.15} className="h-full">
-                  <div className="bg-white rounded-3xl p-7 border border-slate-200 hover:border-purple-400 hover:shadow-lg transition-all duration-300 shadow-sm h-full flex flex-col justify-between">
+                  <div className="bg-white rounded-3xl p-7 border border-slate-300 hover:border-purple-400 hover:shadow-lg transition-all duration-300 shadow-sm h-full flex flex-col justify-between">
                     <div>
                       <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-50 to-amber-50 border border-purple-200 flex items-center justify-center text-purple-700 mb-5 p-2.5 shadow-xs">
                         <Icon className="w-6 h-6" />
@@ -116,7 +116,7 @@ export default function AboutSection() {
           className="mt-14"
         >
           <TouchInteractiveTilt maxTilt={5} glareOpacity={0.15}>
-            <div className="rounded-3xl bg-white border border-slate-200/90 p-8 sm:p-10 relative overflow-hidden backdrop-blur-2xl shadow-xl">
+            <div className="rounded-3xl bg-white border border-slate-300 p-8 sm:p-10 relative overflow-hidden backdrop-blur-2xl shadow-xl">
               <div className="absolute top-0 right-0 w-80 h-80 bg-purple-500/5 rounded-full blur-3xl pointer-events-none" />
               
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 relative z-10">
@@ -154,7 +154,7 @@ export default function AboutSection() {
                 </div>
 
                 <div className="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0">
-                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                  <div className="p-4 rounded-xl bg-slate-100/90 border border-slate-300 text-xs">
                     <p className="text-[10px] font-mono uppercase text-slate-500">Date &amp; Venue</p>
                     <p className="font-bold text-slate-900 mt-0.5">Wednesday, 11th Nov 2026</p>
                     <p className="text-purple-700 font-semibold text-[11px]">09:30 AM – 04:00 PM</p>

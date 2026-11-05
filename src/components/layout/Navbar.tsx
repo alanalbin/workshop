@@ -32,7 +32,7 @@ export default function Navbar() {
   }, []);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-b border-slate-200/90 shadow-xs">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-[#e8ecf2]/90 backdrop-blur-xl border-b border-slate-300/80 shadow-xs">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         
         {/* Brand Wordmark (Logo removed per user specification) */}
@@ -156,7 +156,7 @@ export default function Navbar() {
 
       {/* Mobile Menu Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-white/95 backdrop-blur-2xl border-b border-slate-200 px-6 py-6 space-y-4 shadow-xl">
+        <div className="md:hidden bg-[#e8ecf2]/95 backdrop-blur-2xl border-b border-slate-300 px-6 py-6 space-y-4 shadow-xl">
           {/* User Sign In / Profile status on mobile */}
           {user ? (
             <div className="p-3 rounded-xl bg-purple-50 border border-purple-200 flex items-center justify-between">

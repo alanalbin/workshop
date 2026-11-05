@@ -13,7 +13,7 @@ interface CtaBannerProps {
 
 export default function CtaBanner({ fee, registrationsClosed }: CtaBannerProps) {
   return (
-    <section className="pt-6 pb-14 bg-white relative overflow-hidden border-t border-slate-200 z-10">
+    <section className="pt-6 pb-14 bg-[#dfe5ec]/60 relative overflow-hidden border-t border-slate-300 z-10">
       
       {/* Background glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-purple-500/5 rounded-full blur-[140px] pointer-events-none" />
@@ -27,7 +27,7 @@ export default function CtaBanner({ fee, registrationsClosed }: CtaBannerProps) 
           transition={{ duration: 0.6 }}
         >
           <TouchInteractiveTilt maxTilt={5} glareOpacity={0.12}>
-            <div className="rounded-3xl bg-gradient-to-br from-purple-50/70 via-white to-amber-50/50 border border-slate-200/90 p-9 sm:p-14 text-center shadow-lg relative overflow-hidden">
+            <div className="rounded-3xl bg-gradient-to-br from-purple-50/70 via-white to-amber-50/50 border border-slate-300 p-9 sm:p-14 text-center shadow-lg relative overflow-hidden">
               
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-purple-200 text-xs font-bold text-purple-700 mb-6 shadow-xs relative z-10">
                 <Lightbulb className="w-4 h-4 text-purple-600" />

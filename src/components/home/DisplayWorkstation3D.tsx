@@ -33,7 +33,7 @@ export default function DisplayWorkstation3D() {
   }, []);
 
   return (
-    <section className="py-20 sm:py-28 relative overflow-hidden bg-slate-50/70 border-t border-slate-200">
+    <section className="py-20 sm:py-28 relative overflow-hidden bg-[#e8ecf2] border-t border-slate-300">
       <div className="max-w-6xl mx-auto px-6 relative z-10">
         
         {/* Section Header */}

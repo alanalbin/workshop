@@ -5,12 +5,12 @@
 }
 
 :root {
-  /* Modern Clean Light Palette */
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8fafc;
+  /* Modern Refined Light-Dim / Soft Slate Palette (Slightly Darker Than White) */
+  --bg-primary: #e8edf2;
+  --bg-secondary: #dfe5ec;
   --bg-surface: #ffffff;
-  --bg-surface-elevated: #f1f5f9;
-  --bg-card: rgba(255, 255, 255, 0.92);
+  --bg-surface-elevated: #f1f4f8;
+  --bg-card: rgba(255, 255, 255, 0.95);
   
   --accent-purple-light: #9333ea;
   --accent-purple: #7c3aed;
@@ -18,7 +18,7 @@
   --accent-violet: #6d28d9;
   --accent-magenta: #a855f7;
   
-  --border-subtle: rgba(203, 213, 225, 0.8);
+  --border-subtle: rgba(203, 213, 225, 0.9);
   --border-active: rgba(147, 51, 234, 0.5);
   
   --text-primary: #0f172a;
@@ -50,12 +50,12 @@ body {
   color: #ffffff;
 }
 
-/* Custom Scrollbar for Light Theme */
+/* Custom Scrollbar for Soft Slate Theme */
 ::-webkit-scrollbar {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #dfe5ec;
 }
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
@@ -65,20 +65,20 @@ body {
   background: #94a3b8;
 }
 
-/* Light Mesh & Subtle Depth */
+/* Soft Slate Mesh & Subtle Depth */
 .purple-mesh-bg {
-  background: radial-gradient(circle at 50% 0%, rgba(124, 58, 237, 0.05) 0%, rgba(248, 250, 252, 0) 70%),
-              radial-gradient(circle at 85% 30%, rgba(245, 158, 11, 0.04) 0%, rgba(248, 250, 252, 0) 50%),
-              radial-gradient(circle at 15% 60%, rgba(99, 102, 241, 0.04) 0%, rgba(248, 250, 252, 0) 60%),
-              #f8fafc;
+  background: radial-gradient(circle at 50% 0%, rgba(124, 58, 237, 0.06) 0%, rgba(232, 236, 242, 0) 70%),
+              radial-gradient(circle at 85% 30%, rgba(245, 158, 11, 0.05) 0%, rgba(232, 236, 242, 0) 50%),
+              radial-gradient(circle at 15% 60%, rgba(99, 102, 241, 0.05) 0%, rgba(232, 236, 242, 0) 60%),
+              #e8ecf2;
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(226, 232, 240, 0.9);
-  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04);
+  border: 1px solid rgba(203, 213, 225, 0.9);
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
 }
 
 .glass-card-hover {

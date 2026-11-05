@@ -57,7 +57,7 @@ export default function BenefitsSection({ benefits }: BenefitsSectionProps) {
   ];
 
   return (
-    <section id="benefits" className="py-24 bg-slate-50/80 border-t border-slate-200 relative overflow-hidden z-10">
+    <section id="benefits" className="py-24 bg-[#e8ecf2] border-t border-slate-300 relative overflow-hidden z-10">
       
       {/* Background radial glow */}
       <div className="absolute top-1/3 right-10 w-[550px] h-[350px] bg-purple-500/5 rounded-full blur-[130px] pointer-events-none" />
@@ -96,7 +96,7 @@ export default function BenefitsSection({ benefits }: BenefitsSectionProps) {
                 transition={{ type: 'spring', stiffness: 220, damping: 22, delay: idx * 0.07 }}
               >
                 <TouchInteractiveTilt maxTilt={7} glareOpacity={0.12} className="h-full">
-                  <div className="bg-white rounded-3xl p-7 sm:p-8 border border-slate-200 hover:border-purple-300 flex flex-col justify-between transition-all duration-300 shadow-sm hover:shadow-md h-full">
+                  <div className="bg-white rounded-3xl p-7 sm:p-8 border border-slate-300 hover:border-purple-400 flex flex-col justify-between transition-all duration-300 shadow-sm hover:shadow-md h-full">
                     <div>
                       <div className="flex items-center justify-between mb-5">
                         <div className="w-12 h-12 rounded-2xl bg-purple-50 border border-purple-200 flex items-center justify-center p-2.5 shadow-xs text-purple-700">

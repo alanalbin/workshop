@@ -18,7 +18,7 @@ export default function FaqSection({ faq }: FaqSectionProps) {
   };
 
   return (
-    <section id="faq" className="pt-20 pb-16 bg-slate-50/80 border-t border-slate-200 relative z-10 overflow-hidden">
+    <section id="faq" className="pt-20 pb-16 bg-[#e8ecf2] border-t border-slate-300 relative z-10 overflow-hidden">
       
       {/* Background glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-purple-500/5 rounded-full blur-[140px] pointer-events-none" />
@@ -55,7 +55,7 @@ export default function FaqSection({ faq }: FaqSectionProps) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-30px' }}
                 transition={{ duration: 0.4, delay: idx * 0.06 }}
-                className="bg-white rounded-2xl border border-slate-200 hover:border-purple-300 overflow-hidden transition-all duration-300 shadow-xs"
+                className="bg-white rounded-2xl border border-slate-300 hover:border-purple-400 overflow-hidden transition-all duration-300 shadow-xs"
               >
                 <button
                   onClick={() => toggle(item.id)}

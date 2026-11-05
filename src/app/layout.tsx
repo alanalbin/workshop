@@ -75,7 +75,7 @@ export default function RootLayout({
           strategy="lazyOnload"
         />
       </head>
-      <body className={`min-h-screen flex flex-col bg-[#f8fafc] text-slate-800 ${spaceGrotesk.className} selection:bg-purple-600 selection:text-white antialiased relative`}>
+      <body className={`min-h-screen flex flex-col bg-[#e8ecf2] text-slate-800 ${spaceGrotesk.className} selection:bg-purple-600 selection:text-white antialiased relative`}>
         <ScrollProgressBar />
         <AuthProvider>
           <Navbar />

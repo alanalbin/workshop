@@ -16,7 +16,7 @@ export default function EventDetailsSection({ event }: EventDetailsSectionProps)
   const isClosed = Boolean(event.registrationsClosed);
 
   return (
-    <section className="py-24 bg-white border-t border-slate-200 relative z-10 overflow-hidden">
+    <section className="py-24 bg-[#dfe5ec]/50 border-t border-slate-300 relative z-10 overflow-hidden">
       
       {/* Background glow */}
       <div className="absolute top-1/2 left-1/3 w-[650px] h-[350px] bg-purple-500/5 rounded-full blur-[140px] pointer-events-none" />
@@ -53,7 +53,7 @@ export default function EventDetailsSection({ event }: EventDetailsSectionProps)
             transition={{ duration: 0.5, delay: 0.05 }}
           >
             <TouchInteractiveTilt maxTilt={7} glareOpacity={0.12} className="h-full">
-              <div className="rounded-2xl p-7 sm:p-8 border border-slate-200 hover:border-purple-300 bg-slate-50/70 hover:bg-white space-y-6 shadow-sm hover:shadow-md transition-all h-full flex flex-col justify-between">
+              <div className="rounded-2xl p-7 sm:p-8 border border-slate-300 hover:border-purple-400 bg-white space-y-6 shadow-sm hover:shadow-md transition-all h-full flex flex-col justify-between">
                 <div>
                   <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2.5 mb-5">
                     <div className="w-9 h-9 rounded-lg bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-700 shadow-xs">
@@ -108,7 +108,7 @@ export default function EventDetailsSection({ event }: EventDetailsSectionProps)
             transition={{ duration: 0.5, delay: 0.15 }}
           >
             <TouchInteractiveTilt maxTilt={7} glareOpacity={0.12} className="h-full">
-              <div className="rounded-2xl p-7 sm:p-8 border border-slate-200 hover:border-purple-300 bg-slate-50/70 hover:bg-white space-y-6 shadow-sm hover:shadow-md transition-all h-full flex flex-col justify-between">
+              <div className="rounded-2xl p-7 sm:p-8 border border-slate-300 hover:border-purple-400 bg-white space-y-6 shadow-sm hover:shadow-md transition-all h-full flex flex-col justify-between">
                 <div>
                   <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2.5 mb-5">
                     <div className="w-9 h-9 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-700 shadow-xs">
@@ -157,7 +157,7 @@ export default function EventDetailsSection({ event }: EventDetailsSectionProps)
             transition={{ duration: 0.5, delay: 0.25 }}
           >
             <TouchInteractiveTilt maxTilt={7} glareOpacity={0.12} className="h-full">
-              <div className="rounded-2xl p-7 sm:p-8 border border-slate-200 hover:border-purple-300 bg-slate-50/70 hover:bg-white space-y-6 shadow-sm hover:shadow-md transition-all h-full flex flex-col justify-between">
+              <div className="rounded-2xl p-7 sm:p-8 border border-slate-300 hover:border-purple-400 bg-white space-y-6 shadow-sm hover:shadow-md transition-all h-full flex flex-col justify-between">
                 <div>
                   <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2.5 mb-5">
                     <div className="w-9 h-9 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700 shadow-xs">

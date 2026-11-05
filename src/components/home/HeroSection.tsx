@@ -65,7 +65,7 @@ export default function HeroSection({ event }: HeroSectionProps) {
 
   return (
     <section className="relative min-h-[92vh] flex items-center pt-24 pb-16 overflow-hidden">
-      
+
       {/* Light Theme Subtle Ambient Gradients */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-purple-500/5 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute top-1/3 right-10 w-[400px] h-[400px] bg-amber-500/5 rounded-full blur-[140px] pointer-events-none" />
@@ -77,12 +77,12 @@ export default function HeroSection({ event }: HeroSectionProps) {
           animate="visible"
           className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center"
         >
-          
+
           {/* ========================================================
               LEFT COLUMN: Primary Content & Interactive Controls (7 cols)
              ======================================================== */}
           <div className="lg:col-span-7 flex flex-col justify-center">
-            
+
             {/* Event Association Badges */}
             <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-2.5 mb-6">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-orange-50 border border-orange-200 text-xs font-semibold text-orange-700 shadow-xs">
@@ -162,11 +162,10 @@ export default function HeroSection({ event }: HeroSectionProps) {
             {/* Workshop Status & Countdown */}
             <motion.div
               variants={itemVariants}
-              className={`mt-7 p-4 sm:p-5 rounded-2xl max-w-lg shadow-sm border ${
-                isEventCompleted
-                  ? 'bg-emerald-50 border-emerald-200'
-                  : 'bg-white border-slate-200'
-              }`}
+              className={`mt-7 p-4 sm:p-5 rounded-2xl max-w-lg shadow-sm border ${isEventCompleted
+                ? 'bg-emerald-50 border-emerald-200'
+                : 'bg-white border-slate-200'
+                }`}
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
@@ -202,7 +201,7 @@ export default function HeroSection({ event }: HeroSectionProps) {
             </motion.div>
 
             {/* Resource Person Preview Card with Extracted Photo */}
-            <motion.div variants={itemVariants} className="mt-4 p-4 rounded-xl bg-white border border-slate-200 shadow-sm max-w-lg">
+            <motion.div variants={itemVariants} className="mt-4 p-4 rounded-xl bg-white border border-slate-300 shadow-sm max-w-lg">
               <div className="flex items-center gap-3.5">
                 <div className="w-14 h-14 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden shrink-0 flex items-center justify-center shadow-xs">
                   <img
@@ -236,7 +235,7 @@ export default function HeroSection({ event }: HeroSectionProps) {
             </motion.div>
 
             {/* Coordinator & Approval Information */}
-            <motion.div variants={itemVariants} className="mt-3 p-3.5 rounded-xl bg-slate-50 border border-slate-200 max-w-lg">
+            <motion.div variants={itemVariants} className="mt-3 p-3.5 rounded-xl bg-slate-100/90 border border-slate-300 max-w-lg">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-[10px] font-mono uppercase tracking-wider text-slate-500">Proposed By</p>
@@ -299,8 +298,8 @@ export default function HeroSection({ event }: HeroSectionProps) {
              ======================================================== */}
           <motion.div variants={itemVariants} className="lg:col-span-5 w-full">
             <TouchInteractiveTilt maxTilt={8} glareOpacity={0.15}>
-              <div className="bg-white rounded-3xl p-7 sm:p-8 border border-slate-200 shadow-xl relative overflow-hidden group">
-                
+              <div className="bg-white rounded-3xl p-7 sm:p-8 border border-slate-300 shadow-xl relative overflow-hidden group">
+
                 {/* Glowing Corner Ambient */}
                 <div className="absolute top-0 right-0 w-36 h-36 bg-purple-500/5 rounded-full blur-2xl pointer-events-none group-hover:bg-purple-500/10 transition-all duration-500" />
 

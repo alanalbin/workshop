@@ -6,11 +6,11 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-slate-100 border-t border-slate-200 text-slate-600 text-xs">
+    <footer className="bg-[#dfe5ec] border-t border-slate-300 text-slate-700 text-xs">
       <div className="max-w-7xl mx-auto px-6 pt-10 pb-6">
         
         {/* Partner Logos Strip */}
-        <div className="mb-8 pb-6 border-b border-slate-200">
+        <div className="mb-8 pb-6 border-b border-slate-300">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 text-center sm:text-left">
             <div>
               <p className="text-[10px] font-mono uppercase tracking-widest text-purple-700 font-bold">
@@ -107,7 +107,7 @@ export default function Footer() {
               <p className="text-[11px] text-purple-700 font-medium mt-0.5">IIC Coordinator, KMCTCEEM</p>
             </div>
 
-            <div className="pt-2 border-t border-slate-200">
+            <div className="pt-2 border-t border-slate-300">
               <p className="text-[10px] uppercase font-mono tracking-wider text-slate-500">Approval</p>
               <p className="text-slate-700 text-xs mt-0.5">Approved by the Principal on 4th November 2026</p>
             </div>
@@ -162,7 +162,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-8 pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+        <div className="mt-8 pt-4 border-t border-slate-300 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
           <p className="text-[11px] text-slate-500">
             © {currentYear} KMCT College of Engineering for Emerging Technologies and Management. Institution’s Innovation Council (IIC).
           </p>

@@ -371,7 +371,7 @@ function PaymentContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f8fafc] flex flex-col items-center justify-center p-6 text-slate-700">
+      <div className="min-h-screen bg-[#e8ecf2] flex flex-col items-center justify-center p-6 text-slate-700">
         <Loader2 className="w-10 h-10 text-purple-600 animate-spin mb-4" />
         <p className="text-sm font-semibold">Securing Razorpay payment session...</p>
       </div>
@@ -379,7 +379,7 @@ function PaymentContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] py-28 relative">
+    <div className="min-h-screen bg-[#e8ecf2] py-28 relative">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
 
       <div className="max-w-3xl mx-auto px-6 relative z-10">
@@ -750,7 +750,7 @@ export default function PaymentPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center text-slate-500">
+        <div className="min-h-screen bg-[#e8ecf2] flex items-center justify-center text-slate-500">
           <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
         </div>
       }

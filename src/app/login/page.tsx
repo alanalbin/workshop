@@ -73,7 +73,7 @@ function LoginContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] py-20 sm:py-24 relative flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#e8ecf2] py-20 sm:py-24 relative flex items-center justify-center px-4">
       {/* Background Ambient Glows */}
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[380px] bg-purple-500/5 rounded-full blur-[140px] pointer-events-none" />
 
@@ -299,7 +299,7 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center">
+        <div className="min-h-screen bg-[#e8ecf2] flex items-center justify-center">
           <div className="w-8 h-8 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
         </div>
       }
