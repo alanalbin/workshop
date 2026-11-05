@@ -10,7 +10,6 @@ import AboutSection from '@/components/home/AboutSection';
 import WorkshopStructureSection from '@/components/home/WorkshopStructureSection';
 import BenefitsSection from '@/components/home/BenefitsSection';
 import EventDetailsSection from '@/components/home/EventDetailsSection';
-import GallerySection from '@/components/gallery/GallerySection';
 import FaqSection from '@/components/home/FaqSection';
 import CtaBanner from '@/components/home/CtaBanner';
 import Scroll3DPopup from '@/components/ui/Scroll3DPopup';
@@ -72,10 +71,6 @@ export default async function HomePage() {
         <EventDetailsSection event={event} />
       </Scroll3DPopup>
 
-      {/* Workshop High-Res Gallery with AI Biometric Face & OCR Scanner */}
-      <Scroll3DPopup delay={0.05}>
-        <GallerySection id="gallery" />
-      </Scroll3DPopup>
 
       {/* Detailed FAQs addressing Student & Faculty inquiries */}
       <Scroll3DPopup delay={0.05}>

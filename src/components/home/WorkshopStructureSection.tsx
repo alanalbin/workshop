@@ -131,10 +131,10 @@ const AGENDA: AgendaItem[] = [
 
 export default function WorkshopStructureSection() {
   return (
-    <section id="workshop" className="py-24 bg-[#05030a]/40 backdrop-blur-[2px] relative overflow-hidden z-10 border-t border-purple-950/40">
+    <section id="workshop" className="py-24 bg-white relative overflow-hidden z-10 border-t border-slate-200">
       
       {/* Glow aura */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-orange-900/10 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-purple-500/5 rounded-full blur-[150px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 sm:px-10 relative z-20">
         
@@ -146,13 +146,13 @@ export default function WorkshopStructureSection() {
           transition={{ duration: 0.6 }}
           className="text-center max-w-3xl mx-auto"
         >
-          <span className="text-xs uppercase font-extrabold tracking-widest text-amber-400 bg-amber-950/70 border border-amber-800/40 px-4 py-1.5 rounded-full shadow-sm">
+          <span className="text-xs uppercase font-extrabold tracking-widest text-purple-700 bg-purple-50 border border-purple-200 px-4 py-1.5 rounded-full shadow-xs">
             Proposed Agenda • 11th November 2026
           </span>
-          <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight mt-4">
+          <h2 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight mt-4">
             Hands-on Activity-Driven Schedule
           </h2>
-          <p className="mt-3.5 text-slate-300 text-base sm:text-lg">
+          <p className="mt-3.5 text-slate-600 text-base sm:text-lg">
             A comprehensive, interactive schedule engineered to take 1st-year students from an abstract problem to a physical prototype and pitch-ready innovation.
           </p>
         </motion.div>
@@ -170,23 +170,23 @@ export default function WorkshopStructureSection() {
                 viewport={{ once: true, margin: '-30px' }}
                 transition={{ type: 'spring', stiffness: 220, damping: 22, delay: idx * 0.05 }}
               >
-                <TouchInteractiveTilt maxTilt={6} glareOpacity={0.18}>
+                <TouchInteractiveTilt maxTilt={6} glareOpacity={0.12}>
                   <div
-                    className={`rounded-3xl p-6 sm:p-7 border transition-all duration-300 shadow-xl h-full flex flex-col justify-between ${
+                    className={`rounded-3xl p-6 sm:p-7 border transition-all duration-300 shadow-sm hover:shadow-md h-full flex flex-col justify-between ${
                       isBreak
-                        ? 'bg-amber-950/20 border-amber-500/30 hover:border-amber-400/50 shadow-amber-950/20'
-                        : 'bg-white/[0.02] border-white/[0.08] hover:border-orange-500/40 shadow-black/40'
+                        ? 'bg-amber-50/60 border-amber-200 hover:border-amber-300'
+                        : 'bg-slate-50/70 border-slate-200 hover:border-purple-300 hover:bg-white'
                     }`}
                   >
                     <div>
                       {/* Time and Tag Header */}
                       <div className="flex items-center justify-between mb-4">
-                        <span className="text-xs font-mono font-bold px-3 py-1 rounded-xl bg-black/60 border border-white/10 text-amber-300 flex items-center gap-1.5">
-                          <Clock className="w-3.5 h-3.5 text-amber-400" />
+                        <span className="text-xs font-mono font-bold px-3 py-1 rounded-xl bg-white border border-slate-200 text-slate-800 shadow-xs flex items-center gap-1.5">
+                          <Clock className="w-3.5 h-3.5 text-purple-600" />
                           <span>{item.time}</span>
                         </span>
                         <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
-                          isBreak ? 'bg-amber-900/40 border-amber-600/40 text-amber-200' : 'bg-purple-950/60 border-purple-800/40 text-purple-300'
+                          isBreak ? 'bg-amber-100 border-amber-300 text-amber-800' : 'bg-purple-100 border-purple-200 text-purple-700'
                         }`}>
                           {item.tag}
                         </span>
@@ -194,31 +194,31 @@ export default function WorkshopStructureSection() {
 
                       {/* Title & Icon */}
                       <div className="flex items-start gap-3.5 mb-2.5">
-                        <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-inner ${
-                          isBreak ? 'bg-amber-500/20 border border-amber-500/40 text-amber-300' : 'bg-orange-500/20 border border-orange-500/40 text-orange-300'
+                        <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-xs ${
+                          isBreak ? 'bg-amber-100 border border-amber-300 text-amber-700' : 'bg-purple-100 border border-purple-200 text-purple-700'
                         }`}>
                           <Icon className="w-5 h-5" />
                         </div>
                         <div>
-                          <h3 className="text-base sm:text-lg font-bold text-white leading-snug">
+                          <h3 className="text-base sm:text-lg font-bold text-slate-900 leading-snug">
                             {item.title}
                           </h3>
-                          <p className="text-xs font-semibold text-amber-400 mt-0.5">
+                          <p className="text-xs font-semibold text-purple-700 mt-0.5">
                             Format / Output: {item.format}
                           </p>
                         </div>
                       </div>
 
                       {/* Description */}
-                      <p className="text-xs sm:text-sm text-slate-300 leading-relaxed mt-2.5">
+                      <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mt-2.5">
                         {item.description}
                       </p>
                     </div>
 
-                    <div className="mt-5 pt-3.5 border-t border-white/[0.06] flex items-center justify-between text-[11px] text-zinc-400">
+                    <div className="mt-5 pt-3.5 border-t border-slate-200/80 flex items-center justify-between text-[11px] text-slate-500">
                       <span>Venue: College Seminar Hall</span>
-                      <span className="text-emerald-400 font-semibold flex items-center gap-1">
-                        <CheckCircle className="w-3 h-3" />
+                      <span className="text-emerald-600 font-semibold flex items-center gap-1">
+                        <CheckCircle className="w-3.5 h-3.5" />
                         <span>Interactive Team Session</span>
                       </span>
                     </div>

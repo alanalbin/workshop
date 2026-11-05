@@ -286,7 +286,6 @@ function PaymentContent() {
         currency: orderData.currency || 'INR',
         name: 'FROM PROBLEM TO POSSIBILITY',
         description: 'Workshop Pass & IIC Activity Certificate',
-        image: '/logos/kmct-college.png',
         order_id: orderData.order_id,
         prefill: {
           name: activeReg.fullName,
@@ -372,15 +371,15 @@ function PaymentContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#05030a] flex flex-col items-center justify-center p-6 text-slate-300">
-        <Loader2 className="w-10 h-10 text-purple-400 animate-spin mb-4" />
-        <p className="text-sm font-medium">Securing Razorpay payment session...</p>
+      <div className="min-h-screen bg-[#f8fafc] flex flex-col items-center justify-center p-6 text-slate-700">
+        <Loader2 className="w-10 h-10 text-purple-600 animate-spin mb-4" />
+        <p className="text-sm font-semibold">Securing Razorpay payment session...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#05030a] py-28 relative">
+    <div className="min-h-screen bg-[#f8fafc] py-28 relative">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
 
       <div className="max-w-3xl mx-auto px-6 relative z-10">
@@ -396,51 +395,51 @@ function PaymentContent() {
                 router.push('/register');
               }
             }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-purple-500/40 text-xs font-semibold text-slate-300 hover:text-white transition-all cursor-pointer group shadow-sm backdrop-blur-md active:scale-95"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 hover:border-purple-300 text-xs font-semibold text-slate-700 hover:text-slate-900 transition-all cursor-pointer group shadow-xs active:scale-95"
             title="Go back"
           >
-            <ArrowLeft className="w-4 h-4 text-purple-400 group-hover:-translate-x-1 transition-transform" />
+            <ArrowLeft className="w-4 h-4 text-purple-600 group-hover:-translate-x-1 transition-transform" />
             <span>Back</span>
           </button>
 
           <Link
             href="/"
-            className="text-xs text-slate-400 hover:text-purple-300 transition-colors flex items-center gap-1.5"
+            className="text-xs text-slate-600 hover:text-purple-700 transition-colors flex items-center gap-1.5 font-medium"
           >
             <span>Event Home</span>
-            <ArrowRight className="w-3.5 h-3.5 opacity-60" />
+            <ArrowRight className="w-3.5 h-3.5 opacity-70" />
           </Link>
         </div>
 
         {/* Header */}
         <div className="text-center max-w-xl mx-auto mb-8">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-950/60 border border-purple-800/40 text-xs font-bold text-purple-300 uppercase tracking-widest mb-3 shadow-sm">
-            <Lock className="w-3.5 h-3.5 text-purple-400" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-50 border border-purple-200 text-xs font-bold text-purple-700 uppercase tracking-widest mb-3 shadow-2xs">
+            <Lock className="w-3.5 h-3.5 text-purple-600" />
             <span>Razorpay Standard Checkout</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
             Complete Registration Payment
           </h1>
-          <p className="mt-2 text-slate-300 text-sm">
+          <p className="mt-2 text-slate-600 text-sm">
             Securely pay ₹{fee} with Razorpay to activate your confirmed registration pass and official IIC activity certificate.
           </p>
         </div>
 
         {/* Razorpay Authentication Error Card */}
         {isAuthError && (
-          <div className="mb-6 p-5 rounded-2xl bg-amber-950/50 border border-amber-500/40 text-xs text-amber-200 space-y-3 shadow-xl backdrop-blur-md">
-            <div className="flex items-center gap-2 text-amber-400 font-bold text-sm">
-              <AlertCircle className="w-5 h-5 shrink-0" />
+          <div className="mb-6 p-5 rounded-2xl bg-amber-50 border border-amber-300 text-xs text-amber-900 space-y-3 shadow-md">
+            <div className="flex items-center gap-2 text-amber-800 font-bold text-sm">
+              <AlertCircle className="w-5 h-5 shrink-0 text-amber-600" />
               <span>Razorpay Key Authentication Required</span>
             </div>
-            <p className="text-slate-300 leading-relaxed">
-              Razorpay returned <code className="px-1.5 py-0.5 rounded bg-black/50 text-amber-300 font-mono">HTTP 401 Authentication failed</code> for your Key ID.
+            <p className="text-slate-700 leading-relaxed">
+              Razorpay returned <code className="px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 font-mono">HTTP 401 Authentication failed</code> for your Key ID.
               This occurs when the API key has been regenerated or deactivated in the Razorpay Dashboard.
             </p>
-            <div className="p-3 rounded-xl bg-black/40 border border-amber-900/40 space-y-1 text-[11px] text-slate-300">
-              <p className="font-semibold text-white">How to fix in 1 minute:</p>
-              <ol className="list-decimal list-inside space-y-1 text-slate-300">
-                <li>Log in to <a href="https://dashboard.razorpay.com" target="_blank" rel="noreferrer" className="text-purple-300 underline font-semibold">dashboard.razorpay.com</a></li>
+            <div className="p-3 rounded-xl bg-white border border-amber-200 space-y-1 text-[11px] text-slate-700">
+              <p className="font-semibold text-slate-900">How to fix in 1 minute:</p>
+              <ol className="list-decimal list-inside space-y-1 text-slate-600">
+                <li>Log in to <a href="https://dashboard.razorpay.com" target="_blank" rel="noreferrer" className="text-purple-600 underline font-semibold">dashboard.razorpay.com</a></li>
                 <li>Switch toggle to <strong>Test Mode</strong></li>
                 <li>Go to <strong>Settings &gt; API Keys</strong> and click <strong>Regenerate Test Key</strong></li>
                 <li>Set the new Key ID and Secret in your environment or Vercel Settings</li>
@@ -493,9 +492,9 @@ function PaymentContent() {
                   }
                 }}
                 disabled={isProcessing}
-                className="w-full py-2.5 px-4 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-200 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-98"
+                className="w-full py-2.5 px-4 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs active:scale-98"
               >
-                {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 text-amber-400" />}
+                {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 text-amber-200" />}
                 <span>Simulate Verified Payment (Test Ticket Unlock &amp; GSheet Sync)</span>
               </button>
             </div>
@@ -504,58 +503,58 @@ function PaymentContent() {
 
         {/* Payment Error Alert */}
         {paymentError && !isAuthError && (
-          <div className="mb-6 p-4 rounded-2xl bg-red-950/60 border border-red-800/50 text-xs text-red-200 flex items-center gap-3 animate-shake shadow-lg">
-            <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
-            <span className="flex-1">{paymentError}</span>
+          <div className="mb-6 p-4 rounded-2xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-center gap-3 shadow-md">
+            <AlertCircle className="w-5 h-5 text-red-500 shrink-0" />
+            <span className="flex-1 font-medium">{paymentError}</span>
           </div>
         )}
 
         {/* Candidate Details Card */}
         {registration ? (
-          <div className="glass-card rounded-3xl p-6 sm:p-7 border border-purple-800/40 mb-6 shadow-2xl backdrop-blur-xl relative overflow-hidden">
+          <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 mb-6 shadow-xl relative overflow-hidden">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs uppercase font-extrabold text-purple-400 tracking-wider">
+                  <span className="text-xs uppercase font-extrabold text-purple-700 tracking-wider">
                     Candidate Details
                   </span>
-                  <span className="text-[11px] font-semibold text-amber-300 bg-amber-950/70 border border-amber-800/50 px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
-                    <Lock className="w-3 h-3 text-amber-400" />
-                    Pass & Ticket ID unlock after payment
+                  <span className="text-[11px] font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
+                    <Lock className="w-3 h-3 text-amber-600" />
+                    Pass &amp; Ticket ID unlock after payment
                   </span>
                 </div>
-                <h3 className="text-xl font-black text-white mt-1">{registration.fullName}</h3>
-                <p className="text-xs text-slate-300 mt-0.5">
+                <h3 className="text-xl font-black text-slate-900 mt-1">{registration.fullName}</h3>
+                <p className="text-xs text-slate-600 mt-0.5">
                   {registration.email} • +91 {registration.phone}
                 </p>
-                <p className="text-xs text-purple-300/80 mt-0.5">
+                <p className="text-xs text-purple-700 mt-0.5 font-medium">
                   {registration.course} • {registration.institution}
                 </p>
               </div>
 
-              <div className="text-left sm:text-right w-full sm:w-auto pt-3 sm:pt-0 border-t sm:border-t-0 border-purple-950/60">
-                <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold">Total Pass Fee</span>
-                <p className="text-3xl font-black text-gradient-vibrant">₹{fee}</p>
-                <span className="text-[10px] text-amber-400 font-medium">Payment Required</span>
+              <div className="text-left sm:text-right w-full sm:w-auto pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Total Pass Fee</span>
+                <p className="text-3xl font-black text-purple-600">₹{fee}</p>
+                <span className="text-[10px] text-amber-700 font-semibold bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md inline-block mt-0.5">Payment Required</span>
               </div>
             </div>
           </div>
         ) : (
-          <div className="glass-card rounded-3xl p-6 sm:p-7 border border-purple-800/40 mb-6 shadow-2xl backdrop-blur-xl space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-900/40 pb-4">
+          <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 mb-6 shadow-xl space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
               <div>
-                <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                  <User className="w-4 h-4 text-purple-400" />
+                <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <User className="w-4 h-4 text-purple-600" />
                   <span>Participant Details</span>
                 </h3>
-                <p className="text-xs text-slate-300 mt-0.5">
+                <p className="text-xs text-slate-600 mt-0.5">
                   Provide your details to register and proceed to Razorpay payment.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setShowLookupBox(!showLookupBox)}
-                className="text-xs text-purple-300 hover:text-white flex items-center gap-1.5 underline decoration-purple-500/50 cursor-pointer self-start sm:self-auto"
+                className="text-xs text-purple-700 hover:text-purple-900 font-semibold flex items-center gap-1.5 underline decoration-purple-300 cursor-pointer self-start sm:self-auto"
               >
                 <Search className="w-3.5 h-3.5" />
                 <span>{showLookupBox ? 'Hide lookup' : 'Already registered? Search your pass'}</span>
@@ -564,8 +563,8 @@ function PaymentContent() {
 
             {/* Quick Lookup Bar */}
             {showLookupBox && (
-              <form onSubmit={handleLookup} className="p-3.5 rounded-2xl bg-purple-950/40 border border-purple-800/40 space-y-2">
-                <span className="text-xs font-semibold text-slate-300 block">
+              <form onSubmit={handleLookup} className="p-3.5 rounded-2xl bg-purple-50/60 border border-purple-200 space-y-2">
+                <span className="text-xs font-semibold text-slate-700 block">
                   Search by Ticket ID (ILM-KMCT-...) or Email:
                 </span>
                 <div className="flex gap-2">
@@ -574,19 +573,19 @@ function PaymentContent() {
                     placeholder="e.g. ILM-KMCT-... or your@email.com"
                     value={lookupQuery}
                     onChange={(e) => setLookupQuery(e.target.value)}
-                    className="flex-1 px-3.5 py-2.5 rounded-xl bg-black/60 border border-purple-800/50 text-white text-xs font-mono focus:border-purple-400 focus:outline-none"
+                    className="flex-1 px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs font-mono focus:border-purple-600 focus:outline-none shadow-2xs"
                   />
                   <button
                     type="submit"
                     disabled={isSearchingLookup}
-                    className="px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
+                    className="px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50 shadow-xs"
                   >
                     {isSearchingLookup ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Search className="w-3.5 h-3.5" />}
                     <span>Find Pass</span>
                   </button>
                 </div>
                 {lookupError && (
-                  <p className="text-[11px] text-red-300">{lookupError}</p>
+                  <p className="text-[11px] text-red-600 font-medium">{lookupError}</p>
                 )}
               </form>
             )}
@@ -594,8 +593,8 @@ function PaymentContent() {
             {/* Quick Participant Input Fields */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               <div>
-                <label className="block text-[11px] font-semibold text-slate-300 uppercase tracking-wider mb-1">
-                  Full Name <span className="text-purple-400">*</span>
+                <label className="block text-[11px] font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  Full Name <span className="text-purple-600">*</span>
                 </label>
                 <input
                   type="text"
@@ -603,13 +602,13 @@ function PaymentContent() {
                   placeholder="e.g. Rahul Sharma"
                   value={quickFullName}
                   onChange={(e) => setQuickFullName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-black/60 border border-purple-900/50 text-white text-xs focus:border-purple-400 focus:outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs focus:border-purple-600 focus:outline-none shadow-2xs"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-slate-300 uppercase tracking-wider mb-1">
-                  Email Address <span className="text-purple-400">*</span>
+                <label className="block text-[11px] font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  Email Address <span className="text-purple-600">*</span>
                 </label>
                 <input
                   type="email"
@@ -617,13 +616,13 @@ function PaymentContent() {
                   placeholder="e.g. rahul@example.com"
                   value={quickEmail}
                   onChange={(e) => setQuickEmail(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-black/60 border border-purple-900/50 text-white text-xs focus:border-purple-400 focus:outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs focus:border-purple-600 focus:outline-none shadow-2xs"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-slate-300 uppercase tracking-wider mb-1">
-                  Mobile Number <span className="text-purple-400">*</span>
+                <label className="block text-[11px] font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  Mobile Number <span className="text-purple-600">*</span>
                 </label>
                 <input
                   type="tel"
@@ -632,12 +631,12 @@ function PaymentContent() {
                   placeholder="e.g. 9876543210"
                   value={quickPhone}
                   onChange={(e) => setQuickPhone(e.target.value.replace(/\D/g, ''))}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-black/60 border border-purple-900/50 text-white text-xs font-mono focus:border-purple-400 focus:outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs font-mono focus:border-purple-600 focus:outline-none shadow-2xs"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                <label className="block text-[11px] font-semibold text-slate-700 uppercase tracking-wider mb-1">
                   College / Institution
                 </label>
                 <input
@@ -645,7 +644,7 @@ function PaymentContent() {
                   placeholder="KMCT College of Engineering"
                   value={quickInstitution}
                   onChange={(e) => setQuickInstitution(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-black/60 border border-purple-900/50 text-white text-xs focus:border-purple-400 focus:outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs focus:border-purple-600 focus:outline-none shadow-2xs"
                 />
               </div>
             </div>
@@ -653,57 +652,57 @@ function PaymentContent() {
         )}
 
         {/* Razorpay Checkout Card */}
-        <div className="glass-card rounded-3xl p-6 sm:p-9 border border-purple-700/50 shadow-2xl space-y-6 backdrop-blur-xl relative overflow-hidden">
+        <div className="bg-white rounded-3xl p-6 sm:p-9 border border-purple-200 shadow-xl space-y-6 relative overflow-hidden">
           
-          <div className="flex items-center justify-between border-b border-purple-900/40 pb-5">
+          <div className="flex items-center justify-between border-b border-slate-200 pb-5">
             <div>
-              <span className="text-[11px] font-mono uppercase tracking-wider text-purple-300 font-bold block">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-purple-700 font-bold block">
                 Payment Method
               </span>
-              <h3 className="text-xl font-bold text-white flex items-center gap-2 mt-0.5">
-                <CreditCard className="w-5 h-5 text-purple-400" />
+              <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2 mt-0.5">
+                <CreditCard className="w-5 h-5 text-purple-600" />
                 <span>Razorpay Standard Web Checkout</span>
               </h3>
             </div>
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/80 border border-emerald-500/40 text-[11px] font-bold text-emerald-300">
-              <ShieldCheck className="w-3.5 h-3.5" />
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-[11px] font-bold text-emerald-700">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
               <span>PCI-DSS Secured</span>
             </div>
           </div>
 
           {/* Supported Rails Showcase */}
-          <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.08] space-y-2.5">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400 block font-semibold">
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-slate-600 block font-semibold">
               Supported Payment Modes in Razorpay Modal:
             </span>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-zinc-300">
-              <div className="p-2.5 rounded-xl bg-purple-950/30 border border-purple-800/40 flex items-center gap-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-purple-400" />
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-slate-700">
+              <div className="p-2.5 rounded-xl bg-white border border-slate-200 flex items-center gap-2 shadow-2xs font-medium">
+                <CheckCircle2 className="w-3.5 h-3.5 text-purple-600" />
                 <span>All UPI Apps</span>
               </div>
-              <div className="p-2.5 rounded-xl bg-purple-950/30 border border-purple-800/40 flex items-center gap-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-purple-400" />
+              <div className="p-2.5 rounded-xl bg-white border border-slate-200 flex items-center gap-2 shadow-2xs font-medium">
+                <CheckCircle2 className="w-3.5 h-3.5 text-purple-600" />
                 <span>Debit / Credit Cards</span>
               </div>
-              <div className="p-2.5 rounded-xl bg-purple-950/30 border border-purple-800/40 flex items-center gap-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-purple-400" />
+              <div className="p-2.5 rounded-xl bg-white border border-slate-200 flex items-center gap-2 shadow-2xs font-medium">
+                <CheckCircle2 className="w-3.5 h-3.5 text-purple-600" />
                 <span>Net Banking (50+)</span>
               </div>
-              <div className="p-2.5 rounded-xl bg-purple-950/30 border border-purple-800/40 flex items-center gap-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-purple-400" />
-                <span>Wallets & Cred</span>
+              <div className="p-2.5 rounded-xl bg-white border border-slate-200 flex items-center gap-2 shadow-2xs font-medium">
+                <CheckCircle2 className="w-3.5 h-3.5 text-purple-600" />
+                <span>Wallets &amp; Cred</span>
               </div>
             </div>
           </div>
 
           {/* Included Features */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-300">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-700 font-medium">
             <div className="flex items-center gap-2">
-              <Award className="w-4 h-4 text-amber-400 shrink-0" />
+              <Award className="w-4 h-4 text-amber-600 shrink-0" />
               <span>Official IIC Activity Certificate</span>
             </div>
             <div className="flex items-center gap-2">
-              <Package className="w-4 h-4 text-amber-400 shrink-0" />
+              <Package className="w-4 h-4 text-amber-600 shrink-0" />
               <span>Stationery Kit &amp; Canteen Refreshments (Samosa &amp; Tea)</span>
             </div>
           </div>
@@ -713,7 +712,7 @@ function PaymentContent() {
             type="button"
             onClick={handleRazorpayPayment}
             disabled={isProcessing}
-            className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:from-purple-500 hover:to-indigo-500 text-white font-extrabold text-base uppercase tracking-wider shadow-2xl shadow-purple-950/80 transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2.5 group hover:scale-[1.01] active:scale-[0.99] hover:shadow-[0_0_30px_rgba(147,51,234,0.4)]"
+            className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold text-base uppercase tracking-wider shadow-lg shadow-purple-600/30 transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2.5 group hover:scale-[1.01] active:scale-[0.99]"
           >
             {isProcessing ? (
               <>
@@ -730,12 +729,12 @@ function PaymentContent() {
           </button>
 
           {/* Trust Guarantees */}
-          <div className="pt-2 border-t border-white/[0.08] flex flex-wrap items-center justify-between text-xs text-zinc-400 gap-3">
-            <div className="flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+          <div className="pt-2 border-t border-slate-200 flex flex-wrap items-center justify-between text-xs text-slate-500 gap-3">
+            <div className="flex items-center gap-1.5 font-medium">
+              <ShieldCheck className="w-4 h-4 text-emerald-600" />
               <span>256-Bit SSL Encrypted • Direct Bank Rails</span>
             </div>
-            <span className="text-[11px] text-zinc-500">
+            <span className="text-[11px] text-slate-500">
               Ticket pass is issued immediately upon payment completion
             </span>
           </div>
@@ -751,8 +750,8 @@ export default function PaymentPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#05030a] flex items-center justify-center text-slate-400">
-          <Loader2 className="w-8 h-8 animate-spin text-purple-400" />
+        <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center text-slate-500">
+          <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
         </div>
       }
     >

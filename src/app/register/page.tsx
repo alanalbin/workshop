@@ -189,39 +189,39 @@ export default function RegisterPage() {
 
   if (isClosed === true) {
     return (
-      <div className="min-h-screen bg-[#05030a] py-36 relative">
+      <div className="min-h-screen bg-[#f8fafc] py-36 relative">
         <div className="max-w-xl mx-auto px-6 relative z-10 text-center">
-          <div className="glass-card rounded-3xl p-8 sm:p-10 border border-white/[0.08] shadow-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-950/70 border border-rose-800/50 text-rose-300 text-xs font-bold uppercase tracking-wider mb-6">
+          <div className="bg-white rounded-3xl p-8 sm:p-10 border border-slate-200 shadow-xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold uppercase tracking-wider mb-6">
               <span className="w-2 h-2 rounded-full bg-rose-500" />
               <span>Registrations Closed</span>
             </div>
 
-            <div className="w-16 h-16 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center mx-auto mb-6 shadow-lg shadow-rose-950/40">
+            <div className="w-16 h-16 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center mx-auto mb-6 shadow-xs">
               <Lock className="w-8 h-8" />
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
               Registrations Are Now Closed
             </h1>
 
-            <p className="mt-4 text-sm sm:text-base text-zinc-300 leading-relaxed">
+            <p className="mt-4 text-sm sm:text-base text-slate-600 leading-relaxed">
               Thank you for your interest! The registration period for the{' '}
-              <strong className="text-white">Workshop on Problem Solving &amp; Ideation (From Problem to Possibility)</strong> at KMCT College has concluded.
+              <strong className="text-slate-900">Workshop on Problem Solving &amp; Ideation (From Problem to Possibility)</strong> at KMCT College has concluded.
             </p>
 
-            <div className="mt-8 p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] text-left">
-              <h3 className="text-xs uppercase font-mono tracking-wider text-amber-400 font-bold mb-1.5 flex items-center gap-2">
+            <div className="mt-8 p-4 rounded-2xl bg-slate-50 border border-slate-200 text-left">
+              <h3 className="text-xs uppercase font-mono tracking-wider text-purple-700 font-bold mb-1.5 flex items-center gap-2">
                 <Ticket className="w-4 h-4" />
                 <span>Already Registered &amp; Paid?</span>
               </h3>
-              <p className="text-xs text-zinc-300 leading-relaxed">
+              <p className="text-xs text-slate-600 leading-relaxed">
                 If you have previously completed your registration and payment, your entry pass and seat reservation remain confirmed.
               </p>
               <div className="mt-3">
                 <Link
                   href="/success"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-orange-600/30 hover:bg-orange-600/50 border border-orange-500/40 text-amber-200 text-xs font-bold transition-all"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 text-xs font-bold transition-all"
                 >
                   <span>Access / Lookup Your Ticket Pass</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -232,9 +232,9 @@ export default function RegisterPage() {
             <div className="mt-8 flex items-center justify-center">
               <Link
                 href="/"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.1] text-xs font-semibold text-zinc-200 hover:text-white transition-all active:scale-95"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-xs font-semibold text-slate-700 hover:text-slate-900 transition-all active:scale-95"
               >
-                <ArrowLeft className="w-4 h-4 text-amber-400" />
+                <ArrowLeft className="w-4 h-4 text-purple-600" />
                 <span>Return to Homepage</span>
               </Link>
             </div>
@@ -246,25 +246,25 @@ export default function RegisterPage() {
 
   if (authLoading || !user) {
     return (
-      <div className="min-h-screen bg-[#05030a] py-36 flex flex-col items-center justify-center px-6 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-orange-500/20 border border-orange-500/40 flex items-center justify-center text-amber-400 mb-4 shadow-lg">
+      <div className="min-h-screen bg-[#f8fafc] py-36 flex flex-col items-center justify-center px-6 text-center">
+        <div className="w-16 h-16 rounded-2xl bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-700 mb-4 shadow-xs">
           <Lightbulb className="w-8 h-8" />
         </div>
-        <h2 className="text-xl font-bold text-white mb-2">Sign In Required to Register</h2>
-        <p className="text-sm text-slate-400 max-w-sm mb-6">
+        <h2 className="text-xl font-bold text-slate-900 mb-2">Sign In Required to Register</h2>
+        <p className="text-sm text-slate-600 max-w-sm mb-6">
           Please sign in with your Google account to reserve your workshop seat.
         </p>
         <div className="flex flex-col sm:flex-row items-center gap-3">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-amber-500/40 text-xs font-semibold text-slate-300 hover:text-white transition-all cursor-pointer group shadow-sm backdrop-blur-md active:scale-95"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-xs font-semibold text-slate-700 hover:text-slate-900 transition-all cursor-pointer group shadow-xs active:scale-95"
           >
-            <ArrowLeft className="w-4 h-4 text-amber-400 group-hover:-translate-x-1 transition-transform" />
+            <ArrowLeft className="w-4 h-4 text-purple-600 group-hover:-translate-x-1 transition-transform" />
             <span>Back to Home</span>
           </Link>
           <Link
             href="/login?redirect=/register"
-            className="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white font-bold text-xs uppercase tracking-wider transition-colors shadow-lg shadow-orange-900/40"
+            className="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 via-orange-600 to-purple-600 hover:opacity-95 text-white font-bold text-xs uppercase tracking-wider transition-colors shadow-md shadow-orange-500/20"
           >
             Proceed to Sign In
           </Link>
@@ -274,10 +274,10 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#05030a] py-28 relative">
+    <div className="min-h-screen bg-[#f8fafc] py-28 relative">
       
       {/* Background Glows */}
-      <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-orange-900/15 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-purple-500/5 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto px-6 relative z-10">
         
@@ -292,16 +292,16 @@ export default function RegisterPage() {
                 router.push('/');
               }
             }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-amber-500/40 text-xs font-semibold text-slate-300 hover:text-white transition-all cursor-pointer group shadow-sm backdrop-blur-md active:scale-95"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 hover:text-purple-700 transition-all cursor-pointer group shadow-xs active:scale-95"
             title="Go back"
           >
-            <ArrowLeft className="w-4 h-4 text-amber-400 group-hover:-translate-x-1 transition-transform" />
+            <ArrowLeft className="w-4 h-4 text-purple-600 group-hover:-translate-x-1 transition-transform" />
             <span>Back</span>
           </button>
 
           <Link
             href="/"
-            className="text-xs text-slate-400 hover:text-amber-300 transition-colors flex items-center gap-1.5"
+            className="text-xs text-slate-600 hover:text-purple-700 transition-colors flex items-center gap-1.5 font-medium"
           >
             <span>Event Home</span>
             <ArrowRight className="w-3.5 h-3.5 opacity-60" />
@@ -310,14 +310,14 @@ export default function RegisterPage() {
 
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-950/60 border border-orange-800/40 text-xs font-semibold text-amber-300 uppercase tracking-widest mb-3">
-            <Lightbulb className="w-3.5 h-3.5 text-amber-400" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-50 border border-purple-200 text-xs font-semibold text-purple-700 uppercase tracking-widest mb-3 shadow-xs">
+            <Lightbulb className="w-3.5 h-3.5 text-purple-600" />
             <span>Participant Registration • 70 Seats Cap</span>
           </div>
-          <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
+          <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight">
             Reserve Your Workshop Seat
           </h1>
-          <p className="mt-3 text-slate-300 text-sm">
+          <p className="mt-3 text-slate-600 text-sm">
             Join the offline workshop &quot;From Problem to Possibility&quot; at KMCT Kasaragod. Organized by Institution&apos;s Innovation Council (IIC).
           </p>
         </div>
@@ -326,33 +326,33 @@ export default function RegisterPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           
           {/* Left Column: Registration Form */}
-          <div className="lg:col-span-7 glass-card rounded-2xl p-8 border border-white/[0.08] shadow-2xl">
+          <div className="lg:col-span-7 bg-white rounded-2xl p-8 border border-slate-200 shadow-xl">
             
             {serverError && (
-              <div className="mb-6 p-4 rounded-xl bg-red-950/40 border border-red-800/50 flex items-start gap-3 text-sm text-red-200">
-                <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+              <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 flex items-start gap-3 text-sm text-red-700 shadow-xs">
+                <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
                 <p>{serverError}</p>
               </div>
             )}
 
             {/* Auth Sign-in Banner / Verified Pill */}
             {user && (
-              <div className="mb-6 p-3.5 rounded-2xl bg-emerald-950/40 border border-emerald-500/40 flex items-center justify-between text-xs text-emerald-200 shadow-md">
+              <div className="mb-6 p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-between text-xs text-emerald-800 shadow-xs">
                 <div className="flex items-center gap-2.5">
                   {user.photoURL ? (
                     <img
                       src={user.photoURL}
                       alt={user.displayName || 'Google User'}
-                      className="w-7 h-7 rounded-full border border-emerald-400/50 object-cover"
+                      className="w-7 h-7 rounded-full border border-emerald-300 object-cover"
                     />
                   ) : (
-                    <UserCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <UserCheck className="w-4 h-4 text-emerald-600 shrink-0" />
                   )}
                   <span>
                     Google Verified: <strong>{user.displayName || user.email}</strong> (Pre-filled below)
                   </span>
                 </div>
-                <span className="text-[10px] bg-emerald-900/60 text-emerald-300 font-semibold px-2 py-0.5 rounded-full border border-emerald-500/30">
+                <span className="text-[10px] bg-emerald-100 text-emerald-800 font-semibold px-2 py-0.5 rounded-full border border-emerald-300">
                   Ready
                 </span>
               </div>
@@ -362,8 +362,8 @@ export default function RegisterPage() {
               
               {/* Full Name */}
               <div>
-                <label htmlFor="fullName" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                  Full Name <span className="text-amber-400">*</span>
+                <label htmlFor="fullName" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Full Name <span className="text-amber-500">*</span>
                 </label>
                 <input
                   id="fullName"
@@ -373,18 +373,18 @@ export default function RegisterPage() {
                   placeholder="e.g. Muhammed Faiz"
                   value={formData.fullName}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 rounded-xl bg-[#0e071c] border ${
-                    errors.fullName ? 'border-red-500' : 'border-white/10'
-                  } focus:border-amber-400 focus:outline-none text-white text-sm transition-colors`}
+                  className={`w-full px-4 py-3 rounded-xl bg-slate-50 border ${
+                    errors.fullName ? 'border-red-500' : 'border-slate-300'
+                  } focus:border-purple-600 focus:bg-white focus:outline-none text-slate-900 text-sm transition-colors`}
                 />
-                {errors.fullName && <p className="text-xs text-red-400 mt-1">{errors.fullName}</p>}
+                {errors.fullName && <p className="text-xs text-red-500 mt-1">{errors.fullName}</p>}
               </div>
 
               {/* Email & Phone */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="email" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                    Email Address <span className="text-amber-400">*</span>
+                  <label htmlFor="email" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Email Address <span className="text-amber-500">*</span>
                   </label>
                   <input
                     id="email"
@@ -394,16 +394,16 @@ export default function RegisterPage() {
                     placeholder="name@kmct.edu.in"
                     value={formData.email}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 rounded-xl bg-[#0e071c] border ${
-                      errors.email ? 'border-red-500' : 'border-white/10'
-                    } focus:border-amber-400 focus:outline-none text-white text-sm transition-colors`}
+                    className={`w-full px-4 py-3 rounded-xl bg-slate-50 border ${
+                      errors.email ? 'border-red-500' : 'border-slate-300'
+                    } focus:border-purple-600 focus:bg-white focus:outline-none text-slate-900 text-sm transition-colors`}
                   />
-                  {errors.email && <p className="text-xs text-red-400 mt-1">{errors.email}</p>}
+                  {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
                 </div>
 
                 <div>
-                  <label htmlFor="phone" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                    Mobile Number <span className="text-amber-400">*</span>
+                  <label htmlFor="phone" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Mobile Number <span className="text-amber-500">*</span>
                   </label>
                   <input
                     id="phone"
@@ -413,18 +413,18 @@ export default function RegisterPage() {
                     placeholder="10-digit number"
                     value={formData.phone}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 rounded-xl bg-[#0e071c] border ${
-                      errors.phone ? 'border-red-500' : 'border-white/10'
-                    } focus:border-amber-400 focus:outline-none text-white text-sm transition-colors`}
+                    className={`w-full px-4 py-3 rounded-xl bg-slate-50 border ${
+                      errors.phone ? 'border-red-500' : 'border-slate-300'
+                    } focus:border-purple-600 focus:bg-white focus:outline-none text-slate-900 text-sm transition-colors`}
                   />
-                  {errors.phone && <p className="text-xs text-red-400 mt-1">{errors.phone}</p>}
+                  {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone}</p>}
                 </div>
               </div>
 
               {/* Institution */}
               <div>
-                <label htmlFor="institution" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                  Institution / College <span className="text-amber-400">*</span>
+                <label htmlFor="institution" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Institution / College <span className="text-amber-500">*</span>
                 </label>
                 <div className="relative">
                   <input
@@ -434,20 +434,20 @@ export default function RegisterPage() {
                     required
                     value={formData.institution}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 rounded-xl bg-[#0e071c] border ${
-                      errors.institution ? 'border-red-500' : 'border-white/10'
-                    } focus:border-amber-400 focus:outline-none text-white text-sm transition-colors`}
+                    className={`w-full px-4 py-3 rounded-xl bg-slate-50 border ${
+                      errors.institution ? 'border-red-500' : 'border-slate-300'
+                    } focus:border-purple-600 focus:bg-white focus:outline-none text-slate-900 text-sm transition-colors`}
                   />
-                  <Building className="absolute right-3.5 top-3.5 w-4 h-4 text-slate-500 pointer-events-none" />
+                  <Building className="absolute right-3.5 top-3.5 w-4 h-4 text-slate-400 pointer-events-none" />
                 </div>
-                {errors.institution && <p className="text-xs text-red-400 mt-1">{errors.institution}</p>}
+                {errors.institution && <p className="text-xs text-red-500 mt-1">{errors.institution}</p>}
               </div>
 
               {/* Course & Year */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="course" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                    Course / Department <span className="text-amber-400">*</span>
+                  <label htmlFor="course" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Course / Department <span className="text-amber-500">*</span>
                   </label>
                   <input
                     id="course"
@@ -457,23 +457,23 @@ export default function RegisterPage() {
                     placeholder="e.g. B.Tech Computer Science / Management"
                     value={formData.course}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 rounded-xl bg-[#0e071c] border ${
-                      errors.course ? 'border-red-500' : 'border-white/10'
-                    } focus:border-amber-400 focus:outline-none text-white text-sm transition-colors`}
+                    className={`w-full px-4 py-3 rounded-xl bg-slate-50 border ${
+                      errors.course ? 'border-red-500' : 'border-slate-300'
+                    } focus:border-purple-600 focus:bg-white focus:outline-none text-slate-900 text-sm transition-colors`}
                   />
-                  {errors.course && <p className="text-xs text-red-400 mt-1">{errors.course}</p>}
+                  {errors.course && <p className="text-xs text-red-500 mt-1">{errors.course}</p>}
                 </div>
 
                 <div>
-                  <label htmlFor="yearOfStudy" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                    Year of Study <span className="text-amber-400">*</span>
+                  <label htmlFor="yearOfStudy" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Year of Study <span className="text-amber-500">*</span>
                   </label>
                   <select
                     id="yearOfStudy"
                     name="yearOfStudy"
                     value={formData.yearOfStudy}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-xl bg-[#0e071c] border border-white/10 focus:border-amber-400 focus:outline-none text-white text-sm transition-colors"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:border-purple-600 focus:bg-white focus:outline-none text-slate-900 text-sm transition-colors"
                   >
                     <option value="1st Year">1st Year (Primary Target Audience)</option>
                     <option value="2nd Year">2nd Year</option>
@@ -493,18 +493,18 @@ export default function RegisterPage() {
                     name="privacyConsent"
                     checked={formData.privacyConsent}
                     onChange={handleChange}
-                    className="mt-1 w-4 h-4 rounded text-orange-600 bg-[#0e071c] border-white/20 focus:ring-amber-500 focus:ring-offset-0"
+                    className="mt-1 w-4 h-4 rounded text-purple-600 bg-white border-slate-300 focus:ring-purple-500 focus:ring-offset-0"
                   />
-                  <span className="text-xs text-slate-300 leading-normal">
+                  <span className="text-xs text-slate-600 leading-normal">
                     I agree to the{' '}
-                    <Link href="/terms" className="text-amber-400 underline hover:text-amber-300">
+                    <Link href="/terms" className="text-purple-700 underline hover:text-purple-900">
                       Terms of Participation
                     </Link>{' '}
                     and acknowledge that data collected will be used for official IIC certificate issuance and event logistics at KMCTCEEM.
                   </span>
                 </label>
                 {errors.privacyConsent && (
-                  <p className="text-xs text-red-400 mt-1">{errors.privacyConsent}</p>
+                  <p className="text-xs text-red-500 mt-1">{errors.privacyConsent}</p>
                 )}
               </div>
 
@@ -513,7 +513,7 @@ export default function RegisterPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-amber-500 via-orange-600 to-purple-600 hover:from-amber-400 hover:to-orange-500 text-white font-bold text-sm shadow-xl shadow-orange-950 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                  className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-amber-500 via-orange-600 to-purple-600 hover:opacity-95 text-white font-bold text-sm shadow-md shadow-orange-500/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                 >
                   {isSubmitting ? (
                     <>
@@ -536,77 +536,77 @@ export default function RegisterPage() {
           <div className="lg:col-span-5 space-y-6">
             
             {/* Pass Summary Card */}
-            <div className="glass-card rounded-2xl p-7 border border-white/[0.08]">
-              <h2 className="text-base font-bold text-white uppercase tracking-wider mb-4 border-b border-white/[0.08] pb-3">
+            <div className="bg-white rounded-2xl p-7 border border-slate-200 shadow-xl">
+              <h2 className="text-base font-bold text-slate-900 uppercase tracking-wider mb-4 border-b border-slate-200 pb-3">
                 Registration Summary
               </h2>
 
               <div className="space-y-3">
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-slate-300">Workshop Pass</span>
-                  <span className="font-bold text-white">₹100</span>
+                  <span className="text-slate-600">Workshop Pass</span>
+                  <span className="font-bold text-slate-900">₹100</span>
                 </div>
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-slate-300">Date</span>
-                  <span className="text-amber-300 font-medium">11th November 2026</span>
+                  <span className="text-slate-600">Date</span>
+                  <span className="text-purple-700 font-semibold">11th November 2026</span>
                 </div>
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-slate-300">Timing &amp; Venue</span>
-                  <span className="text-zinc-300 font-medium">09:30 AM – 04:00 PM (Seminar Hall)</span>
+                  <span className="text-slate-600">Timing &amp; Venue</span>
+                  <span className="text-slate-800 font-medium">09:30 AM – 04:00 PM (Seminar Hall)</span>
                 </div>
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-slate-300">Cohort Cap</span>
-                  <span className="text-amber-400 font-semibold">Strictly 70 Seats</span>
+                  <span className="text-slate-600">Cohort Cap</span>
+                  <span className="text-purple-700 font-bold">Strictly 70 Seats</span>
                 </div>
 
-                <div className="pt-3 border-t border-white/[0.08] flex justify-between items-baseline">
-                  <span className="text-sm font-semibold text-white">Total Amount</span>
-                  <span className="text-3xl font-black text-gradient-vibrant bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">₹100</span>
+                <div className="pt-3 border-t border-slate-200 flex justify-between items-baseline">
+                  <span className="text-sm font-semibold text-slate-900">Total Amount</span>
+                  <span className="text-3xl font-black text-slate-900">₹100</span>
                 </div>
               </div>
 
               {/* Verified note */}
-              <div className="mt-5 p-3 rounded-xl bg-orange-950/40 border border-orange-800/30 text-xs text-amber-200 leading-relaxed">
-                <p className="font-semibold text-amber-300 mb-0.5">Approved Fee Structure:</p>
+              <div className="mt-5 p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 leading-relaxed">
+                <p className="font-bold text-amber-800 mb-0.5">Approved Fee Structure:</p>
                 The ₹100 registration fee covers full full-day workshop access, chart paper &amp; marker prototyping kits, morning tea with fresh canteen samosas, and official IIC certificate.
               </div>
             </div>
 
             {/* Guaranteed Deliverables */}
-            <div className="glass-card rounded-2xl p-7 border border-white/[0.08] space-y-3">
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-2">
+            <div className="bg-white rounded-2xl p-7 border border-slate-200 shadow-xl space-y-3">
+              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-2">
                 What You Receive
               </h3>
 
-              <div className="flex items-start gap-3 text-xs text-slate-300">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                <span><strong>Official IIC Activity Certificate</strong> of participation</span>
+              <div className="flex items-start gap-3 text-xs text-slate-600">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                <span><strong className="text-slate-900">Official IIC Activity Certificate</strong> of participation</span>
               </div>
 
-              <div className="flex items-start gap-3 text-xs text-slate-300">
-                <Package className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-3 text-xs text-slate-600">
+                <Package className="w-4 h-4 text-purple-600 shrink-0 mt-0.5" />
                 <span>Stationery kit: Chart paper, sketch pens, and empathy worksheets</span>
               </div>
 
-              <div className="flex items-start gap-3 text-xs text-slate-300">
-                <Award className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                <span>Keynote mentorship from <strong>Mr. Muhammed Shayiz K P</strong></span>
+              <div className="flex items-start gap-3 text-xs text-slate-600">
+                <Award className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                <span>Keynote mentorship from <strong className="text-slate-900">Mr. Muhammed Shayiz K P</strong></span>
               </div>
 
-              <div className="flex items-start gap-3 text-xs text-slate-300">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-3 text-xs text-slate-600">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                 <span>Refreshments: Morning tea and fresh hot canteen samosas</span>
               </div>
             </div>
 
             {/* Registration Coordinator Box */}
-            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.08] text-xs text-zinc-300 space-y-2">
-              <p className="text-[10px] uppercase font-mono tracking-wider text-zinc-400">Proposed By</p>
-              <p className="text-white font-medium text-sm">Mr. Abdul Mujeeb MS</p>
-              <p className="text-amber-400 text-xs">IIC Coordinator, KMCT College of Engineering</p>
-              <div className="pt-2 border-t border-white/[0.08]">
-                <p className="text-[10px] uppercase font-mono tracking-wider text-zinc-400">Institutional Approval</p>
-                <p className="text-emerald-400 text-xs">Approved by Principal on 4th November 2026</p>
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 space-y-2">
+              <p className="text-[10px] uppercase font-mono tracking-wider text-slate-500">Proposed By</p>
+              <p className="text-slate-900 font-semibold text-sm">Mr. Abdul Mujeeb MS</p>
+              <p className="text-purple-700 text-xs font-medium">IIC Coordinator, KMCT College of Engineering</p>
+              <div className="pt-2 border-t border-slate-200">
+                <p className="text-[10px] uppercase font-mono tracking-wider text-slate-500">Institutional Approval</p>
+                <p className="text-emerald-700 text-xs font-medium">Approved by Principal on 4th November 2026</p>
               </div>
             </div>
 

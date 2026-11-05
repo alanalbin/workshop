@@ -10,7 +10,6 @@ import {
   CheckCircle2,
   AlertCircle,
   ArrowLeft,
-  UserCheck,
   LogOut,
   Award,
   Zap,
@@ -62,7 +61,6 @@ function LoginContent() {
     try {
       const res = await signInWithGoogle();
       if (res.success) {
-        // Successful Google login: route directly to destination
         router.push(redirectPath);
       } else {
         setError(res.error || 'Failed to sign in with Google. Please try again.');
@@ -75,10 +73,9 @@ function LoginContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#05030a] py-20 sm:py-24 relative flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#f8fafc] py-20 sm:py-24 relative flex items-center justify-center px-4">
       {/* Background Ambient Glows */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[380px] bg-purple-900/25 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-10 left-1/4 w-[350px] h-[250px] bg-indigo-900/20 rounded-full blur-[110px] pointer-events-none" />
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[380px] bg-purple-500/5 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="w-full max-w-lg relative z-10">
         
@@ -86,37 +83,32 @@ function LoginContent() {
         <div className="mb-6 flex items-center justify-between">
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-purple-300 transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-purple-700 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back to Home</span>
           </Link>
 
-          <span className="text-xs font-mono text-zinc-400 bg-white/[0.03] border border-white/[0.08] px-2.5 py-1 rounded-md">
+          <span className="text-xs font-mono text-slate-600 bg-white border border-slate-200 px-2.5 py-1 rounded-md shadow-xs">
             IIC Quarter 1 Workshop • KMCT Kasaragod
           </span>
         </div>
 
         {/* Card Box */}
-        <div className="bg-[#0a0618] border border-purple-800/40 rounded-3xl shadow-2xl shadow-purple-950/70 overflow-hidden text-slate-100 p-6 sm:p-9 relative backdrop-blur-xl">
+        <div className="bg-white border border-slate-200 rounded-3xl shadow-xl overflow-hidden text-slate-800 p-6 sm:p-9 relative">
           
-          {/* Background subtle watermark */}
-          <div className="absolute right-0 bottom-0 translate-x-8 translate-y-8 pointer-events-none opacity-[0.05] w-64 h-64 overflow-hidden" aria-hidden="true">
-            <img src="/logo-icon.png" alt="" className="w-full h-full object-contain" />
-          </div>
-
           {/* Header Badge */}
           <div className="text-center mb-7 relative z-10">
             <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 rounded-2xl bg-orange-500/20 border border-orange-500/40 flex items-center justify-center text-amber-400 shadow-xl shadow-orange-950/60">
+              <div className="w-16 h-16 rounded-2xl bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-700 shadow-xs">
                 <Sparkles className="w-8 h-8" />
               </div>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">
               {user ? 'Welcome Back!' : 'Sign In to Register'}
             </h1>
-            <p className="text-xs sm:text-sm text-slate-400 mt-2 max-w-sm mx-auto">
+            <p className="text-xs sm:text-sm text-slate-600 mt-2 max-w-sm mx-auto">
               {user
                 ? 'Your Google account is verified. Click below to complete your registration.'
                 : 'Sign in with your Google account to get your official pass for From Problem to Possibility.'}
@@ -125,18 +117,18 @@ function LoginContent() {
 
           {/* Error Message */}
           {error && (
-            <div className="mb-6 p-4 rounded-2xl bg-red-950/70 border border-red-500/40 text-red-200 text-xs space-y-3 animate-in fade-in duration-200 shadow-lg">
+            <div className="mb-6 p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs space-y-3 animate-in fade-in duration-200 shadow-xs">
               <div className="flex items-start gap-2.5">
-                <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <p className="font-semibold">{error}</p>
                 </div>
               </div>
 
               {error.includes('not authorized in Firebase') && (
-                <div className="pt-2 border-t border-red-800/40 space-y-2">
-                  <p className="text-[11px] text-slate-300">
-                    To enable Google Sign-In permanently: Open <a href="https://console.firebase.google.com" target="_blank" rel="noreferrer" className="text-purple-300 underline font-bold">Firebase Console</a> &gt; <strong>Authentication</strong> &gt; <strong>Settings</strong> &gt; <strong>Authorized domains</strong> and add your website domain.
+                <div className="pt-2 border-t border-red-200 space-y-2">
+                  <p className="text-[11px] text-slate-600">
+                    To enable Google Sign-In permanently: Open <a href="https://console.firebase.google.com" target="_blank" rel="noreferrer" className="text-purple-700 underline font-bold">Firebase Console</a> &gt; <strong>Authentication</strong> &gt; <strong>Settings</strong> &gt; <strong>Authorized domains</strong> and add your website domain.
                   </p>
                   <button
                     type="button"
@@ -144,9 +136,9 @@ function LoginContent() {
                       loginAsDemoUser({ displayName: 'Registered Participant' });
                       router.push(redirectPath);
                     }}
-                    className="w-full py-2.5 px-3 rounded-xl bg-purple-600/30 hover:bg-purple-600/50 border border-purple-400/40 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
+                    className="w-full py-2.5 px-3 rounded-xl bg-purple-100 hover:bg-purple-200 border border-purple-300 text-purple-800 font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
                   >
-                    <Sparkles className="w-3.5 h-3.5 text-purple-300" />
+                    <Sparkles className="w-3.5 h-3.5 text-purple-600" />
                     <span>Proceed Directly to Registration Form</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
@@ -159,36 +151,36 @@ function LoginContent() {
           {user ? (
             <div className="space-y-6">
               {/* Profile Card */}
-              <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-purple-950/60 to-indigo-950/40 border border-purple-600/40 flex items-center gap-3.5 shadow-inner">
+              <div className="p-4 sm:p-5 rounded-2xl bg-purple-50/70 border border-purple-200 flex items-center gap-3.5">
                 {user.photoURL ? (
                   <img
                     src={user.photoURL}
                     alt={user.displayName || 'User'}
-                    className="w-14 h-14 rounded-full border-2 border-purple-400/80 object-cover shadow-md"
+                    className="w-14 h-14 rounded-full border-2 border-purple-300 object-cover shadow-xs"
                   />
                 ) : (
-                  <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xl shadow-md">
+                  <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xl shadow-xs">
                     {(user.displayName || user.email || 'U').charAt(0).toUpperCase()}
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <p className="text-base font-bold text-white truncate">
+                    <p className="text-base font-bold text-slate-900 truncate">
                       {user.displayName || 'Participant'}
                     </p>
-                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-400 bg-emerald-950/70 border border-emerald-500/40 px-2 py-0.5 rounded-full">
-                      <CheckCircle2 className="w-3 h-3" />
+                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                      <CheckCircle2 className="w-3 h-3 text-emerald-600" />
                       Verified
                     </span>
                   </div>
-                  <p className="text-xs text-purple-300 truncate mt-0.5">
+                  <p className="text-xs text-purple-700 truncate mt-0.5">
                     {user.email || 'Google Account'}
                   </p>
                 </div>
               </div>
 
               {/* Step indicator */}
-              <div className="flex items-center gap-3 py-1 px-3 rounded-xl bg-purple-900/20 border border-purple-800/30 text-xs text-purple-300">
+              <div className="flex items-center gap-3 py-1.5 px-3 rounded-xl bg-purple-50 border border-purple-200 text-xs text-purple-800">
                 <span className="w-5 h-5 rounded-full bg-purple-600 text-white font-bold text-[11px] flex items-center justify-center shrink-0">
                   2
                 </span>
@@ -198,19 +190,19 @@ function LoginContent() {
               {/* PRIMARY PROCEED BUTTON */}
               <Link
                 href={redirectPath}
-                className="w-full py-4 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:from-purple-500 hover:to-indigo-500 text-white font-extrabold text-sm uppercase tracking-wider flex items-center justify-center gap-2.5 shadow-xl shadow-purple-950/80 hover:shadow-purple-700/50 transition-all hover:scale-[1.01] active:scale-[0.99]"
+                className="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-600 to-purple-600 hover:opacity-95 text-white font-extrabold text-sm uppercase tracking-wider flex items-center justify-center gap-2.5 shadow-lg shadow-orange-500/20 transition-all hover:scale-[1.01] active:scale-[0.99]"
               >
                 <span>Proceed to Registration Form (₹100)</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
 
               {/* Sign out switch */}
-              <div className="pt-2 flex items-center justify-between text-xs text-slate-400">
+              <div className="pt-2 flex items-center justify-between text-xs text-slate-500">
                 <span>Want to use another Google account?</span>
                 <button
                   type="button"
                   onClick={() => signOut()}
-                  className="text-purple-400 hover:text-white flex items-center gap-1 font-semibold transition-colors cursor-pointer"
+                  className="text-purple-700 hover:text-purple-900 flex items-center gap-1 font-semibold transition-colors cursor-pointer"
                 >
                   <LogOut className="w-3.5 h-3.5" />
                   <span>Sign Out</span>
@@ -222,16 +214,16 @@ function LoginContent() {
             <div className="space-y-6">
               
               {/* Step Flow Banner */}
-              <div className="flex items-center justify-between p-3 rounded-2xl bg-purple-950/40 border border-purple-800/30 text-xs">
-                <div className="flex items-center gap-2.5 text-purple-200 font-semibold">
-                  <span className="w-6 h-6 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 text-white text-[11px] font-bold flex items-center justify-center shadow-sm">
+              <div className="flex items-center justify-between p-3 rounded-2xl bg-purple-50 border border-purple-200 text-xs">
+                <div className="flex items-center gap-2.5 text-purple-800 font-semibold">
+                  <span className="w-6 h-6 rounded-full bg-purple-600 text-white text-[11px] font-bold flex items-center justify-center shadow-xs">
                     1
                   </span>
                   <span>Step 1: Sign in with Google</span>
                 </div>
-                <div className="flex items-center gap-1.5 text-slate-400 text-[11px]">
+                <div className="flex items-center gap-1.5 text-slate-500 text-[11px]">
                   <span>Step 2: Registration</span>
-                  <ArrowRight className="w-3 h-3 text-slate-500" />
+                  <ArrowRight className="w-3 h-3 text-slate-400" />
                 </div>
               </div>
 
@@ -240,10 +232,10 @@ function LoginContent() {
                 type="button"
                 onClick={handleGoogleSignIn}
                 disabled={loading}
-                className="w-full py-4 px-6 rounded-2xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-sm sm:text-base flex items-center justify-center gap-3 shadow-xl shadow-black/40 hover:shadow-2xl transition-all cursor-pointer hover:scale-[1.01] active:scale-[0.99] disabled:opacity-70 disabled:cursor-not-allowed group"
+                className="w-full py-4 px-6 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 font-bold text-sm sm:text-base flex items-center justify-center gap-3 shadow-md hover:shadow-lg transition-all cursor-pointer hover:scale-[1.01] active:scale-[0.99] disabled:opacity-70 disabled:cursor-not-allowed group"
               >
                 {loading ? (
-                  <div className="w-5 h-5 border-2 border-slate-900 border-t-transparent rounded-full animate-spin" />
+                  <div className="w-5 h-5 border-2 border-slate-800 border-t-transparent rounded-full animate-spin" />
                 ) : (
                   <GoogleIcon className="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform" />
                 )}
@@ -252,22 +244,22 @@ function LoginContent() {
 
               {/* Key Highlights */}
               <div className="grid grid-cols-2 gap-3 pt-2">
-                <div className="p-3 rounded-xl bg-purple-950/30 border border-purple-800/30 text-left">
-                  <div className="flex items-center gap-1.5 text-purple-300 font-bold text-xs mb-1">
-                    <Zap className="w-3.5 h-3.5 text-yellow-400" />
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-left">
+                  <div className="flex items-center gap-1.5 text-slate-800 font-bold text-xs mb-1">
+                    <Zap className="w-3.5 h-3.5 text-amber-500" />
                     <span>Instant Access</span>
                   </div>
-                  <p className="text-[11px] text-slate-400 leading-tight">
+                  <p className="text-[11px] text-slate-600 leading-tight">
                     1-click authorization without OTP or password delays.
                   </p>
                 </div>
 
-                <div className="p-3 rounded-xl bg-purple-950/30 border border-purple-800/30 text-left">
-                  <div className="flex items-center gap-1.5 text-purple-300 font-bold text-xs mb-1">
-                    <Award className="w-3.5 h-3.5 text-emerald-400" />
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-left">
+                  <div className="flex items-center gap-1.5 text-slate-800 font-bold text-xs mb-1">
+                    <Award className="w-3.5 h-3.5 text-emerald-600" />
                     <span>IIC Activity Cert</span>
                   </div>
-                  <p className="text-[11px] text-slate-400 leading-tight">
+                  <p className="text-[11px] text-slate-600 leading-tight">
                     Certificate tied directly to your verified Google account.
                   </p>
                 </div>
@@ -277,8 +269,8 @@ function LoginContent() {
           )}
 
           {/* Footer Security Note */}
-          <div className="mt-8 pt-5 border-t border-purple-950/60 flex items-center justify-center gap-2 text-[11px] text-slate-500">
-            <ShieldCheck className="w-3.5 h-3.5 text-purple-400" />
+          <div className="mt-8 pt-5 border-t border-slate-100 flex items-center justify-center gap-2 text-[11px] text-slate-500">
+            <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />
             <span>Secure 256-bit OAuth authentication by Google</span>
           </div>
 
@@ -290,11 +282,11 @@ function LoginContent() {
             href="https://kmct.org"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-300 hover:text-white transition-colors bg-white/[0.03] border border-white/[0.08] hover:border-white/20 px-3 py-1.5 rounded-md"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-purple-700 transition-colors bg-white border border-slate-200 px-3 py-1.5 rounded-md shadow-xs"
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
             <span>KMCT CEEM Kasaragod</span>
-            <span className="text-[10px] text-zinc-500">↗</span>
+            <span className="text-[10px] text-slate-400">↗</span>
           </a>
         </div>
 
@@ -307,8 +299,8 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#05030a] flex items-center justify-center">
-          <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+        <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center">
+          <div className="w-8 h-8 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
         </div>
       }
     >

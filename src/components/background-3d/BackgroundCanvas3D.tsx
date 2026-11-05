@@ -33,9 +33,9 @@ export default function BackgroundCanvas3D({ onReplayIntro }: BackgroundCanvas3D
 
     const isMobile = window.innerWidth < 768;
 
-    // 2. Scene & Deep Atmospheric Cosmic Gloom Fog
+    // 2. Scene & Subtle Light Atmosphere
     const scene = new THREE.Scene();
-    const gloomFogColor = 0x05030c;
+    const gloomFogColor = 0xf8fafc;
     scene.fog = new THREE.FogExp2(gloomFogColor, isMobile ? 0.0034 : 0.0024);
 
     // 3. Camera
@@ -668,7 +668,7 @@ export default function BackgroundCanvas3D({ onReplayIntro }: BackgroundCanvas3D
   if (!webglSupported) {
     return (
       <div
-        className="fixed inset-0 pointer-events-none z-0 bg-[#04020a]"
+        className="fixed inset-0 pointer-events-none z-0 bg-[#f8fafc]"
         aria-hidden="true"
       />
     );
@@ -679,27 +679,17 @@ export default function BackgroundCanvas3D({ onReplayIntro }: BackgroundCanvas3D
       ref={containerRef}
       className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none"
       style={{
-        // Deep moody cosmic abyss gradient with central planetary depth
         background:
-          'radial-gradient(ellipse at 50% 35%, #0f0722 0%, #06030e 55%, #020106 100%)',
+          'radial-gradient(ellipse at 50% 15%, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%)',
       }}
       aria-hidden="true"
     >
-      {/* Central Content Dark Vignette Overlay: Guarantees that hero typography and cards are 100% visible and razor sharp */}
+      {/* Light subtle ambient glow for elegance and high contrast */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            'radial-gradient(ellipse at 50% 40%, rgba(4, 2, 10, 0.62) 0%, rgba(3, 2, 7, 0.25) 50%, rgba(2, 1, 5, 0.85) 100%)',
-        }}
-      />
-
-      {/* Atmospheric planetary cosmic rim glow */}
-      <div
-        className="absolute inset-0 pointer-events-none opacity-25 mix-blend-screen"
-        style={{
-          background:
-            'radial-gradient(circle at 50% 30%, rgba(139, 92, 246, 0.2) 0%, transparent 60%)',
+            'radial-gradient(circle at 50% 20%, rgba(147, 51, 234, 0.04) 0%, rgba(245, 158, 11, 0.03) 45%, transparent 70%)',
         }}
       />
     </div>

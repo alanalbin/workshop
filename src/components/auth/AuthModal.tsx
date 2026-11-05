@@ -6,12 +6,10 @@ import { useAuth } from '@/context/AuthContext';
 import {
   X,
   ShieldCheck,
-  CheckCircle2,
   AlertCircle,
   Sparkles,
   LogOut,
   ArrowRight,
-  Zap,
 } from 'lucide-react';
 
 function GoogleIcon({ className = 'w-5 h-5' }: { className?: string }) {
@@ -72,13 +70,13 @@ export default function AuthModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="relative w-full max-w-md bg-[#0a0618] border border-purple-800/40 rounded-3xl shadow-2xl shadow-purple-950/70 overflow-hidden text-slate-100 p-6 sm:p-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="relative w-full max-w-md bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden text-slate-800 p-6 sm:p-8">
         
         {/* Close Button */}
         <button
           onClick={closeAuthModal}
-          className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white rounded-full bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
+          className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-800 rounded-full bg-slate-100 hover:bg-slate-200 transition-colors cursor-pointer"
           aria-label="Close"
         >
           <X className="w-5 h-5" />
@@ -87,15 +85,15 @@ export default function AuthModal() {
         {/* Header */}
         <div className="text-center mb-6">
           <div className="flex justify-center mb-3">
-            <div className="w-12 h-12 rounded-xl bg-orange-500/20 border border-orange-500/40 flex items-center justify-center text-amber-400 shadow-md">
+            <div className="w-12 h-12 rounded-xl bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-700 shadow-xs">
               <Sparkles className="w-6 h-6" />
             </div>
           </div>
 
-          <h2 className="text-2xl font-black tracking-tight text-white">
+          <h2 className="text-2xl font-black tracking-tight text-slate-900">
             {user ? 'Welcome Back!' : 'Sign In with Google'}
           </h2>
-          <p className="text-xs text-slate-400 mt-1.5">
+          <p className="text-xs text-slate-600 mt-1.5">
             {user
               ? 'You are signed in and ready to proceed.'
               : 'Sign in to access From Problem to Possibility workshop passes & registration.'}
@@ -104,8 +102,8 @@ export default function AuthModal() {
 
         {/* Error Notice */}
         {error && (
-          <div className="mb-4 p-3 rounded-xl bg-red-950/70 border border-red-500/40 text-red-200 text-xs flex items-start gap-2">
-            <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+          <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-start gap-2">
+            <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
             <div className="flex-1">
               <p>{error}</p>
             </div>
@@ -115,23 +113,23 @@ export default function AuthModal() {
         {/* Already Logged In */}
         {user ? (
           <div className="space-y-4">
-            <div className="p-4 rounded-2xl bg-purple-950/40 border border-purple-700/40 flex items-center gap-3">
+            <div className="p-4 rounded-2xl bg-purple-50 border border-purple-200 flex items-center gap-3">
               {user.photoURL ? (
                 <img
                   src={user.photoURL}
                   alt={user.displayName || 'User'}
-                  className="w-12 h-12 rounded-full border border-purple-500/50 object-cover"
+                  className="w-12 h-12 rounded-full border border-purple-300 object-cover shadow-xs"
                 />
               ) : (
-                <div className="w-12 h-12 rounded-full bg-purple-800/50 text-purple-200 flex items-center justify-center font-bold text-lg">
+                <div className="w-12 h-12 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-lg">
                   {(user.displayName || user.email || 'U').charAt(0).toUpperCase()}
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-white truncate">
+                <p className="text-sm font-bold text-slate-900 truncate">
                   {user.displayName || 'Participant'}
                 </p>
-                <p className="text-xs text-purple-300 truncate">
+                <p className="text-xs text-purple-700 truncate">
                   {user.email || 'Google Account'}
                 </p>
               </div>
@@ -142,17 +140,17 @@ export default function AuthModal() {
                 closeAuthModal();
                 router.push('/register');
               }}
-              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-purple-950/80 cursor-pointer"
+              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-500 via-orange-600 to-purple-600 hover:opacity-95 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md shadow-orange-500/20 cursor-pointer"
             >
               <span>Continue to Registration (₹100)</span>
               <ArrowRight className="w-4 h-4" />
             </button>
 
-            <div className="pt-2 flex items-center justify-between text-xs text-slate-400">
+            <div className="pt-2 flex items-center justify-between text-xs text-slate-500">
               <button
                 type="button"
                 onClick={() => signOut()}
-                className="text-purple-400 hover:text-white flex items-center gap-1 font-semibold cursor-pointer"
+                className="text-purple-700 hover:text-purple-900 flex items-center gap-1 font-semibold cursor-pointer"
               >
                 <LogOut className="w-3.5 h-3.5" />
                 <span>Sign Out</span>
@@ -166,7 +164,7 @@ export default function AuthModal() {
               type="button"
               onClick={handleGoogleSignIn}
               disabled={loading}
-              className="w-full py-3.5 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-sm flex items-center justify-center gap-3 shadow-lg transition-all cursor-pointer disabled:opacity-70 group"
+              className="w-full py-3.5 px-4 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 font-bold text-sm flex items-center justify-center gap-3 shadow-sm hover:shadow transition-all cursor-pointer disabled:opacity-70 group"
             >
               {loading ? (
                 <div className="w-4 h-4 border-2 border-slate-900 border-t-transparent rounded-full animate-spin" />
@@ -176,8 +174,8 @@ export default function AuthModal() {
               <span>{loading ? 'Connecting...' : 'Continue with Google'}</span>
             </button>
 
-            <div className="pt-4 border-t border-purple-950/60 flex items-center justify-center gap-1.5 text-[11px] text-slate-500">
-              <ShieldCheck className="w-3.5 h-3.5 text-purple-400" />
+            <div className="pt-4 border-t border-slate-100 flex items-center justify-center gap-1.5 text-[11px] text-slate-500">
+              <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />
               <span>Fast & secure login powered by Google</span>
             </div>
           </div>

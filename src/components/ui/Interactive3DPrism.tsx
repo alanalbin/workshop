@@ -808,26 +808,26 @@ export default function Interactive3DPrism({ className = '' }: Interactive3DPris
   return (
     <div
       ref={cardContainerRef}
-      className={`glass-card rounded-3xl p-6 sm:p-7 border border-purple-500/40 hover:border-purple-400/80 bg-gradient-to-b from-[#130926]/95 via-[#0a0418]/95 to-[#04010a]/95 backdrop-blur-xl relative overflow-hidden group shadow-2xl shadow-purple-950/70 transition-all duration-300 ${className}`}
+      className={`rounded-3xl p-6 sm:p-7 border border-slate-200 hover:border-purple-300 bg-white backdrop-blur-xl relative overflow-hidden group shadow-xl transition-all duration-300 ${className}`}
     >
       {/* 1. Arcade Header Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-white/[0.08] relative z-20">
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-200 relative z-20">
         <div className="flex items-center gap-2.5">
           <div className="relative flex items-center justify-center">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping absolute" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping absolute" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-[13px] font-mono uppercase tracking-wider text-purple-200 font-bold flex items-center gap-1.5">
-                <Gamepad2 className="w-4 h-4 text-purple-400" />
+              <span className="text-[13px] font-mono uppercase tracking-wider text-purple-700 font-bold flex items-center gap-1.5">
+                <Gamepad2 className="w-4 h-4 text-purple-600" />
                 Venture Blaster 3D
               </span>
-              <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold">
                 ARCADE LIVE
               </span>
             </div>
-            <p className="text-[11px] text-zinc-400">
+            <p className="text-[11px] text-slate-600">
               Interactive 3D Target Shooter • Aim with Cursor, Tap to Shoot & Trigger EMPs
             </p>
           </div>
@@ -836,17 +836,17 @@ export default function Interactive3DPrism({ className = '' }: Interactive3DPris
         {/* Arcade Status Readout & Sound Control */}
         <div className="flex items-center gap-3 font-mono text-xs">
           {/* Best Score */}
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/[0.04] border border-white/[0.08] text-amber-300">
-            <Trophy className="w-3.5 h-3.5" />
-            <span className="text-[11px] text-zinc-400">BEST:</span>
-            <strong className="text-white font-bold">{highScore}</strong>
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-100 border border-slate-200 text-slate-700">
+            <Trophy className="w-3.5 h-3.5 text-amber-500" />
+            <span className="text-[11px] text-slate-500">BEST:</span>
+            <strong className="text-slate-900 font-bold">{highScore}</strong>
           </div>
 
           {/* Sound Toggle */}
           <button
             type="button"
             onClick={() => setSoundEnabled(!soundEnabled)}
-            className="p-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-zinc-300 hover:text-white transition-all cursor-pointer"
+            className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 hover:text-slate-900 transition-all cursor-pointer"
             title={soundEnabled ? 'Mute SFX' : 'Enable SFX'}
           >
             {soundEnabled ? <Volume2 className="w-4 h-4 text-cyan-400" /> : <VolumeX className="w-4 h-4 text-zinc-500" />}
@@ -952,7 +952,7 @@ export default function Interactive3DPrism({ className = '' }: Interactive3DPris
       </div>
 
       {/* 3. Bottom Controls & EMP Ability Dock */}
-      <div className="pt-3 border-t border-white/[0.08] flex flex-wrap items-center justify-between gap-3 text-xs relative z-20">
+      <div className="pt-3 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs relative z-20">
         {/* EMP Weapon Trigger */}
         <div className="flex items-center gap-2">
           <button

@@ -5,7 +5,7 @@ import BackgroundCanvas3D from '@/components/background-3d/BackgroundCanvas3D';
 import BeamIntroLoading from '@/components/intro/BeamIntroLoading';
 
 export default function HomeExperienceManager() {
-  const [playIntro, setPlayIntro] = useState(true);
+  const [playIntro, setPlayIntro] = useState(false);
   const [introKey, setIntroKey] = useState(0);
 
   const handleReplayIntro = () => {
@@ -15,14 +15,15 @@ export default function HomeExperienceManager() {
 
   return (
     <>
-      {/* 3D Beam Intro Loading Screen (plays at initial site opening or on replay request) */}
-      <BeamIntroLoading
-        key={introKey}
-        forcePlay={playIntro}
-        onComplete={() => setPlayIntro(false)}
-      />
+      {playIntro && (
+        <BeamIntroLoading
+          key={introKey}
+          forcePlay={playIntro}
+          onComplete={() => setPlayIntro(false)}
+        />
+      )}
 
-      {/* Interactive 3D Holographic Quantum Cybersphere Background */}
+      {/* Interactive Light 3D Canvas Background */}
       <BackgroundCanvas3D onReplayIntro={handleReplayIntro} />
     </>
   );

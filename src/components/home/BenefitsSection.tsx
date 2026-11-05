@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Award, Package, Sparkles, Compass, Trophy, CheckCircle2, AlertCircle, Target, FileText, Palette, Mic } from 'lucide-react';
+import { Award, Sparkles, Compass, CheckCircle2, Target, Palette, Mic } from 'lucide-react';
 import { EventBenefit } from '@/types';
 import TouchInteractiveTilt from '@/components/ui/TouchInteractiveTilt';
 
@@ -57,10 +57,10 @@ export default function BenefitsSection({ benefits }: BenefitsSectionProps) {
   ];
 
   return (
-    <section id="benefits" className="py-24 bg-[#070312]/30 backdrop-blur-[2px] border-t border-purple-950/40 relative overflow-hidden z-10">
+    <section id="benefits" className="py-24 bg-slate-50/80 border-t border-slate-200 relative overflow-hidden z-10">
       
       {/* Background radial glow */}
-      <div className="absolute top-1/3 right-10 w-[550px] h-[350px] bg-orange-900/10 rounded-full blur-[130px] pointer-events-none" />
+      <div className="absolute top-1/3 right-10 w-[550px] h-[350px] bg-purple-500/5 rounded-full blur-[130px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 sm:px-10 relative z-20">
         
@@ -72,13 +72,13 @@ export default function BenefitsSection({ benefits }: BenefitsSectionProps) {
           transition={{ duration: 0.6 }}
           className="max-w-3xl"
         >
-          <span className="text-xs uppercase font-extrabold tracking-widest text-amber-400 bg-amber-950/50 border border-amber-800/40 px-4 py-1.5 rounded-full shadow-sm">
+          <span className="text-xs uppercase font-extrabold tracking-widest text-purple-700 bg-purple-50 border border-purple-200 px-4 py-1.5 rounded-full shadow-xs">
             Tangible Deliverables &amp; Outcomes
           </span>
-          <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight mt-4">
+          <h2 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight mt-4">
             Expected Learning Outcomes
           </h2>
-          <p className="mt-3.5 text-slate-300 text-base sm:text-lg leading-relaxed">
+          <p className="mt-3.5 text-slate-600 text-base sm:text-lg leading-relaxed">
             By the end of the workshop, each student team will walk away with real, physical and pitch-ready deliverables designed to jumpstart their innovation journey.
           </p>
         </motion.div>
@@ -87,7 +87,6 @@ export default function BenefitsSection({ benefits }: BenefitsSectionProps) {
         <div className="mt-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {outcomes.map((item, idx) => {
             const Icon = item.icon;
-            const isHeroCard = idx === 0 || idx === 2;
             return (
               <motion.div
                 key={item.id}
@@ -96,30 +95,30 @@ export default function BenefitsSection({ benefits }: BenefitsSectionProps) {
                 viewport={{ once: true, margin: '-40px' }}
                 transition={{ type: 'spring', stiffness: 220, damping: 22, delay: idx * 0.07 }}
               >
-                <TouchInteractiveTilt maxTilt={7} glareOpacity={0.2} className="h-full">
-                  <div className="glass-card rounded-3xl p-7 sm:p-8 border border-white/[0.08] hover:border-orange-500/50 flex flex-col justify-between transition-all duration-300 shadow-xl shadow-black/40 hover:shadow-orange-950/40 h-full">
+                <TouchInteractiveTilt maxTilt={7} glareOpacity={0.12} className="h-full">
+                  <div className="bg-white rounded-3xl p-7 sm:p-8 border border-slate-200 hover:border-purple-300 flex flex-col justify-between transition-all duration-300 shadow-sm hover:shadow-md h-full">
                     <div>
                       <div className="flex items-center justify-between mb-5">
-                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-orange-950/80 to-purple-950/80 border border-orange-500/40 flex items-center justify-center p-2.5 shadow-inner text-amber-400">
+                        <div className="w-12 h-12 rounded-2xl bg-purple-50 border border-purple-200 flex items-center justify-center p-2.5 shadow-xs text-purple-700">
                           <Icon className="w-6 h-6" />
                         </div>
 
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-950/70 border border-amber-500/40 text-[11px] font-bold text-amber-300">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-amber-400" />
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-50 border border-purple-200 text-[11px] font-bold text-purple-700">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-purple-600" />
                           <span>{item.highlight}</span>
                         </span>
                       </div>
 
-                      <h3 className="text-lg font-black text-white group-hover:text-amber-200 transition-colors mb-2">
+                      <h3 className="text-lg font-bold text-slate-900 group-hover:text-purple-700 transition-colors mb-2">
                         {item.title}
                       </h3>
 
-                      <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                      <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                         {item.description}
                       </p>
                     </div>
 
-                    <div className="mt-6 pt-4 border-t border-white/[0.06] flex items-center gap-2 text-xs text-amber-400/90 font-medium">
+                    <div className="mt-6 pt-4 border-t border-slate-100 flex items-center gap-2 text-xs text-purple-700 font-semibold">
                       <span>✓ Team-based interactive completion</span>
                     </div>
                   </div>

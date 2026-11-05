@@ -75,18 +75,7 @@ export default function RootLayout({
           strategy="lazyOnload"
         />
       </head>
-      <body className={`min-h-screen flex flex-col bg-[#05030a] text-slate-100 ${spaceGrotesk.className} selection:bg-purple-600 selection:text-white antialiased relative`}>
-        {/* Ambient Brand Watermark Background */}
-        <div 
-          className="fixed inset-0 pointer-events-none z-0 flex items-center justify-center overflow-hidden" 
-          aria-hidden="true"
-        >
-          <img
-            src="/logos/kmct-college.png"
-            alt=""
-            className="w-[850px] max-w-[90vw] h-auto object-contain opacity-[0.035] select-none filter blur-[0.4px] scale-110"
-          />
-        </div>
+      <body className={`min-h-screen flex flex-col bg-[#f8fafc] text-slate-800 ${spaceGrotesk.className} selection:bg-purple-600 selection:text-white antialiased relative`}>
         <ScrollProgressBar />
         <AuthProvider>
           <Navbar />
