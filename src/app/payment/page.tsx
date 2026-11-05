@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, Suspense } from 'react';
+import React, { useEffect, useState, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Script from 'next/script';
@@ -49,6 +49,8 @@ function PaymentContent() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [isAuthError, setIsAuthError] = useState(false);
+  const autoOpen = searchParams.get('autoOpen') === 'true';
+  const hasAutoOpened = useRef(false);
 
   // Pre-fill quick registration from authenticated user if available
   useEffect(() => {
@@ -90,22 +92,20 @@ function PaymentContent() {
           targetId = user.email;
         }
 
-        if (!targetId) {
-          targetId = 'latest';
-        }
-
-        const regRes = await fetch(`/api/registrations/${encodeURIComponent(targetId)}`);
-        if (regRes.ok) {
-          const regData = await regRes.json();
-          if (regData.registration && isMounted) {
-            setRegistration(regData.registration);
-            if (typeof window !== 'undefined') {
-              sessionStorage.setItem('p2p_registration_id', regData.registration.id);
-              localStorage.setItem('p2p_last_registration_id', regData.registration.id);
-            }
-            if (regData.registration.paymentStatus === 'verified') {
-              router.push(`/success?registrationId=${regData.registration.id}`);
-              return;
+        if (targetId) {
+          const regRes = await fetch(`/api/registrations/${encodeURIComponent(targetId)}`);
+          if (regRes.ok) {
+            const regData = await regRes.json();
+            if (regData.registration && isMounted) {
+              setRegistration(regData.registration);
+              if (typeof window !== 'undefined') {
+                sessionStorage.setItem('p2p_registration_id', regData.registration.id);
+                localStorage.setItem('p2p_last_registration_id', regData.registration.id);
+              }
+              if (regData.registration.paymentStatus === 'verified') {
+                router.push(`/success?registrationId=${regData.registration.id}`);
+                return;
+              }
             }
           }
         } else if (typeof window !== 'undefined' && isMounted) {
@@ -369,6 +369,16 @@ function PaymentContent() {
     }
   };
 
+  useEffect(() => {
+    if (autoOpen && registration && registration.paymentStatus !== 'verified' && !isProcessing && !hasAutoOpened.current) {
+      hasAutoOpened.current = true;
+      const timer = setTimeout(() => {
+        handleRazorpayPayment();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [registration, autoOpen]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-transparent flex flex-col items-center justify-center p-6 text-slate-700">
@@ -433,71 +443,8 @@ function PaymentContent() {
               <span>Razorpay Key Authentication Required</span>
             </div>
             <p className="text-slate-700 leading-relaxed">
-              Razorpay returned <code className="px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 font-mono">HTTP 401 Authentication failed</code> for your Key ID.
-              This occurs when the API key has been regenerated or deactivated in the Razorpay Dashboard.
+              Razorpay returned an authentication error. Please verify that your Key ID and Key Secret are active in the Razorpay Dashboard.
             </p>
-            <div className="p-3 rounded-xl bg-white border border-amber-200 space-y-1 text-[11px] text-slate-700">
-              <p className="font-semibold text-slate-900">How to fix in 1 minute:</p>
-              <ol className="list-decimal list-inside space-y-1 text-slate-600">
-                <li>Log in to <a href="https://dashboard.razorpay.com" target="_blank" rel="noreferrer" className="text-purple-600 underline font-semibold">dashboard.razorpay.com</a></li>
-                <li>Switch toggle to <strong>Test Mode</strong></li>
-                <li>Go to <strong>Settings &gt; API Keys</strong> and click <strong>Regenerate Test Key</strong></li>
-                <li>Set the new Key ID and Secret in your environment or Vercel Settings</li>
-              </ol>
-            </div>
-            <div className="pt-1">
-              <button
-                type="button"
-                onClick={async () => {
-                  let activeReg = registration;
-                  if (!activeReg) return;
-                  setIsProcessing(true);
-                  setPaymentError(null);
-                  try {
-                    const mockOrderId = `order_test_${Date.now()}`;
-                    const mockPaymentId = `pay_test_${Date.now()}`;
-                    const mockSig = `test_sig_${mockOrderId}_${mockPaymentId}`;
-
-                    const verifyRes = await fetch('/api/verify-payment', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({
-                        registrationId: activeReg.id,
-                        order_id: mockOrderId,
-                        payment_id: mockPaymentId,
-                        signature: mockSig,
-                      }),
-                    });
-
-                    const verifyData = await verifyRes.json();
-                    if (verifyRes.ok && verifyData.success) {
-                      if (typeof window !== 'undefined') {
-                        const confirmed = {
-                          ...activeReg,
-                          paymentStatus: 'verified',
-                          status: 'confirmed',
-                          amountPaid: fee,
-                          paymentId: mockPaymentId,
-                        };
-                        localStorage.setItem('p2p_registration_cache', JSON.stringify(confirmed));
-                      }
-                      router.push(`/success?registrationId=${activeReg.id}`);
-                    } else {
-                      setPaymentError(verifyData.message || 'Simulation failed.');
-                      setIsProcessing(false);
-                    }
-                  } catch {
-                    setPaymentError('Network error during test payment simulation.');
-                    setIsProcessing(false);
-                  }
-                }}
-                disabled={isProcessing}
-                className="w-full py-2.5 px-4 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs active:scale-98"
-              >
-                {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 text-amber-200" />}
-                <span>Simulate Verified Payment (Test Ticket Unlock &amp; GSheet Sync)</span>
-              </button>
-            </div>
           </div>
         )}
 

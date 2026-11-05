@@ -122,11 +122,11 @@ export default function AboutSection() {
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 relative z-10">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
                   {/* Extracted Photo of Mr. Muhammed Shayiz K P on Studio Background */}
-                  <div className="w-32 h-32 sm:w-44 sm:h-44 rounded-2xl bg-slate-100 border-2 border-purple-200 overflow-hidden shrink-0 shadow-lg relative group">
+                  <div className="w-32 h-32 sm:w-44 sm:h-44 rounded-2xl bg-slate-100 border-2 border-sky-200 overflow-hidden shrink-0 shadow-lg relative group">
                     <img
                       src="/trainer-shayiz.jpg"
                       alt="Mr. Muhammed Shayiz K P - Resource Person"
-                      className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute bottom-0 inset-x-0 bg-slate-900/85 backdrop-blur-xs py-1 text-center text-[10px] font-mono text-white font-bold uppercase tracking-wider">
                       Resource Person

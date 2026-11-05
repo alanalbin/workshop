@@ -179,7 +179,7 @@ export default function RegisterPage() {
         }
       }
 
-      router.push(`/payment?registrationId=${data.registrationId}`);
+      router.push(`/payment?registrationId=${data.registrationId}&autoOpen=true`);
     } catch {
       setServerError('A network error occurred. Please try submitting again.');
       setIsSubmitting(false);

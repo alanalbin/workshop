@@ -15,11 +15,6 @@ export async function GET(
       registration = await DataStore.getRegistrationByEmail(cleanId);
     }
 
-    if (!registration && cleanId === 'latest') {
-      const all = await DataStore.listRegistrations();
-      registration = all.find((r) => r.paymentStatus !== 'verified') || all[0] || null;
-    }
-
     const emailQuery = req.nextUrl.searchParams.get('email');
     if (!registration && emailQuery) {
       registration = await DataStore.getRegistrationByEmail(emailQuery.trim());

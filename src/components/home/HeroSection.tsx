@@ -207,7 +207,7 @@ export default function HeroSection({ event }: HeroSectionProps) {
                   <img
                     src="/trainer-shayiz.jpg"
                     alt="Mr. Muhammed Shayiz K P"
-                    className="w-full h-full object-cover object-top"
+                    className="w-full h-full object-cover object-center"
                   />
                 </div>
                 <div className="min-w-0 flex-1">
