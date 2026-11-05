@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import confetti from 'canvas-confetti';
@@ -27,7 +27,7 @@ import {
 import { Registration, EventConfig } from '@/types';
 import { DEFAULT_EVENT_CONFIG } from '@/lib/config/event-defaults';
 
-export default function RegistrationSuccessPage() {
+function SuccessContent() {
   const searchParams = useSearchParams();
   const registrationId = searchParams.get('registrationId');
 
@@ -426,5 +426,19 @@ export default function RegistrationSuccessPage() {
 
       </div>
     </div>
+  );
+}
+
+export default function RegistrationSuccessPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#030206] flex items-center justify-center">
+          <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+      }
+    >
+      <SuccessContent />
+    </Suspense>
   );
 }
