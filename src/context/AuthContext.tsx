@@ -148,7 +148,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       let errorMessage = error.message || 'Failed to sign in with Google. Please check your connection.';
       if (error?.code === 'auth/unauthorized-domain') {
         const domain = typeof window !== 'undefined' ? window.location.hostname : 'your domain';
-        const activeProjectId = auth?.app?.options?.projectId || 'illuminate-kmct-117e5';
+        const activeProjectId = auth?.app?.options?.projectId || 'workshop-4892b';
         errorMessage = `Domain "${domain}" is not authorized in Firebase project "${activeProjectId}". Check that: 1) You are in Firebase project "${activeProjectId}", 2) "${domain}" is added without "https://" under Authentication > Settings > Authorized domains.`;
       }
       return {

@@ -3,12 +3,12 @@ import { getAuth, Auth } from 'firebase/auth';
 import { getFirestore, Firestore } from 'firebase/firestore';
 
 export const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'AIzaSyBvXgWojJ4_OhU43e-qjldh7VdBNyXfES4',
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || 'illuminate-kmct-117e5.firebaseapp.com',
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'illuminate-kmct-117e5',
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'illuminate-kmct-117e5.firebasestorage.app',
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '173463417315',
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '1:173463417315:web:b287428cc40aea765830d6',
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'AIzaSyB6GB5wpErKZpFk2f7ZUOfxS5fwzJI6GHU',
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || 'workshop-4892b.firebaseapp.com',
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'workshop-4892b',
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'workshop-4892b.firebasestorage.app',
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '304438348712',
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '1:304438348712:web:54f7c3ca912fff00fcab9d',
 };
 
 export const isFirebaseConfigured = (): boolean => {

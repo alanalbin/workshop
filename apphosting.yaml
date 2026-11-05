@@ -8,6 +8,6 @@ runConfig:
 
 env:
   - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
-    value: illuminate-kmct-117e5
+    value: workshop-4892b
   - variable: NODE_ENV
     value: production
