@@ -258,13 +258,6 @@ export default function HeroSection({ event }: HeroSectionProps) {
                     <span className="w-2.5 h-2.5 rounded-full bg-rose-500" />
                     <span>Registrations Closed</span>
                   </div>
-                  <Link
-                    href="/success"
-                    className="px-6 py-4 rounded-2xl bg-white/85 hover:bg-white text-sky-800 border border-slate-200 text-sm font-semibold transition-all active:scale-[0.98] flex items-center gap-2 shadow-xs"
-                  >
-                    <span>Lookup Your Pass</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
                 </div>
               ) : (
                 <Link

@@ -50,22 +50,11 @@ function SuccessContent() {
   const [rechecking, setRechecking] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Search input state
-  const [searchInput, setSearchInput] = useState('');
-  const [isSearching, setIsSearching] = useState(false);
-  const [searchError, setSearchError] = useState<string | null>(null);
-  const [showLookupBox, setShowLookupBox] = useState(false);
-
   const passRef = useRef<HTMLDivElement>(null);
 
-  const fetchCandidatePass = async (queryVal: string, isManualSearch = false) => {
-    if (isManualSearch) {
-      setIsSearching(true);
-      setSearchError(null);
-    } else {
-      setLoading(true);
-      setError(null);
-    }
+  const fetchCandidatePass = async (queryVal: string) => {
+    setLoading(true);
+    setError(null);
 
     try {
       const [regRes, eventRes] = await Promise.all([
@@ -106,12 +95,7 @@ function SuccessContent() {
       }
 
       if (!resolvedReg) {
-        const notFoundMsg = 'No registration or pass found matching that email or mobile number.';
-        if (isManualSearch) {
-          setSearchError(notFoundMsg);
-        } else {
-          setError(notFoundMsg);
-        }
+        setError('No registration or pass found matching that record.');
         return;
       }
 
@@ -121,7 +105,6 @@ function SuccessContent() {
       resolvedReg.amountPaid = !isNaN(parsed) && parsed >= 1000 ? Math.round(parsed / 100) : parsed || 100;
 
       setRegistration(resolvedReg);
-      setShowLookupBox(false);
 
       if (typeof window !== 'undefined') {
         sessionStorage.setItem('p2p_registration_id', resolvedReg.id);
@@ -132,14 +115,9 @@ function SuccessContent() {
       }
     } catch (err: any) {
       const errMsg = err?.message || 'Error connecting to server. Please try again.';
-      if (isManualSearch) {
-        setSearchError(errMsg);
-      } else {
-        setError(errMsg);
-      }
+      setError(errMsg);
     } finally {
       setLoading(false);
-      setIsSearching(false);
       setRechecking(false);
     }
   };
@@ -158,22 +136,16 @@ function SuccessContent() {
 
     if (initialTarget) {
       setTargetQuery(initialTarget);
-      fetchCandidatePass(initialTarget, false);
+      fetchCandidatePass(initialTarget);
     } else {
       setLoading(false);
     }
   }, [urlId]);
 
-  const handleManualSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!searchInput.trim()) return;
-    fetchCandidatePass(searchInput.trim(), true);
-  };
-
   const handleRecheckStatus = () => {
     if (!registration) return;
     setRechecking(true);
-    fetchCandidatePass(registration.id || registration.email, false);
+    fetchCandidatePass(registration.id || registration.email);
   };
 
   const handlePrint = () => {
@@ -191,85 +163,29 @@ function SuccessContent() {
     );
   }
 
-  // If no registration loaded or search error occurred, show the Pass Retrieval Portal
+  // If no registration loaded, show informational screen
   if (!registration) {
     return (
       <div className="min-h-screen bg-transparent py-28 relative">
         <div className="max-w-xl mx-auto px-6 relative z-10">
           <div className="bg-white rounded-3xl p-8 sm:p-10 border border-slate-200 shadow-2xl text-center">
-            <div className="w-14 h-14 rounded-2xl bg-sky-50 border border-sky-200 flex items-center justify-center mx-auto mb-5 text-sky-700 shadow-xs">
-              <Search className="w-7 h-7" />
+            <div className="w-14 h-14 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center mx-auto mb-5 text-amber-700 shadow-xs">
+              <AlertCircle className="w-7 h-7" />
             </div>
 
             <h2 className="text-2xl font-black text-slate-950 tracking-tight mb-2">
-              Retrieve Your Workshop Pass
+              No Pass Found
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 mb-6 leading-relaxed">
-              Already registered or completed payment? Enter your registered <strong>Email Address</strong> or <strong>WhatsApp Mobile Number</strong> below to access your official pass.
+              Workshop entry passes are issued directly to verified participants upon payment completion. Public pass lookup has been disabled.
             </p>
 
-            <form onSubmit={handleManualSearch} className="space-y-3.5 text-left mb-6">
-              <div>
-                <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                  Email Address or Mobile Number:
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. yourname@gmail.com or 9876543210"
-                    value={searchInput}
-                    onChange={(e) => setSearchInput(e.target.value)}
-                    className="w-full pl-4 pr-11 py-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-sm font-medium focus:bg-white focus:border-sky-600 focus:outline-none shadow-2xs"
-                  />
-                  <button
-                    type="submit"
-                    disabled={isSearching}
-                    className="absolute right-2 top-2 bottom-2 px-3.5 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs flex items-center justify-center transition-colors cursor-pointer disabled:opacity-50"
-                  >
-                    {isSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
-
-              {(searchError || error) && (
-                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span>{searchError || error}</span>
-                </div>
-              )}
-
-              <button
-                type="submit"
-                disabled={isSearching}
-                className="w-full py-3.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md shadow-sky-600/20 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-              >
-                {isSearching ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Searching Verified Passes...</span>
-                  </>
-                ) : (
-                  <>
-                    <Search className="w-4 h-4" />
-                    <span>Find &amp; View Pass</span>
-                  </>
-                )}
-              </button>
-            </form>
-
-            <div className="pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-center gap-3 text-xs">
-              <Link
-                href="/register"
-                className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 font-bold text-slate-800 transition-colors"
-              >
-                Register for Workshop
-              </Link>
+            <div className="pt-6 border-t border-slate-200 flex items-center justify-center">
               <Link
                 href="/"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 transition-colors"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md active:scale-95 cursor-pointer"
               >
-                <ArrowLeft className="w-3.5 h-3.5" />
+                <ArrowLeft className="w-4 h-4" />
                 <span>Return to Homepage</span>
               </Link>
             </div>
@@ -291,45 +207,6 @@ function SuccessContent() {
   return (
     <div className="min-h-screen bg-transparent py-28 relative">
       <div className="max-w-4xl mx-auto px-6 relative z-10">
-        {/* Toggle Lookup Drawer / Bar */}
-        {showLookupBox && (
-          <div className="mb-6 p-5 rounded-2xl bg-white border border-sky-300 shadow-xl print:hidden animate-in fade-in slide-in-from-top-4 duration-200">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-                <Search className="w-3.5 h-3.5 text-sky-600" />
-                <span>Lookup Another Workshop Pass</span>
-              </span>
-              <button
-                type="button"
-                onClick={() => setShowLookupBox(false)}
-                className="text-xs text-slate-500 hover:text-slate-800 font-semibold cursor-pointer"
-              >
-                Close
-              </button>
-            </div>
-            <form onSubmit={handleManualSearch} className="flex flex-col sm:flex-row gap-2">
-              <input
-                type="text"
-                placeholder="Enter Email Address or Mobile Number..."
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                className="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-xs focus:bg-white focus:border-sky-600 focus:outline-none"
-              />
-              <button
-                type="submit"
-                disabled={isSearching}
-                className="px-5 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer disabled:opacity-50 flex items-center justify-center gap-1.5"
-              >
-                {isSearching ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Search className="w-3.5 h-3.5" />}
-                <span>Search</span>
-              </button>
-            </form>
-            {searchError && (
-              <p className="text-[11px] text-rose-600 font-medium mt-2">{searchError}</p>
-            )}
-          </div>
-        )}
-
         {isPaid ? (
           <>
             {/* Professional Verified Header Banner */}
@@ -352,15 +229,6 @@ function SuccessContent() {
               </div>
 
               <div className="flex items-center gap-2 self-stretch sm:self-auto justify-end">
-                <button
-                  type="button"
-                  onClick={() => setShowLookupBox(!showLookupBox)}
-                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-semibold text-xs transition-all cursor-pointer shadow-2xs active:scale-95"
-                  title="Search another pass"
-                >
-                  <Search className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Find Other</span>
-                </button>
                 <button
                   type="button"
                   onClick={handlePrint}
@@ -537,15 +405,6 @@ function SuccessContent() {
               >
                 <Printer className="w-4 h-4" />
                 <span>Print / Save Pass PDF</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setShowLookupBox(true)}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-xs font-semibold text-slate-700 hover:text-slate-900 transition-all shadow-xs cursor-pointer active:scale-95"
-              >
-                <Search className="w-4 h-4 text-sky-600" />
-                <span>Lookup Another Pass</span>
               </button>
 
               <Link

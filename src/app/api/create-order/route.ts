@@ -18,6 +18,27 @@ export async function POST(req: NextRequest) {
     const body = await req.json().catch(() => ({}));
     let { amount, currency = 'INR', receipt, registrationId, registration, registrationData } = body;
 
+    // If amount is provided but invalid, reject immediately with 400
+    if (amount !== undefined && (typeof amount !== 'number' || isNaN(amount))) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Valid amount is required.',
+        },
+        { status: 400 }
+      );
+    }
+
+    if (amount !== undefined && amount < 100) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Minimum amount is 100 paise (₹1).',
+        },
+        { status: 400 }
+      );
+    }
+
     const [eventConfig, seatsInfo] = await Promise.all([
       DataStore.getEventConfig(),
       getLiveSeatsInfo().catch(() => null),
@@ -52,17 +73,6 @@ export async function POST(req: NextRequest) {
           console.warn('Could not persist registration in create-order:', err);
         }
       }
-    }
-
-    // If amount is provided but invalid, reject immediately with 400
-    if (amount !== undefined && (typeof amount !== 'number' || isNaN(amount))) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Invalid amount. Minimum amount is 100 paise (₹1.00).',
-        },
-        { status: 400 }
-      );
     }
 
     // If registrationId is provided but amount is omitted, resolve authoritative amount

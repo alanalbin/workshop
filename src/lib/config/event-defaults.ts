@@ -20,7 +20,7 @@ export const DEFAULT_EVENT_CONFIG: EventConfig = {
   venue: 'KMCT College of Engineering for Emerging Technologies and Management, Kasaragod, Kerala',
   roomNumber: 'College Seminar Hall',
   registrationClosingDate: '2026-11-11T09:00:00+05:30',
-  registrationsClosed: false,
+  registrationsClosed: true,
   eventCompleted: false,
 
   // Pricing & Capacities

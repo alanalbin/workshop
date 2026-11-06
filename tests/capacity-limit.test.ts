@@ -120,3 +120,4 @@ describe('70-Participant Capacity & Auto-Closure Enforcement', () => {
     expect(data.seats.remaining).toBe(0);
   });
 });
+

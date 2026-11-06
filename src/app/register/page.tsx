@@ -216,25 +216,6 @@ export default function RegisterPage() {
               <strong className="text-slate-900">Workshop on Problem Solving &amp; Ideation (From Problem to Possibility)</strong> at KMCT College.
             </p>
 
-            <div className="mt-8 p-4 rounded-2xl bg-slate-50 border border-slate-200 text-left">
-              <h3 className="text-xs uppercase font-mono tracking-wider text-purple-700 font-bold mb-1.5 flex items-center gap-2">
-                <Ticket className="w-4 h-4" />
-                <span>Already Registered &amp; Paid?</span>
-              </h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                If you have previously completed your registration and payment, your entry pass and seat reservation remain confirmed.
-              </p>
-              <div className="mt-3">
-                <Link
-                  href="/success"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 text-xs font-bold transition-all"
-                >
-                  <span>Access / Lookup Your Ticket Pass</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-            </div>
-
             <div className="mt-8 flex items-center justify-center">
               <Link
                 href="/"

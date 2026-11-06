@@ -40,12 +40,6 @@ function PaymentContent() {
   const [quickInstitution, setQuickInstitution] = useState('KMCT College of Engineering');
   const [quickCourse, setQuickCourse] = useState('Computer Science & Engineering');
 
-  // Lookup existing registration state
-  const [lookupQuery, setLookupQuery] = useState('');
-  const [isSearchingLookup, setIsSearchingLookup] = useState(false);
-  const [lookupError, setLookupError] = useState<string | null>(null);
-  const [showLookupBox, setShowLookupBox] = useState(false);
-
   // Payment processing state
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
@@ -157,41 +151,6 @@ function PaymentContent() {
       isMounted = false;
     };
   }, [registrationId, user, router]);
-
-  // Handle manual lookup of existing pass by Ticket ID or Email
-  const handleLookup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!lookupQuery.trim()) return;
-
-    setIsSearchingLookup(true);
-    setLookupError(null);
-
-    try {
-      const res = await fetch(`/api/registrations/${encodeURIComponent(lookupQuery.trim())}`);
-      const data = await res.json();
-
-      if (!res.ok || !data.registration) {
-        setLookupError('No pass found for that Ticket ID or Email. Please register below.');
-        setIsSearchingLookup(false);
-        return;
-      }
-
-      setRegistration(data.registration);
-      setShowLookupBox(false);
-      if (typeof window !== 'undefined') {
-        sessionStorage.setItem('p2p_registration_id', data.registration.id);
-        localStorage.setItem('p2p_last_registration_id', data.registration.id);
-      }
-
-      if (data.registration.paymentStatus === 'verified') {
-        router.push(`/success?registrationId=${data.registration.id}`);
-      }
-    } catch {
-      setLookupError('Network error while searching. Please try again.');
-    } finally {
-      setIsSearchingLookup(false);
-    }
-  };
 
   const fee = eventConfig?.registrationFee || 100;
   const feePaise = Math.round(fee * 100);
@@ -521,16 +480,10 @@ function PaymentContent() {
           <div className="mb-6 p-5 rounded-2xl bg-rose-50 border border-rose-300 text-rose-900 space-y-2 shadow-md">
             <div className="flex items-center gap-2 text-rose-800 font-bold text-sm">
               <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse" />
-              <span>Housefull • 70 Participants Limit Reached</span>
+              <span>Registrations Closed</span>
             </div>
             <p className="text-xs text-rose-700 leading-relaxed">
-              Registrations and payments for the <strong>Workshop on Problem Solving &amp; Ideation (From Problem to Possibility)</strong> are now officially closed. The maximum capacity of 70 participants has been reached.
-            </p>
-            <p className="text-xs text-slate-700">
-              Already paid via UPI or card?{' '}
-              <Link href="/success" className="font-bold underline text-rose-800">
-                Click here to find and download your workshop pass
-              </Link>.
+              Registrations and payments for the <strong>Workshop on Problem Solving &amp; Ideation (From Problem to Possibility)</strong> are now officially closed.
             </p>
           </div>
         )}
@@ -598,44 +551,7 @@ function PaymentContent() {
                   Provide your details to register and proceed to Razorpay payment.
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => setShowLookupBox(!showLookupBox)}
-                className="text-xs text-purple-700 hover:text-purple-900 font-semibold flex items-center gap-1.5 underline decoration-purple-300 cursor-pointer self-start sm:self-auto"
-              >
-                <Search className="w-3.5 h-3.5" />
-                <span>{showLookupBox ? 'Hide lookup' : 'Already registered? Search your pass'}</span>
-              </button>
             </div>
-
-            {/* Quick Lookup Bar */}
-            {showLookupBox && (
-              <form onSubmit={handleLookup} className="p-3.5 rounded-2xl bg-purple-50/60 border border-purple-200 space-y-2">
-                <span className="text-xs font-semibold text-slate-700 block">
-                  Search by Email, WhatsApp Number, or Ticket ID (P2P-KMCT-...):
-                </span>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    placeholder="e.g. your@email.com, 9876543210, or P2P-KMCT-..."
-                    value={lookupQuery}
-                    onChange={(e) => setLookupQuery(e.target.value)}
-                    className="flex-1 px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs font-mono focus:border-purple-600 focus:outline-none shadow-2xs"
-                  />
-                  <button
-                    type="submit"
-                    disabled={isSearchingLookup}
-                    className="px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50 shadow-xs"
-                  >
-                    {isSearchingLookup ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Search className="w-3.5 h-3.5" />}
-                    <span>Find Pass</span>
-                  </button>
-                </div>
-                {lookupError && (
-                  <p className="text-[11px] text-red-600 font-medium">{lookupError}</p>
-                )}
-              </form>
-            )}
 
             {/* Quick Participant Input Fields */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
@@ -756,25 +672,14 @@ function PaymentContent() {
 
           {/* Primary Action Button */}
           {isClosed && (!registration || registration.paymentStatus !== 'verified') ? (
-            <div className="space-y-3">
-              <button
-                type="button"
-                disabled
-                className="w-full py-4 px-6 rounded-2xl bg-slate-200 border border-slate-300 text-slate-500 font-black text-base uppercase tracking-wider cursor-not-allowed flex items-center justify-center gap-2.5 shadow-none"
-              >
-                <Lock className="w-4 h-4 text-slate-400" />
-                <span>Registrations Closed (70 / 70 Full)</span>
-              </button>
-              <div className="text-center">
-                <Link
-                  href="/success"
-                  className="inline-flex items-center gap-1.5 text-xs text-sky-700 hover:text-sky-900 font-bold underline decoration-sky-300"
-                >
-                  <Search className="w-3.5 h-3.5" />
-                  <span>Already paid? Click here to find and download your pass</span>
-                </Link>
-              </div>
-            </div>
+            <button
+              type="button"
+              disabled
+              className="w-full py-4 px-6 rounded-2xl bg-slate-200 border border-slate-300 text-slate-500 font-black text-base uppercase tracking-wider cursor-not-allowed flex items-center justify-center gap-2.5 shadow-none"
+            >
+              <Lock className="w-4 h-4 text-slate-400" />
+              <span>Registrations Closed</span>
+            </button>
           ) : (
             <button
               type="button"
@@ -806,16 +711,6 @@ function PaymentContent() {
             <span className="text-[11px] text-slate-500">
               Ticket pass is issued immediately upon payment completion
             </span>
-          </div>
-
-          <div className="pt-2 text-center">
-            <Link
-              href="/success"
-              className="inline-flex items-center gap-1.5 text-xs text-sky-700 hover:text-sky-900 font-semibold underline decoration-sky-300"
-            >
-              <Search className="w-3.5 h-3.5" />
-              <span>Already completed payment via UPI? Retrieve your Workshop Pass here</span>
-            </Link>
           </div>
 
         </div>
