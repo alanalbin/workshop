@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import crypto from 'crypto';
 import { DataStore } from '@/lib/storage/data-store';
-import { PaymentService } from '@/lib/payments/razorpay';
+import { PaymentService, getRazorpayKeySecret } from '@/lib/payments/razorpay';
 import { getLiveSeatsInfo } from '@/lib/seats/live-seats';
 
 describe('Strict Payment Gate & Pass Issuance Security Rules', () => {
@@ -65,8 +65,9 @@ describe('Strict Payment Gate & Pass Issuance Security Rules', () => {
 
     // 2. Accept authentic HMAC-SHA256 signature
     const mockPaymentId = `pay_test_${Date.now()}`;
+    const secret = getRazorpayKeySecret() || 'OJrmNNFNHfOjyccm7vD9VcUf';
     const validSignature = crypto
-      .createHmac('sha256', 'pX0vQg95UPAazHZjz49SRcaQ')
+      .createHmac('sha256', secret)
       .update(`${orderId}|${mockPaymentId}`)
       .digest('hex');
 

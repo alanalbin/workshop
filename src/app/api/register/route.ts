@@ -43,12 +43,7 @@ export async function POST(req: NextRequest) {
     // 3. Duplicate email check
     const existing = await DataStore.getRegistrationByEmail(email);
     if (existing) {
-      const isAuthenticPaid =
-        existing.paymentStatus === 'verified' &&
-        Boolean(existing.paymentId && existing.paymentId.startsWith('pay_') && existing.paymentId !== 'pay_TjQSIYw4J4tPTW') &&
-        Boolean(existing.registrationNumber && existing.registrationNumber.startsWith('P2P-KMCT-'));
-
-      if (isAuthenticPaid) {
+      if (existing.paymentStatus === 'verified') {
         return NextResponse.json(
           {
             success: false,

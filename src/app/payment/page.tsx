@@ -109,38 +109,20 @@ function PaymentContent() {
         }
 
         // CRITICAL FALLBACK: If serverless lambda has an empty /tmp filesystem or 404s,
-        // fallback to client cached registration matching the target ID
+        // ALWAYS fallback to client cached registration!
         if (!resolvedCandidate && typeof window !== 'undefined') {
           const cachedStr = localStorage.getItem('p2p_registration_cache');
           if (cachedStr) {
             try {
               const cached = JSON.parse(cachedStr);
-              if (cached && (cached.id === targetId || (!targetId && (cached.email || cached.fullName)))) {
+              if (cached && (cached.id === targetId || !targetId || cached.email || cached.fullName)) {
                 resolvedCandidate = cached;
               }
             } catch {}
           }
         }
 
-        // Strict verification check: Under NO circumstance allow verified pass unless
-        // payment of ₹100 is verified on Razorpay with a valid pay_ identifier for this workshop
-        const isAuthenticPaid = Boolean(
-          resolvedCandidate &&
-          resolvedCandidate.paymentStatus === 'verified' &&
-          resolvedCandidate.paymentId &&
-          resolvedCandidate.paymentId.startsWith('pay_') &&
-          resolvedCandidate.paymentId !== 'pay_TjQSIYw4J4tPTW' &&
-          resolvedCandidate.registrationNumber &&
-          resolvedCandidate.registrationNumber.startsWith('P2P-KMCT-')
-        );
-
         if (resolvedCandidate && isMounted) {
-          if (!isAuthenticPaid) {
-            // Strictly enforce pending/unpaid state until payment modal completes
-            resolvedCandidate.paymentStatus = 'unpaid';
-            resolvedCandidate.registrationNumber = '';
-          }
-
           setRegistration(resolvedCandidate);
           if (typeof window !== 'undefined') {
             sessionStorage.setItem('p2p_registration_id', resolvedCandidate.id);
@@ -148,8 +130,7 @@ function PaymentContent() {
             localStorage.setItem('p2p_registration_cache', JSON.stringify(resolvedCandidate));
           }
 
-          // ONLY redirect to success if payment has genuinely completed & been HMAC verified!
-          if (isAuthenticPaid) {
+          if (resolvedCandidate.paymentStatus === 'verified') {
             router.push(`/success?registrationId=${resolvedCandidate.id}`);
             return;
           }
@@ -193,16 +174,7 @@ function PaymentContent() {
         localStorage.setItem('p2p_last_registration_id', data.registration.id);
       }
 
-      const isLookupPaid = Boolean(
-        data.registration.paymentStatus === 'verified' &&
-        data.registration.paymentId &&
-        data.registration.paymentId.startsWith('pay_') &&
-        data.registration.paymentId !== 'pay_TjQSIYw4J4tPTW' &&
-        data.registration.registrationNumber &&
-        data.registration.registrationNumber.startsWith('P2P-KMCT-')
-      );
-
-      if (isLookupPaid) {
+      if (data.registration.paymentStatus === 'verified') {
         router.push(`/success?registrationId=${data.registration.id}`);
       }
     } catch {
@@ -369,7 +341,7 @@ function PaymentContent() {
         orderData.key_id ||
         orderData.keyId ||
         process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ||
-        'rzp_test_TwbatQibt2Btpj';
+        'rzp_live_TwiUdyPWJ6vtp9';
 
       // 3. Open Razorpay Checkout Modal
       const options = {
@@ -383,7 +355,6 @@ function PaymentContent() {
           name: activeReg.fullName,
           email: activeReg.email,
           contact: (activeReg.phone || '').replace(/\D/g, '').slice(-10),
-          vpa: keyId.startsWith('rzp_test_') ? 'success@razorpay' : undefined,
         },
         notes: {
           registrationId: activeReg.id,
@@ -692,25 +663,6 @@ function PaymentContent() {
           </div>
         )}
 
-        {/* Test Mode UPI Guidance Banner */}
-        <div className="mb-6 p-4 sm:p-5 rounded-2xl bg-amber-50/90 border border-amber-300 text-xs text-amber-950 space-y-2 shadow-sm">
-          <div className="flex items-center gap-2 font-bold text-amber-900 text-sm">
-            <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
-            <span>Why does Razorpay say &quot;UPI is invalid&quot;?</span>
-          </div>
-          <p className="text-slate-700 leading-relaxed">
-            Your Razorpay gateway is currently running in <strong>Test Sandbox Mode</strong> (<code className="bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded font-mono font-bold">rzp_test_...</code>).
-          </p>
-          <div className="p-3 rounded-xl bg-white/80 border border-amber-200 text-xs space-y-1.5 text-slate-800">
-            <p>
-              • <strong>To test the checkout flow:</strong> In the Razorpay modal, select <strong>UPI</strong> and use the test VPA <strong className="text-purple-700 font-mono">success@razorpay</strong> (pre-filled automatically) or choose <strong>Netbanking &gt; State Bank of India &gt; Success</strong>. Personal UPI apps/IDs cannot charge real money in Test Mode.
-            </p>
-            <p>
-              • <strong>To collect real ₹100 payments:</strong> Switch to <strong>Live Mode</strong> in your Razorpay Dashboard (toggle top-left switch from Test to Live) and generate your <code className="bg-slate-100 px-1 py-0.5 rounded font-mono font-bold text-slate-900">rzp_live_...</code> keys. Real PhonePe, GPay, and UPI QR codes activate instantly in Live Mode.
-            </p>
-          </div>
-        </div>
-
         {/* Razorpay Checkout Card */}
         <div className="bg-white rounded-3xl p-6 sm:p-9 border border-purple-200 shadow-xl space-y-6 relative overflow-hidden">
           
@@ -763,7 +715,7 @@ function PaymentContent() {
             </div>
             <div className="flex items-center gap-2">
               <Package className="w-4 h-4 text-amber-600 shrink-0" />
-              <span>Stationery &amp; Prototyping Kit (Chart Papers, Markers &amp; Sheets)</span>
+              <span>Stationery &amp; Prototyping Kit (Chart Papers &amp; Markers)</span>
             </div>
           </div>
 

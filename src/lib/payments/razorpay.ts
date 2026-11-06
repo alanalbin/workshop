@@ -5,6 +5,8 @@ import { EmailService } from '@/lib/email/sender';
 import { syncCandidateToGoogleSheet } from '@/lib/sheets/google-sheets';
 import { Registration } from '@/types';
 
+const DEFAULT_LIVE_KEY_ID = 'rzp_live_TwiUdyPWJ6vtp9';
+const DEFAULT_LIVE_KEY_SECRET = 'OJrmNNFNHfOjyccm7vD9VcUf';
 const DEFAULT_TEST_KEY_ID = 'rzp_test_TwbatQibt2Btpj';
 const DEFAULT_TEST_KEY_SECRET = 'pX0vQg95UPAazHZjz49SRcaQ';
 
@@ -13,7 +15,7 @@ export const getRazorpayKeyId = (): string => {
     process.env.RAZORPAY_KEY_ID ||
     process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
   if (!envKey || envKey.includes('placeholder') || envKey.trim() === '') {
-    return DEFAULT_TEST_KEY_ID;
+    return DEFAULT_LIVE_KEY_ID;
   }
   return envKey.trim().replace(/^["']|["']$/g, '');
 };
@@ -21,7 +23,7 @@ export const getRazorpayKeyId = (): string => {
 export const getRazorpayKeySecret = (): string => {
   const envSecret = process.env.RAZORPAY_KEY_SECRET;
   if (!envSecret || envSecret.includes('placeholder') || envSecret.trim() === '') {
-    return DEFAULT_TEST_KEY_SECRET;
+    return DEFAULT_LIVE_KEY_SECRET;
   }
   return envSecret.trim().replace(/^["']|["']$/g, '');
 };
@@ -216,7 +218,7 @@ export const PaymentService = {
     }
 
     const secretsToTry = Array.from(
-      new Set([getRazorpayKeySecret(), DEFAULT_TEST_KEY_SECRET].filter(Boolean))
+      new Set([getRazorpayKeySecret(), DEFAULT_LIVE_KEY_SECRET, DEFAULT_TEST_KEY_SECRET].filter(Boolean))
     );
 
     for (const secret of secretsToTry) {

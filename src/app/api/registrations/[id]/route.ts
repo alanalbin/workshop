@@ -34,17 +34,12 @@ export async function GET(
     }
 
     // Pass and Ticket ID are strictly locked until payment is verified
-    const isPaid =
-      registration.paymentStatus === 'verified' &&
-      Boolean(registration.paymentId && registration.paymentId.startsWith('pay_') && registration.paymentId !== 'pay_TjQSIYw4J4tPTW') &&
-      Boolean(registration.registrationNumber && registration.registrationNumber.startsWith('P2P-KMCT-'));
-
+    const isPaid = registration.paymentStatus === 'verified';
     const safeRegistration: typeof registration = isPaid
       ? registration
       : {
           ...registration,
           registrationNumber: '', // Only issued after verified payment
-          paymentStatus: 'unpaid',
         };
 
     return NextResponse.json({

@@ -32,8 +32,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Direct HMAC-SHA256 algorithm verification using PaymentService
-    const isValid = PaymentService.verifySignature(orderId, paymentId, signature);
+    // Direct HMAC-SHA256 algorithm verification
+    const expectedSignature = crypto
+      .createHmac('sha256', keySecret)
+      .update(`${orderId}|${paymentId}`)
+      .digest('hex');
+
+    const expectedBuf = Buffer.from(expectedSignature, 'utf-8');
+    const signatureBuf = Buffer.from(String(signature), 'utf-8');
+
+    const isValid =
+      expectedBuf.length === signatureBuf.length &&
+      crypto.timingSafeEqual(expectedBuf, signatureBuf);
 
     if (!isValid) {
       return NextResponse.json(
