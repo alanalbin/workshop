@@ -50,7 +50,7 @@ export default function BenefitsSection({ benefits }: BenefitsSectionProps) {
     {
       id: 'outcome-6',
       title: 'Official IIC Certificate & Refreshments',
-      description: 'Activity-endorsed certificate of participation issued under IIC Quarter 1, plus morning tea and hot canteen samosas included in the ₹100 pass.',
+      description: 'Activity-endorsed certificate of participation issued under IIC Quarter 1 Activities framework included in the ₹100 pass.',
       icon: Award,
       highlight: 'Credentials & Takeaways',
     },

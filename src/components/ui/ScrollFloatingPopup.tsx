@@ -113,7 +113,7 @@ export default function ScrollFloatingPopup({ fee = 100, registrationsClosed }: 
                     </span>
                   </h4>
                   <p className="text-xs text-slate-600 mt-0.5 line-clamp-1">
-                    11th Nov • Offline Workshop • Materials &amp; Samosa/Tea Included
+                    11th Nov • Offline Workshop • Materials &amp; Certificate Included
                   </p>
                 </div>
               </div>

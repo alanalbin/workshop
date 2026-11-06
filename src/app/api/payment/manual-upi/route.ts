@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
 
       const newReg: Registration = {
         id: cleanId,
-        registrationNumber: regNumber,
+        registrationNumber: '',
         fullName: candidateName,
         email: candidateEmail,
         normalizedEmail: candidateEmail.toLowerCase(),
@@ -79,12 +79,12 @@ export async function POST(req: NextRequest) {
         eventId: 'problem-to-possibility-kmct-2026',
         currency: 'INR',
         amountPaise: amountPaise || 10000,
-        status: 'confirmed',
-        paymentStatus: 'verified',
+        status: 'pending',
+        paymentStatus: 'manual_review',
         paymentMethod: 'manual_upi',
         amountPaid: 100,
         manualUtr: utrNumber,
-        adminNotes: `UPI Payment confirmed. UTR: ${utrNumber}${
+        adminNotes: `UPI Payment pending review. UTR: ${utrNumber}${
           payerUpiId ? ` | Payer UPI: ${payerUpiId}` : ''
         }`,
         createdAt: new Date().toISOString(),
@@ -102,25 +102,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (registration.paymentStatus === 'verified' && registration.manualUtr && registration.manualUtr !== utrNumber) {
-      // Update with new UTR reference
-      await DataStore.updateRegistration(registration.id, {
-        manualUtr: utrNumber,
-        adminNotes: `UPI Payment updated. UTR: ${utrNumber}${
-          payerUpiId ? ` | Payer UPI: ${payerUpiId}` : ''
-        }`,
-      });
-    }
-
-    // Update registration to verified state upon UPI submission
+    // Update registration to manual_review state upon UPI submission (Pass only issued after verification)
     const eventConfig = await DataStore.getEventConfig();
     const feeInRupees = eventConfig.registrationFee || 100;
     const updated = await DataStore.updateRegistration(registration.id, {
-      paymentStatus: 'verified',
+      paymentStatus: 'manual_review',
+      status: 'pending',
       paymentMethod: 'manual_upi',
       amountPaid: feeInRupees,
       manualUtr: utrNumber,
-      adminNotes: `UPI Payment confirmed. UTR: ${utrNumber}${
+      adminNotes: `UPI Payment submitted for review. UTR: ${utrNumber}${
         payerUpiId ? ` | Payer UPI: ${payerUpiId}` : ''
       }`,
     });
@@ -129,24 +120,17 @@ export async function POST(req: NextRequest) {
     await DataStore.recordAuditLog(
       'public-user',
       registration.email,
-      'UPI_PAYMENT_VERIFIED',
+      'UPI_PAYMENT_SUBMITTED_FOR_REVIEW',
       'payment',
       registration.id,
       { utrNumber, payerUpiId, amountINR: feeInRupees }
     );
 
-    // Sync verified candidate to Google Sheet in background
-    if (updated) {
-      syncCandidateToGoogleSheet(updated).catch((err) =>
-        console.warn('Google Sheet sync error on UPI payment:', err)
-      );
-    }
-
     return NextResponse.json({
       success: true,
-      message: 'Your UPI transaction has been verified! Redirecting to your official pass...',
+      message: 'Your UPI transaction reference has been submitted for verification. Your pass will be unlocked upon payment confirmation.',
       registrationId: updated?.id || registration.id,
-      ticketId: updated?.registrationNumber || registration.registrationNumber,
+      ticketId: '',
       registration: updated || registration,
     });
   } catch (error: any) {

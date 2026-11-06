@@ -101,11 +101,11 @@ export const DEFAULT_EVENT_CONFIG: EventConfig = {
     },
     {
       id: 'refreshments',
-      title: 'Refreshments & Canteen Snacks Included',
-      description: 'Refreshments including morning tea and fresh hot canteen samosas provided during scheduled workshop breaks.',
+      title: 'Workshop Stationery & Prototyping Kits',
+      description: 'Hands-on kit including chart papers, markers, sketching stationery, and ideation worksheets provided for all team activities.',
       verified: true,
       condition: 'Included in the ₹100 registration pass for all 70 participants.',
-      iconName: 'Trophy',
+      iconName: 'Package',
     },
   ],
 
@@ -157,7 +157,7 @@ export const DEFAULT_EVENT_CONFIG: EventConfig = {
       id: 'faq-7',
       question: 'What does the registration fee cover?',
       answer:
-        'The ₹100 pass covers complete access to the 6.5-hour workshop, chart papers, markers, stationery, worksheets, mentor guidance, refreshments (morning tea & canteen samosas), and an official IIC participation certificate.',
+        'The ₹100 pass covers complete access to the 6.5-hour workshop, chart papers, markers, stationery, worksheets, mentor guidance, and an official IIC participation certificate.',
       category: 'payment',
     },
   ],

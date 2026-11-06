@@ -109,20 +109,38 @@ function PaymentContent() {
         }
 
         // CRITICAL FALLBACK: If serverless lambda has an empty /tmp filesystem or 404s,
-        // ALWAYS fallback to client cached registration!
+        // fallback to client cached registration matching the target ID
         if (!resolvedCandidate && typeof window !== 'undefined') {
           const cachedStr = localStorage.getItem('p2p_registration_cache');
           if (cachedStr) {
             try {
               const cached = JSON.parse(cachedStr);
-              if (cached && (cached.id === targetId || !targetId || cached.email || cached.fullName)) {
+              if (cached && (cached.id === targetId || (!targetId && (cached.email || cached.fullName)))) {
                 resolvedCandidate = cached;
               }
             } catch {}
           }
         }
 
+        // Strict verification check: Under NO circumstance allow verified pass unless
+        // payment of ₹100 is verified on Razorpay with a valid pay_ identifier for this workshop
+        const isAuthenticPaid = Boolean(
+          resolvedCandidate &&
+          resolvedCandidate.paymentStatus === 'verified' &&
+          resolvedCandidate.paymentId &&
+          resolvedCandidate.paymentId.startsWith('pay_') &&
+          resolvedCandidate.paymentId !== 'pay_TjQSIYw4J4tPTW' &&
+          resolvedCandidate.registrationNumber &&
+          resolvedCandidate.registrationNumber.startsWith('P2P-KMCT-')
+        );
+
         if (resolvedCandidate && isMounted) {
+          if (!isAuthenticPaid) {
+            // Strictly enforce pending/unpaid state until payment modal completes
+            resolvedCandidate.paymentStatus = 'unpaid';
+            resolvedCandidate.registrationNumber = '';
+          }
+
           setRegistration(resolvedCandidate);
           if (typeof window !== 'undefined') {
             sessionStorage.setItem('p2p_registration_id', resolvedCandidate.id);
@@ -130,7 +148,8 @@ function PaymentContent() {
             localStorage.setItem('p2p_registration_cache', JSON.stringify(resolvedCandidate));
           }
 
-          if (resolvedCandidate.paymentStatus === 'verified') {
+          // ONLY redirect to success if payment has genuinely completed & been HMAC verified!
+          if (isAuthenticPaid) {
             router.push(`/success?registrationId=${resolvedCandidate.id}`);
             return;
           }
@@ -174,7 +193,16 @@ function PaymentContent() {
         localStorage.setItem('p2p_last_registration_id', data.registration.id);
       }
 
-      if (data.registration.paymentStatus === 'verified') {
+      const isLookupPaid = Boolean(
+        data.registration.paymentStatus === 'verified' &&
+        data.registration.paymentId &&
+        data.registration.paymentId.startsWith('pay_') &&
+        data.registration.paymentId !== 'pay_TjQSIYw4J4tPTW' &&
+        data.registration.registrationNumber &&
+        data.registration.registrationNumber.startsWith('P2P-KMCT-')
+      );
+
+      if (isLookupPaid) {
         router.push(`/success?registrationId=${data.registration.id}`);
       }
     } catch {
@@ -715,7 +743,7 @@ function PaymentContent() {
             </div>
             <div className="flex items-center gap-2">
               <Package className="w-4 h-4 text-amber-600 shrink-0" />
-              <span>Stationery Kit &amp; Canteen Refreshments (Samosa &amp; Tea)</span>
+              <span>Stationery &amp; Prototyping Kit (Chart Papers, Markers &amp; Sheets)</span>
             </div>
           </div>
 

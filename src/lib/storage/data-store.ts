@@ -51,27 +51,29 @@ function readLocalDb(): LocalDatabase {
     console.warn('Error reading primary db file:', err);
   }
 
-  // Cross-check secondary location if primary is missing or empty
-  try {
-    if (fs.existsSync(SECONDARY_DB_FILE)) {
-      const altContent = fs.readFileSync(SECONDARY_DB_FILE, 'utf-8');
-      const altParsed = JSON.parse(altContent) as LocalDatabase;
-      if (altParsed && Array.isArray(altParsed.registrations) && altParsed.registrations.length > 0) {
-        if (!parsedFromDisk) {
-          parsedFromDisk = altParsed;
-        } else {
-          const existingIds = new Set(parsedFromDisk.registrations.map((r) => r.id));
-          for (const reg of altParsed.registrations) {
-            if (!existingIds.has(reg.id)) {
-              parsedFromDisk.registrations.push(reg);
-              existingIds.add(reg.id);
+  // Cross-check secondary location only in serverless environment if primary is missing or empty
+  if (isCloudServerless) {
+    try {
+      if (fs.existsSync(SECONDARY_DB_FILE)) {
+        const altContent = fs.readFileSync(SECONDARY_DB_FILE, 'utf-8');
+        const altParsed = JSON.parse(altContent) as LocalDatabase;
+        if (altParsed && Array.isArray(altParsed.registrations) && altParsed.registrations.length > 0) {
+          if (!parsedFromDisk) {
+            parsedFromDisk = altParsed;
+          } else {
+            const existingIds = new Set(parsedFromDisk.registrations.map((r) => r.id));
+            for (const reg of altParsed.registrations) {
+              if (!existingIds.has(reg.id)) {
+                parsedFromDisk.registrations.push(reg);
+                existingIds.add(reg.id);
+              }
             }
           }
         }
       }
+    } catch {
+      // Secondary fallback ignored
     }
-  } catch {
-    // Secondary fallback ignored
   }
 
   if (parsedFromDisk) {
@@ -110,6 +112,25 @@ function writeLocalDb(db: LocalDatabase): void {
   } catch {
     // Secondary mirror ignored in restricted environments
   }
+}
+
+function sanitizeRegistration(reg: Registration | null): Registration | null {
+  if (!reg) return null;
+  // A registration is strictly verified ONLY if it has an authentic Razorpay paymentId
+  // (starting with pay_) for this workshop, and is not the legacy payment pay_TjQSIYw4J4tPTW
+  const isActuallyVerified =
+    reg.paymentStatus === 'verified' &&
+    Boolean(reg.paymentId && reg.paymentId.startsWith('pay_') && reg.paymentId !== 'pay_TjQSIYw4J4tPTW');
+
+  if (!isActuallyVerified && reg.paymentStatus === 'verified') {
+    return {
+      ...reg,
+      paymentStatus: 'unpaid',
+      registrationNumber: '',
+      status: 'pending',
+    };
+  }
+  return reg;
 }
 
 // Data Store Repository
@@ -240,17 +261,17 @@ export const DataStore = {
         if (adminDb) {
           const doc = await adminDb.collection('registrations').doc(cleanId).get();
           if (doc.exists) {
-            return doc.data() as Registration;
+            return sanitizeRegistration(doc.data() as Registration);
           }
           // Query by ticket registrationNumber if valid ticket prefix
-          if (cleanId.startsWith('ILM-')) {
+          if (cleanId.startsWith('ILM-') || cleanId.startsWith('P2P-')) {
             const numSnap = await adminDb
               .collection('registrations')
               .where('registrationNumber', '==', cleanId)
               .limit(1)
               .get();
             if (!numSnap.empty) {
-              return numSnap.docs[0].data() as Registration;
+              return sanitizeRegistration(numSnap.docs[0].data() as Registration);
             }
           }
           // Query by normalized email
@@ -260,7 +281,7 @@ export const DataStore = {
             .limit(1)
             .get();
           if (!emailSnap.empty) {
-            return emailSnap.docs[0].data() as Registration;
+            return sanitizeRegistration(emailSnap.docs[0].data() as Registration);
           }
         }
       } catch (e) {
@@ -270,7 +291,7 @@ export const DataStore = {
 
     const local = readLocalDb();
     const cleanLower = cleanId.toLowerCase();
-    return (
+    const rawMatch =
       local.registrations.find(
         (r) =>
           (r.id === cleanId ||
@@ -278,8 +299,9 @@ export const DataStore = {
             r.email?.toLowerCase() === cleanLower ||
             r.phone === cleanId) &&
           (r.eventId === DEFAULT_EVENT_CONFIG.id || !r.eventId)
-      ) || null
-    );
+      ) || null;
+
+    return sanitizeRegistration(rawMatch);
   },
 
   async getRegistrationByEmail(email: string): Promise<Registration | null> {
@@ -296,7 +318,7 @@ export const DataStore = {
             .limit(1)
             .get();
           if (!snapshot.empty) {
-            return snapshot.docs[0].data() as Registration;
+            return sanitizeRegistration(snapshot.docs[0].data() as Registration);
           }
         }
       } catch (e) {
@@ -304,13 +326,14 @@ export const DataStore = {
       }
     }
     const local = readLocalDb();
-    return (
+    const rawMatch =
       local.registrations.find(
         (r) =>
           (r.normalizedEmail === normalized || r.email.toLowerCase() === normalized) &&
           (r.eventId === DEFAULT_EVENT_CONFIG.id || !r.eventId)
-      ) || null
-    );
+      ) || null;
+
+    return sanitizeRegistration(rawMatch);
   },
 
   async updateRegistration(id: string, updates: Partial<Registration>): Promise<Registration | null> {

@@ -39,6 +39,9 @@ export async function POST(req: NextRequest) {
           await DataStore.saveRegistrationDirect({
             ...candidateRecord,
             id: candidateRecord.id || registrationId || `reg_${Date.now()}`,
+            paymentStatus: 'unpaid',
+            registrationNumber: '',
+            status: 'pending',
           });
         } catch (err) {
           console.warn('Could not persist registration in create-order:', err);

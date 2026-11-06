@@ -75,7 +75,7 @@ export const EmailService = {
         <ul style="color: #cbd5e1; line-height: 1.7; padding-left: 20px;">
           <li>Report to the College Seminar Hall before 09:30 AM for multidisciplinary team formation.</li>
           <li>Receive your chart paper, sketch pens, and empathy/problem-framing worksheets.</li>
-          <li>Enjoy morning tea &amp; canteen samosa refreshments during scheduled breaks.</li>
+          <li>Collaborate in hands-on team brainstorming and prototype building.</li>
           <li>Present your team pitch and receive your official <strong>IIC Activity Certificate</strong>.</li>
         </ul>
 

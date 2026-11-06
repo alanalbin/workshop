@@ -39,7 +39,7 @@ export default function TermsPage() {
             <section className="space-y-2">
               <h2 className="text-base font-bold text-slate-900">2. Certificates and Materials</h2>
               <p>
-                Participation certificates are issued under the <strong>Institution’s Innovation Council (IIC) Quarter 1 Activities</strong> framework to students who attend the workshop and complete team activities. Workshop materials (chart papers, markers, pencils, and empathy worksheets) and refreshments (morning tea &amp; canteen samosas) will be distributed at the Seminar Hall reception desk.
+                Participation certificates are issued under the <strong>Institution’s Innovation Council (IIC) Quarter 1 Activities</strong> framework to students who attend the workshop and complete team activities. Workshop materials (chart papers, markers, pencils, and empathy worksheets) will be distributed at the Seminar Hall reception desk.
               </p>
             </section>
 

@@ -74,9 +74,18 @@ function SuccessContent() {
 
         if (!resolvedReg) throw new Error('Registration could not be found.');
 
-        // ENFORCEMENT: First payment, then only the passes!
+        // STRICT ENFORCEMENT: First payment, then only the passes!
         // Unpaid or pending registrations cannot access passes and are sent to payment
-        if (resolvedReg.paymentStatus !== 'verified') {
+        const isAuthenticPaid = Boolean(
+          resolvedReg.paymentStatus === 'verified' &&
+          resolvedReg.paymentId &&
+          resolvedReg.paymentId.startsWith('pay_') &&
+          resolvedReg.paymentId !== 'pay_TjQSIYw4J4tPTW' &&
+          resolvedReg.registrationNumber &&
+          resolvedReg.registrationNumber.startsWith('P2P-KMCT-')
+        );
+
+        if (!isAuthenticPaid) {
           router.replace(`/payment?registrationId=${encodeURIComponent(resolvedReg.id)}&autoOpen=true`);
           return;
         }
@@ -154,7 +163,10 @@ function SuccessContent() {
   const numAmount = typeof rawAmount === 'number' ? rawAmount : parseFloat(String(rawAmount).replace(/[^0-9.]/g, ''));
   const displayAmount = !isNaN(numAmount) && numAmount >= 1000 ? Math.round(numAmount / 100) : numAmount || 100;
 
-  const isPaid = registration.paymentStatus === 'verified';
+  const isPaid =
+    registration.paymentStatus === 'verified' &&
+    Boolean(registration.paymentId && registration.paymentId.startsWith('pay_') && registration.paymentId !== 'pay_TjQSIYw4J4tPTW') &&
+    Boolean(registration.registrationNumber && registration.registrationNumber.startsWith('P2P-KMCT-'));
   const ticketNumber = registration.registrationNumber || (isPaid ? 'P2P-KMCT-VERIFIED' : 'PENDING PAYMENT');
 
   return (

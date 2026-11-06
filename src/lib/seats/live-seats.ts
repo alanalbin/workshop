@@ -120,6 +120,15 @@ async function fetchSheetCandidates(): Promise<SheetCandidate[]> {
       }
 
       if (regNum || (email && email.includes('@'))) {
+        const rawAmt = cols[amountCol] || '';
+        const numAmt = Number(rawAmt.replace(/[^0-9.]/g, '')) || 100;
+        const utrVal = cols[utrCol] || '';
+
+        // Exclude legacy ₹699 payment or invalid amounts from other workshops
+        if (utrVal === 'pay_TjQSIYw4J4tPTW' || rawAmt.includes('699') || numAmt === 699) {
+          continue;
+        }
+
         rows.push({
           timestamp: cols[0] || '',
           registrationNumber: regNum || `P2P-KMCT-SHEET-${i}`,
@@ -131,8 +140,8 @@ async function fetchSheetCandidates(): Promise<SheetCandidate[]> {
           yearOfStudy: cols[yearCol] || '1st Year',
           paymentStatus: cols[statusCol] || 'CONFIRMED / PAID',
           paymentMethod: cols[methodCol] || 'razorpay',
-          utr: cols[utrCol] || '',
-          amountINR: Number(cols[amountCol]) || 100,
+          utr: utrVal,
+          amountINR: numAmt,
         });
       }
     }
@@ -146,6 +155,9 @@ async function fetchSheetCandidates(): Promise<SheetCandidate[]> {
 /**
  * Fetches captured live payments directly from Razorpay
  */
+/**
+ * Fetches captured live payments directly from Razorpay strictly for this workshop
+ */
 async function fetchRazorpayCaptured(): Promise<any[]> {
   if (!isRazorpayConfigured()) return [];
   try {
@@ -155,7 +167,14 @@ async function fetchRazorpayCaptured(): Promise<any[]> {
     });
     const payments = await client.payments.all({ count: 100 });
     return (payments?.items || []).filter(
-      (p: any) => p.status === 'captured' && p.amount >= 10000
+      (p: any) =>
+        p.status === 'captured' &&
+        p.amount === 10000 && // STRICTLY ₹100 for this workshop!
+        p.id !== 'pay_TjQSIYw4J4tPTW' && // Exclude legacy ₹699 payment from another event
+        (p.notes?.workshop === 'From Problem to Possibility' ||
+          p.notes?.eventId === 'problem-to-possibility-kmct-2026' ||
+          p.description?.includes('Problem to Possibility') ||
+          p.notes?.registrationId?.startsWith('reg_'))
     );
   } catch (err) {
     console.warn('[LiveSeats] Razorpay live payments query warning:', err);
@@ -163,15 +182,19 @@ async function fetchRazorpayCaptured(): Promise<any[]> {
   }
 }
 
-function isTestRecord(email?: string, fullName?: string): boolean {
+function isTestRecord(email?: string, fullName?: string, paymentId?: string, amount?: number): boolean {
   const em = (email || '').toLowerCase().trim();
   const fn = (fullName || '').toLowerCase().trim();
+  const pid = (paymentId || '').trim();
+  if (pid === 'pay_TjQSIYw4J4tPTW') return true;
+  if (amount !== undefined && amount !== 100 && amount !== 10000) return true;
   return (
     em.includes('test_') ||
     em.includes('example.com') ||
     em.includes('qrtest_') ||
     em.includes('_test@') ||
     em.includes('restored_') ||
+    em.includes('phantom_') ||
     fn.includes('test') ||
     fn.includes('restored') ||
     fn === 'test participant'
@@ -194,152 +217,26 @@ function formatCandidateTicketId(regId?: string, paymentId?: string): string {
 }
 
 /**
- * Reconciles live confirmed payments into DataStore so local and serverless databases
- * stay synchronized with real participants.
+ * Reconciles live confirmed payments for seat counting metrics ONLY.
+ * NEVER mutates DataStore or Google Sheet during read queries!
  */
 async function reconcileWithDataStore(capturedPayments: any[], sheetRows: SheetCandidate[]): Promise<Set<string>> {
-  const sheetMap = new Map<string, SheetCandidate>();
-  for (const s of sheetRows) {
-    if (s.email) sheetMap.set(s.email.toLowerCase().trim(), s);
-  }
-
   const confirmedEmails = new Set<string>();
 
   // 1. Gather confirmed from Razorpay
   for (const p of capturedPayments) {
     const email = (p.notes?.email || p.email || '').toLowerCase().trim();
     const name = p.notes?.fullName || p.notes?.name || '';
-    if (email && !isTestRecord(email, name)) {
+    if (email && !isTestRecord(email, name, p.id, p.amount)) {
       confirmedEmails.add(email);
     }
   }
 
   // 2. Gather confirmed from Google Sheet
   for (const s of sheetRows) {
-    if (s.email && !isTestRecord(s.email, s.fullName)) {
+    if (s.email && !isTestRecord(s.email, s.fullName, s.utr, s.amountINR)) {
       confirmedEmails.add(s.email.toLowerCase().trim());
     }
-  }
-
-  // 3. Sync missing candidates into DataStore
-  try {
-    const existingList = await DataStore.listRegistrations();
-    const existingEmails = new Set(existingList.map((r) => r.email.toLowerCase().trim()));
-
-    // Sync Razorpay payments
-    for (const p of capturedPayments) {
-      const email = (p.notes?.email || p.email || '').toLowerCase().trim();
-      const name = p.notes?.fullName || p.notes?.name || '';
-      if (!email || isTestRecord(email, name)) continue;
-
-      const sheet = sheetMap.get(email);
-      const regNumber = sheet?.registrationNumber || formatCandidateTicketId(p.notes?.registrationId, p.id);
-      const fullName = sheet?.fullName || p.notes?.fullName || p.notes?.name || email.split('@')[0];
-      const phone = sheet?.phone || p.notes?.phone || p.contact?.replace(/^\+91/, '') || '';
-      const institution = sheet?.institution || p.notes?.institution || 'KMCT College of Engineering for Emerging Technologies and Management, Kasaragod';
-      const course = sheet?.course || p.notes?.course || 'Engineering';
-      const yearOfStudy = sheet?.yearOfStudy || p.notes?.yearOfStudy || '1st Year';
-      const amountINR = (p.amount || 10000) / 100;
-
-      const reg: Registration = {
-        id: p.notes?.registrationId || `reg_${p.created_at * 1000}_${p.id.slice(-6)}`,
-        registrationNumber: regNumber,
-        fullName,
-        email,
-        normalizedEmail: email,
-        phone,
-        institution,
-        course,
-        yearOfStudy,
-        eventId: 'problem-to-possibility-kmct-2026',
-        paymentMethod: 'razorpay',
-        amountPaid: amountINR,
-        amountPaise: p.amount || 10000,
-        currency: 'INR',
-        orderId: p.order_id || '',
-        paymentId: p.id,
-        status: 'confirmed',
-        paymentStatus: 'verified',
-        createdAt: new Date(p.created_at * 1000).toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-
-      if (!existingEmails.has(email)) {
-        await DataStore.saveRegistrationDirect(reg);
-        existingEmails.add(email);
-      }
-
-      // CRITICAL: Automatically sync missing confirmed candidate to Google Sheet if not in sheet yet!
-      if (!sheetMap.has(email)) {
-        console.info(`[LiveSeats] Auto-syncing confirmed paid candidate ${email} (${p.id}) to Google Sheet...`);
-        try {
-          const syncRes = await syncCandidateToGoogleSheet(reg, {
-            registrationId: reg.id,
-            provider: 'razorpay',
-            providerOrderId: p.order_id || '',
-            providerPaymentId: p.id,
-            amountPaise: p.amount || 10000,
-            currency: 'INR',
-            status: 'captured',
-            verifiedAt: new Date(p.created_at * 1000).toISOString(),
-          });
-          if (syncRes.success) {
-            sheetMap.set(email, {
-              timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
-              registrationNumber: regNumber,
-              fullName,
-              email,
-              phone,
-              institution,
-              course,
-              yearOfStudy,
-              paymentStatus: 'CONFIRMED / PAID',
-              paymentMethod: 'razorpay',
-              utr: p.id,
-              amountINR,
-            });
-          }
-        } catch (syncErr: any) {
-          console.warn(`[LiveSeats] Auto-sync to Google Sheet failed for ${email}:`, syncErr?.message || syncErr);
-        }
-      }
-    }
-
-    // Sync Google Sheet candidates
-    for (const s of sheetRows) {
-      const email = (s.email || '').toLowerCase().trim();
-      if (!email || isTestRecord(email, s.fullName)) continue;
-
-      if (!existingEmails.has(email)) {
-        const reg: Registration = {
-          id: `reg_sheet_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
-          registrationNumber: s.registrationNumber,
-          fullName: s.fullName,
-          email,
-          normalizedEmail: email,
-          phone: s.phone,
-          institution: s.institution || 'KMCT College of Engineering for Emerging Technologies and Management, Kasaragod',
-          course: s.course || 'Engineering',
-          yearOfStudy: s.yearOfStudy || '1st Year',
-          eventId: 'problem-to-possibility-kmct-2026',
-          paymentMethod: s.paymentMethod?.toLowerCase().includes('upi') ? 'manual_upi' : 'razorpay',
-          amountPaid: s.amountINR || 100,
-          amountPaise: (s.amountINR || 100) * 100,
-          currency: 'INR',
-          orderId: '',
-          paymentId: s.utr || '',
-          status: 'confirmed',
-          paymentStatus: 'verified',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-
-        await DataStore.saveRegistrationDirect(reg);
-        existingEmails.add(email);
-      }
-    }
-  } catch (err) {
-    console.warn('[LiveSeats] Reconciliation warning:', err);
   }
 
   return confirmedEmails;

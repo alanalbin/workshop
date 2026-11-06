@@ -108,6 +108,13 @@ export default function RegisterPage() {
     setServerError(null);
     setExistingVerifiedId(null);
 
+    // Clear stale cached registration state on every submission attempt
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('p2p_registration_id');
+      localStorage.removeItem('p2p_last_registration_id');
+      localStorage.removeItem('p2p_registration_cache');
+    }
+
     // Basic frontend checks before sending
     const validationErrors: Record<string, string> = {};
     if (!formData.fullName.trim() || formData.fullName.trim().length < 2) {
@@ -580,7 +587,7 @@ export default function RegisterPage() {
 
               <div className="flex items-start gap-3 text-xs text-slate-600">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span>Refreshments: Morning tea and fresh hot canteen samosas</span>
+                <span>Official IIC Activity Participation Certificate endorsed by KMCT</span>
               </div>
             </div>
 
