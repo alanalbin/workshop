@@ -115,3 +115,4 @@ generate().catch(err => {
   console.error('Icon generation failed:', err);
   process.exit(1);
 });
+

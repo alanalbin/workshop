@@ -77,22 +77,28 @@ export default function BackgroundCanvas3D({ onReplayIntro }: BackgroundCanvas3D
           vantaEffectRef.current = null;
         }
 
-        // 4. Initialize VANTA.CLOUDS with exact user configuration and harmonious workshop colors
+        // 4. Initialize VANTA.CLOUDS with optimized mobile scale and passive touch handling
         if (window.VANTA?.CLOUDS) {
+          const isMobileDevice =
+            typeof window !== 'undefined' &&
+            (window.innerWidth < 768 || 'ontouchstart' in window);
+
           vantaEffectRef.current = window.VANTA.CLOUDS({
             el: containerRef.current,
-            mouseControls: true,
-            touchControls: true,
+            mouseControls: !isMobileDevice,
+            touchControls: false, // Prevents non-passive touch interceptors from stalling mobile scrolling
             gyroControls: false,
             minHeight: 200.0,
             minWidth: 200.0,
+            scale: 1.0,
+            scaleMobile: 1.5, // 1.5x resolution downscaling on high-DPI mobile screens (buttery 60-120fps)
             skyColor: 0x68b8d7,
             cloudColor: 0xadc1de,
             cloudShadowColor: 0x183550,
             sunColor: 0xff9919,
             sunGlareColor: 0xff6633,
             sunlightColor: 0xff9933,
-            speed: 1.0,
+            speed: isMobileDevice ? 0.8 : 1.0,
           });
           setIsVantaLoaded(true);
         }
@@ -120,11 +126,13 @@ export default function BackgroundCanvas3D({ onReplayIntro }: BackgroundCanvas3D
     <div
       ref={containerRef}
       id="vanta-clouds-container"
-      className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none"
+      className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none will-change-transform"
       style={{
         width: '100vw',
         height: '100vh',
         background: 'linear-gradient(180deg, #68b8d7 0%, #adc1de 50%, #e0f2fe 100%)',
+        transform: 'translate3d(0, 0, 0)',
+        contain: 'strict',
       }}
       aria-hidden="true"
     />

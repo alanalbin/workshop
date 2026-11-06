@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ArrowUpRight, LogIn, LogOut } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
@@ -154,9 +155,17 @@ export default function Navbar() {
 
       </div>
 
-      {/* Mobile Menu Drawer */}
-      {mobileMenuOpen && (
-        <div className="md:hidden bg-white/95 backdrop-blur-2xl border-b border-slate-200 px-6 py-6 space-y-4 shadow-xl">
+      {/* Mobile Menu Drawer with Smooth Spring Animation */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            key="mobile-nav-drawer"
+            initial={{ opacity: 0, height: 0, y: -6 }}
+            animate={{ opacity: 1, height: 'auto', y: 0 }}
+            exit={{ opacity: 0, height: 0, y: -6 }}
+            transition={{ type: 'spring', stiffness: 350, damping: 28 }}
+            className="md:hidden bg-white/95 backdrop-blur-2xl border-b border-slate-200 px-6 py-6 space-y-4 shadow-xl overflow-hidden will-change-transform"
+          >
           {/* User Sign In / Profile status on mobile */}
           {user ? (
             <div className="p-3 rounded-xl bg-purple-50 border border-purple-200 flex items-center justify-between">
@@ -267,8 +276,9 @@ export default function Navbar() {
               </Link>
             )}
           </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

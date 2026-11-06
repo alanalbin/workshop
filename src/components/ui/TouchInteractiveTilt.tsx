@@ -84,22 +84,24 @@ export default function TouchInteractiveTilt({
       ref={cardRef}
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
-      className={`relative transition-transform duration-200 ease-out will-change-transform ${className}`}
+      className={`relative transition-transform duration-200 ease-out ${isHovered && !isTouchDevice ? 'will-change-transform' : ''} ${className}`}
       style={{
-        transform: isTouchDevice ? 'none' : transform,
+        transform: isTouchDevice ? undefined : transform,
         transformStyle: isTouchDevice ? 'flat' : 'preserve-3d',
       }}
     >
       {children}
 
-      {/* Dynamic Specular Glare Layer */}
-      <div
-        className="pointer-events-none absolute inset-0 rounded-3xl transition-opacity duration-300 overflow-hidden"
-        style={{
-          opacity: isHovered ? glarePosition.opacity : 0,
-          background: `radial-gradient(circle 240px at ${glarePosition.x}% ${glarePosition.y}%, rgba(255, 255, 255, 0.35), transparent 70%)`,
-        }}
-      />
+      {/* Dynamic Specular Glare Layer (desktop only) */}
+      {!isTouchDevice && (
+        <div
+          className="pointer-events-none absolute inset-0 rounded-3xl transition-opacity duration-300 overflow-hidden"
+          style={{
+            opacity: isHovered ? glarePosition.opacity : 0,
+            background: `radial-gradient(circle 240px at ${glarePosition.x}% ${glarePosition.y}%, rgba(255, 255, 255, 0.35), transparent 70%)`,
+          }}
+        />
+      )}
     </div>
   );
 }

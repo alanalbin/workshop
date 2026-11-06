@@ -26,17 +26,19 @@ export default function ScrollFloatingPopup({ fee = 100, registrationsClosed }: 
       setIsDismissed(true);
     }
 
+    let ticking = false;
     const handleScroll = () => {
-      // Show when scrolled down past 320px, hide near the very bottom footer or top hero
-      const scrollY = window.scrollY;
-      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const isPastHero = scrollY > 320;
-      const isNearFooter = scrollY > totalHeight - 200;
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+          const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+          const isPastHero = scrollY > 320;
+          const isNearFooter = scrollY > totalHeight - 200;
 
-      if (isPastHero && !isNearFooter && !isDismissed) {
-        setIsVisible(true);
-      } else {
-        setIsVisible(false);
+          setIsVisible(isPastHero && !isNearFooter && !isDismissed);
+          ticking = false;
+        });
+        ticking = true;
       }
     };
 
@@ -70,7 +72,8 @@ export default function ScrollFloatingPopup({ fee = 100, registrationsClosed }: 
             damping: 24,
             mass: 0.8,
           }}
-          className="fixed bottom-5 right-4 sm:right-6 z-50 max-w-[calc(100vw-2rem)] sm:max-w-md pointer-events-auto"
+          className="fixed bottom-5 right-4 sm:right-6 z-50 max-w-[calc(100vw-2rem)] sm:max-w-md pointer-events-auto will-change-transform"
+          style={{ transform: 'translate3d(0, 0, 0)' }}
         >
           <div className="relative group">
             {/* Ambient Subtle Glow */}
