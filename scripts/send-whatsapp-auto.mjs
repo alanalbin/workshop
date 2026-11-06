@@ -82,6 +82,7 @@ function saveStatus(status) {
 }
 
 async function main() {
+  const keepAlive = setInterval(() => {}, 15000);
   const args = process.argv.slice(2);
   let trialPhone = '';
   let sendAll = args.includes('--send-all');
@@ -320,7 +321,13 @@ async function main() {
 
     await new Promise(r => setTimeout(r, 3000));
     await client.destroy();
+    clearInterval(keepAlive);
     process.exit(0);
+  });
+
+  client.on('disconnected', (reason) => {
+    console.log('⚠️ WhatsApp Web disconnected:', reason);
+    clearInterval(keepAlive);
   });
 
   console.log('Initializing browser and connecting to WhatsApp Web...');
