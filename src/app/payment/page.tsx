@@ -30,6 +30,7 @@ function PaymentContent() {
 
   const [registration, setRegistration] = useState<Registration | null>(null);
   const [eventConfig, setEventConfig] = useState<EventConfig | null>(null);
+  const [isClosed, setIsClosed] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // Quick Registration State (used when entering /payment directly without registering first)
@@ -71,7 +72,15 @@ function PaymentContent() {
         const eventRes = await fetch('/api/event');
         if (eventRes.ok) {
           const eventData = await eventRes.json();
-          if (isMounted) setEventConfig(eventData.event);
+          if (isMounted) {
+            setEventConfig(eventData.event);
+            const closed =
+              Boolean(eventData.event?.registrationsClosed) ||
+              Boolean(eventData.seats && (eventData.seats.paid >= 70 || eventData.seats.remaining <= 0 || eventData.seats.isSoldOut)) ||
+              Boolean(eventData.event?.registrationClosingDate &&
+                new Date(eventData.event.registrationClosingDate).getTime() <= Date.now());
+            setIsClosed(closed);
+          }
         }
 
         // 1. Determine candidate identifier from URL, Storage, or Auth
@@ -191,6 +200,13 @@ function PaymentContent() {
   const handleRazorpayPayment = async () => {
     setPaymentError(null);
     setIsAuthError(false);
+
+    if (isClosed && (!registration || registration.paymentStatus !== 'verified')) {
+      setPaymentError('Registrations and payments are now closed as all 70 seats have been filled.');
+      setIsProcessing(false);
+      return;
+    }
+
     setIsProcessing(true);
 
     try {
@@ -435,14 +451,14 @@ function PaymentContent() {
   };
 
   useEffect(() => {
-    if (autoOpen && registration && registration.paymentStatus !== 'verified' && !isProcessing && !hasAutoOpened.current) {
+    if (autoOpen && !isClosed && registration && registration.paymentStatus !== 'verified' && !isProcessing && !hasAutoOpened.current) {
       hasAutoOpened.current = true;
       const timer = setTimeout(() => {
         handleRazorpayPayment();
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, [registration, autoOpen]);
+  }, [registration, autoOpen, isClosed]);
 
   if (loading) {
     return (
@@ -499,6 +515,25 @@ function PaymentContent() {
             Securely pay ₹{fee} with Razorpay to activate your confirmed registration pass and official IIC activity certificate.
           </p>
         </div>
+
+        {/* Closed / Capacity Limit Alert */}
+        {isClosed && (!registration || registration.paymentStatus !== 'verified') && (
+          <div className="mb-6 p-5 rounded-2xl bg-rose-50 border border-rose-300 text-rose-900 space-y-2 shadow-md">
+            <div className="flex items-center gap-2 text-rose-800 font-bold text-sm">
+              <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse" />
+              <span>Housefull • 70 Participants Limit Reached</span>
+            </div>
+            <p className="text-xs text-rose-700 leading-relaxed">
+              Registrations and payments for the <strong>Workshop on Problem Solving &amp; Ideation (From Problem to Possibility)</strong> are now officially closed. The maximum capacity of 70 participants has been reached.
+            </p>
+            <p className="text-xs text-slate-700">
+              Already paid via UPI or card?{' '}
+              <Link href="/success" className="font-bold underline text-rose-800">
+                Click here to find and download your workshop pass
+              </Link>.
+            </p>
+          </div>
+        )}
 
         {/* Razorpay Authentication Error Card */}
         {isAuthError && (
@@ -720,25 +755,47 @@ function PaymentContent() {
           </div>
 
           {/* Primary Action Button */}
-          <button
-            type="button"
-            onClick={handleRazorpayPayment}
-            disabled={isProcessing}
-            className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-sky-600 via-indigo-600 to-amber-500 hover:opacity-95 text-white font-black text-base uppercase tracking-wider shadow-lg shadow-sky-600/25 transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2.5 group hover:scale-[1.01] active:scale-[0.99]"
-          >
-            {isProcessing ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                <span>Opening Razorpay Checkout...</span>
-              </>
-            ) : (
-              <>
-                <Lock className="w-4 h-4" />
-                <span>Pay ₹{fee} with Razorpay</span>
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-              </>
-            )}
-          </button>
+          {isClosed && (!registration || registration.paymentStatus !== 'verified') ? (
+            <div className="space-y-3">
+              <button
+                type="button"
+                disabled
+                className="w-full py-4 px-6 rounded-2xl bg-slate-200 border border-slate-300 text-slate-500 font-black text-base uppercase tracking-wider cursor-not-allowed flex items-center justify-center gap-2.5 shadow-none"
+              >
+                <Lock className="w-4 h-4 text-slate-400" />
+                <span>Registrations Closed (70 / 70 Full)</span>
+              </button>
+              <div className="text-center">
+                <Link
+                  href="/success"
+                  className="inline-flex items-center gap-1.5 text-xs text-sky-700 hover:text-sky-900 font-bold underline decoration-sky-300"
+                >
+                  <Search className="w-3.5 h-3.5" />
+                  <span>Already paid? Click here to find and download your pass</span>
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={handleRazorpayPayment}
+              disabled={isProcessing}
+              className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-sky-600 via-indigo-600 to-amber-500 hover:opacity-95 text-white font-black text-base uppercase tracking-wider shadow-lg shadow-sky-600/25 transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2.5 group hover:scale-[1.01] active:scale-[0.99]"
+            >
+              {isProcessing ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>Opening Razorpay Checkout...</span>
+                </>
+              ) : (
+                <>
+                  <Lock className="w-4 h-4" />
+                  <span>Pay ₹{fee} with Razorpay</span>
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                </>
+              )}
+            </button>
+          )}
 
           {/* Trust Guarantees */}
           <div className="pt-2 border-t border-slate-200 flex flex-wrap items-center justify-between text-xs text-slate-500 gap-3">

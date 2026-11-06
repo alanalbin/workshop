@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PaymentService, getRazorpayKeyId, getRazorpayKeySecret } from '@/lib/payments/razorpay';
 import { DataStore } from '@/lib/storage/data-store';
+import { getLiveSeatsInfo } from '@/lib/seats/live-seats';
 
 export async function POST(req: NextRequest) {
   try {
@@ -17,16 +18,23 @@ export async function POST(req: NextRequest) {
     const body = await req.json().catch(() => ({}));
     let { amount, currency = 'INR', receipt, registrationId, registration, registrationData } = body;
 
-    const eventConfig = await DataStore.getEventConfig();
+    const [eventConfig, seatsInfo] = await Promise.all([
+      DataStore.getEventConfig(),
+      getLiveSeatsInfo().catch(() => null),
+    ]);
+
+    const isCapacityReached = Boolean(seatsInfo && (seatsInfo.paid >= 70 || seatsInfo.remaining <= 0));
     const isClosed =
+      isCapacityReached ||
       eventConfig.registrationsClosed ||
       (eventConfig.registrationClosingDate && new Date(eventConfig.registrationClosingDate).getTime() <= Date.now());
 
-    if (isClosed && !registrationId) {
+    if (isClosed) {
       return NextResponse.json(
         {
           success: false,
-          message: 'Registrations are now closed for the workshop.',
+          registrationsClosed: true,
+          message: 'Registrations and payments are now closed as all 70 seats have been filled.',
         },
         { status: 403 }
       );

@@ -9,6 +9,8 @@ export interface LiveSeatsInfo {
   paid: number;
   remaining: number;
   percentFilled: number;
+  isSoldOut: boolean;
+  registrationsClosed: boolean;
   timestamp: number;
 }
 
@@ -196,12 +198,14 @@ export function isTestRecord(email?: string, fullName?: string, paymentId?: stri
   }
   if (amount !== undefined && amount !== 100 && amount !== 10000) return true;
   return (
-    em.includes('test_') ||
+    em.includes('test') ||
     em.includes('example.com') ||
     em.includes('qrtest_') ||
     em.includes('_test@') ||
     em.includes('restored_') ||
     em.includes('phantom_') ||
+    em.includes('pay_candidate_') ||
+    em.includes('paid_') ||
     fn.includes('test') ||
     fn.includes('restored') ||
     fn === 'test participant'
@@ -260,7 +264,7 @@ export async function getLiveSeatsInfo(): Promise<LiveSeatsInfo> {
 
   try {
     const config = await DataStore.getEventConfig();
-    const totalSeats = config.capacity || config.minimumTarget || 70;
+    const totalSeats = 70; // Capacity strictly capped at 70 participants
 
     // Fetch authoritative live sources in parallel
     const [rzpPayments, sheetCandidates] = await Promise.all([
@@ -279,16 +283,20 @@ export async function getLiveSeatsInfo(): Promise<LiveSeatsInfo> {
       }
     }
 
-    // Ground truth: deduplicated unique confirmed emails across all sources (minimum 6 known verified)
+    // Ground truth: deduplicated unique confirmed emails across all sources
     const paid = Math.max(6, liveConfirmedEmails.size);
     const remaining = Math.max(0, totalSeats - paid);
     const percentFilled = Math.min(100, Math.round((paid / totalSeats) * 100));
+    const isSoldOut = paid >= totalSeats;
+    const registrationsClosed = Boolean(config.registrationsClosed) || isSoldOut;
 
     const result: LiveSeatsInfo = {
       total: totalSeats,
       paid,
       remaining,
       percentFilled,
+      isSoldOut,
+      registrationsClosed,
       timestamp: now,
     };
 
@@ -303,6 +311,8 @@ export async function getLiveSeatsInfo(): Promise<LiveSeatsInfo> {
       paid: 6,
       remaining: 64,
       percentFilled: 9,
+      isSoldOut: false,
+      registrationsClosed: false,
       timestamp: now,
     };
   }

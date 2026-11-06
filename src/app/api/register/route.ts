@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { registrationFormSchema } from '@/lib/validation/registration';
 import { DataStore } from '@/lib/storage/data-store';
 import { EmailService } from '@/lib/email/sender';
+import { getLiveSeatsInfo } from '@/lib/seats/live-seats';
 
 export async function POST(req: NextRequest) {
   try {
@@ -22,22 +23,30 @@ export async function POST(req: NextRequest) {
 
     const { fullName, email, phone, institution, course, yearOfStudy } = validationResult.data;
 
-    // 2. Fetch current event config
-    const eventConfig = await DataStore.getEventConfig();
+    // 2. Fetch current event config and live seats
+    const [eventConfig, seatsInfo] = await Promise.all([
+      DataStore.getEventConfig(),
+      getLiveSeatsInfo().catch(() => null),
+    ]);
 
-    // Check if capacity is reached (if capacity limit is explicitly set)
-    if (eventConfig.capacity) {
-      const allRegistrations = await DataStore.listRegistrations();
-      const confirmedCount = allRegistrations.filter((r) => r.paymentStatus === 'verified').length;
-      if (confirmedCount >= eventConfig.capacity) {
-        return NextResponse.json(
-          {
-            success: false,
-            message: 'Registrations are currently closed as maximum capacity has been reached.',
-          },
-          { status: 403 }
-        );
-      }
+    // Check if capacity of 70 participants is reached
+    const isCapacityReached = Boolean(seatsInfo && (seatsInfo.paid >= 70 || seatsInfo.remaining <= 0));
+
+    // Check if registrations are officially closed
+    const isClosed =
+      isCapacityReached ||
+      eventConfig.registrationsClosed ||
+      (eventConfig.registrationClosingDate && new Date(eventConfig.registrationClosingDate).getTime() <= Date.now());
+
+    if (isClosed) {
+      return NextResponse.json(
+        {
+          success: false,
+          registrationsClosed: true,
+          message: 'Registrations are now closed as maximum capacity of 70 participants has been reached.',
+        },
+        { status: 403 }
+      );
     }
 
     // 3. Duplicate email check
@@ -56,22 +65,6 @@ export async function POST(req: NextRequest) {
           { status: 409 }
         );
       }
-    }
-
-    // Check if registrations are officially closed
-    const isClosed =
-      eventConfig.registrationsClosed ||
-      (eventConfig.registrationClosingDate && new Date(eventConfig.registrationClosingDate).getTime() <= Date.now());
-
-    if (isClosed) {
-      return NextResponse.json(
-        {
-          success: false,
-          registrationsClosed: true,
-          message: 'Registrations are now officially closed. Maximum capacity has been reached.',
-        },
-        { status: 403 }
-      );
     }
 
     if (existing) {

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { manualUpiSubmissionSchema } from '@/lib/validation/registration';
 import { DataStore } from '@/lib/storage/data-store';
 import { syncCandidateToGoogleSheet } from '@/lib/sheets/google-sheets';
+import { getLiveSeatsInfo } from '@/lib/seats/live-seats';
 import { Registration } from '@/types';
 
 export async function POST(req: NextRequest) {
@@ -44,6 +45,27 @@ export async function POST(req: NextRequest) {
     if (!registration && phone) {
       const all = await DataStore.listRegistrations();
       registration = all.find((r) => r.phone === phone) || null;
+    }
+
+    const [eventConfig, seatsInfo] = await Promise.all([
+      DataStore.getEventConfig(),
+      getLiveSeatsInfo().catch(() => null),
+    ]);
+    const isCapacityReached = Boolean(seatsInfo && (seatsInfo.paid >= 70 || seatsInfo.remaining <= 0));
+    const isClosed =
+      isCapacityReached ||
+      eventConfig.registrationsClosed ||
+      (eventConfig.registrationClosingDate && new Date(eventConfig.registrationClosingDate).getTime() <= Date.now());
+
+    if (isClosed && (!registration || registration.paymentStatus !== 'verified')) {
+      return NextResponse.json(
+        {
+          success: false,
+          registrationsClosed: true,
+          message: 'Registrations and payments are now closed as all 70 seats have been filled.',
+        },
+        { status: 403 }
+      );
     }
 
     // SELF-HEALING FALLBACK: If registration was in another serverless lambda / cache,
@@ -113,7 +135,6 @@ export async function POST(req: NextRequest) {
     }
 
     // Update registration to verified state upon UPI submission
-    const eventConfig = await DataStore.getEventConfig();
     const feeInRupees = eventConfig.registrationFee || 100;
     const updated = await DataStore.updateRegistration(registration.id, {
       paymentStatus: 'verified',

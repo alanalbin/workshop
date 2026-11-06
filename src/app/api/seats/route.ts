@@ -7,13 +7,16 @@ export const revalidate = 0;
 export async function GET() {
   try {
     const seats = await getLiveSeatsInfo();
+    const isClosed = seats.paid >= 70 || seats.remaining <= 0 || Boolean(seats.registrationsClosed);
     return NextResponse.json(
       {
         success: true,
-        total: seats.total,
+        total: 70,
         paid: seats.paid,
-        remaining: seats.remaining,
-        percentFilled: seats.percentFilled,
+        remaining: Math.max(0, 70 - seats.paid),
+        percentFilled: Math.min(100, Math.round((seats.paid / 70) * 100)),
+        isSoldOut: isClosed,
+        registrationsClosed: isClosed,
         timestamp: seats.timestamp,
       },
       {
@@ -32,6 +35,8 @@ export async function GET() {
         paid: 6,
         remaining: 64,
         percentFilled: 9,
+        isSoldOut: false,
+        registrationsClosed: false,
         timestamp: Date.now(),
       },
       {

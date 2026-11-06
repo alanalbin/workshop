@@ -13,15 +13,30 @@ export async function GET() {
       getLiveSeatsInfo(),
     ]);
 
+    const isClosed =
+      Boolean(event.registrationsClosed) ||
+      seats.paid >= 70 ||
+      seats.remaining <= 0 ||
+      Boolean(event.registrationClosingDate && new Date(event.registrationClosingDate).getTime() <= Date.now());
+
+    const augmentedEvent = {
+      ...event,
+      capacity: 70,
+      minimumTarget: 70,
+      registrationsClosed: isClosed,
+    };
+
     return NextResponse.json(
       {
         success: true,
-        event,
+        event: augmentedEvent,
         seats: {
-          total: seats.total,
+          total: 70,
           paid: seats.paid,
-          remaining: seats.remaining,
-          percentFilled: seats.percentFilled,
+          remaining: Math.max(0, 70 - seats.paid),
+          percentFilled: Math.min(100, Math.round((seats.paid / 70) * 100)),
+          isSoldOut: isClosed,
+          registrationsClosed: isClosed,
         },
         timestamp: seats.timestamp,
       },

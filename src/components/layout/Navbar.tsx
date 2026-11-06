@@ -20,7 +20,8 @@ export default function Navbar() {
           if (data?.event) {
             const closed =
               Boolean(data.event.registrationsClosed) ||
-              (Boolean(data.event.registrationClosingDate) &&
+              Boolean(data.seats && (data.seats.paid >= 70 || data.seats.remaining <= 0 || data.seats.isSoldOut)) ||
+              Boolean(data.event.registrationClosingDate &&
                 new Date(data.event.registrationClosingDate).getTime() <= Date.now());
             setRegistrationsClosed(closed);
           }

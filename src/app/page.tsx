@@ -1,6 +1,7 @@
 import React from 'react';
 import { DataStore } from '@/lib/storage/data-store';
 import { DEFAULT_EVENT_CONFIG } from '@/lib/config/event-defaults';
+import { getLiveSeatsInfo } from '@/lib/seats/live-seats';
 import HeroSection from '@/components/home/HeroSection';
 import HomeExperienceManager from '@/components/home/HomeExperienceManager';
 import PartnersShowcase from '@/components/home/PartnersShowcase';
@@ -19,7 +20,21 @@ export default async function HomePage() {
   let event = DEFAULT_EVENT_CONFIG;
 
   try {
-    event = await DataStore.getEventConfig();
+    const [cfg, seats] = await Promise.all([
+      DataStore.getEventConfig(),
+      getLiveSeatsInfo().catch(() => null),
+    ]);
+    const isClosed =
+      Boolean(cfg.registrationsClosed) ||
+      Boolean(seats && (seats.paid >= 70 || seats.remaining <= 0)) ||
+      Boolean(cfg.registrationClosingDate && new Date(cfg.registrationClosingDate).getTime() <= Date.now());
+
+    event = {
+      ...cfg,
+      capacity: 70,
+      minimumTarget: 70,
+      registrationsClosed: isClosed,
+    };
   } catch (err) {
     console.warn('Failed to load event config, falling back to defaults:', err);
   }

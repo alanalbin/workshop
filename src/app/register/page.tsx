@@ -49,7 +49,8 @@ export default function RegisterPage() {
           if (data?.event) {
             const closed =
               Boolean(data.event.registrationsClosed) ||
-              (Boolean(data.event.registrationClosingDate) &&
+              Boolean(data.seats && (data.seats.paid >= 70 || data.seats.remaining <= 0)) ||
+              Boolean(data.event.registrationClosingDate &&
                 new Date(data.event.registrationClosingDate).getTime() <= Date.now());
             setIsClosed(closed);
           }
@@ -199,7 +200,7 @@ export default function RegisterPage() {
           <div className="bg-white rounded-3xl p-8 sm:p-10 border border-slate-200 shadow-xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold uppercase tracking-wider mb-6">
               <span className="w-2 h-2 rounded-full bg-rose-500" />
-              <span>Registrations Closed</span>
+              <span>Housefull • 70 Participants Limit Reached</span>
             </div>
 
             <div className="w-16 h-16 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center mx-auto mb-6 shadow-xs">
@@ -211,8 +212,8 @@ export default function RegisterPage() {
             </h1>
 
             <p className="mt-4 text-sm sm:text-base text-slate-600 leading-relaxed">
-              Thank you for your interest! The registration period for the{' '}
-              <strong className="text-slate-900">Workshop on Problem Solving &amp; Ideation (From Problem to Possibility)</strong> at KMCT College has concluded.
+              The maximum capacity of <strong className="text-slate-900">70 participants</strong> has been reached for the{' '}
+              <strong className="text-slate-900">Workshop on Problem Solving &amp; Ideation (From Problem to Possibility)</strong> at KMCT College.
             </p>
 
             <div className="mt-8 p-4 rounded-2xl bg-slate-50 border border-slate-200 text-left">
