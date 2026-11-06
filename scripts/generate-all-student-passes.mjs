@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
 import QRCode from 'qrcode';
+import jsQR from 'jsqr';
 
 const SHEET_ID = '1ooc3SoHQbKIeCFhaNGm5_qoRSKuC41PDVp_tcodRi4Q';
 const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv`;
@@ -54,7 +55,7 @@ function escapeXml(unsafe) {
 
 async function main() {
   console.log('===========================================================');
-  console.log('🎫 GENERATING OFFICIAL PASSES & QR CODES FOR ALL CANDIDATES');
+  console.log('🎫 GENERATING 2X ULTRA-HD SCANNABLE PASSES & QR CODES');
   console.log('===========================================================\n');
 
   console.log('Fetching live confirmed candidates from Google Sheet...');
@@ -109,7 +110,14 @@ async function main() {
 
   console.log(`Found ${candidates.length} confirmed candidates to generate passes for.\n`);
 
+  // Pre-load and resize 2x template (1364 x 2048)
+  console.log('Preparing 2x Ultra-HD template base (1364 x 2048)...');
+  const base2xBuffer = await sharp('public/pass-template.jpg')
+    .resize(1364, 2048, { kernel: sharp.kernel.lanczos3 })
+    .toBuffer();
+
   const manifest = [];
+  let allScanPassed = true;
 
   for (const c of candidates) {
     const safeName = sanitizeFilename(c.fullName);
@@ -119,84 +127,75 @@ async function main() {
     const passFilePath = path.join(PASSES_DIR, passFilename);
     const qrFilePath = path.join(QRCODES_DIR, qrFilename);
 
-    console.log(`[${c.index}/${candidates.length}] Generating pass for: ${c.fullName} (${c.ticketNumber})...`);
+    // Ultra-Fast Scannable HTTPS URL Payload
+    const scanUrl = `https://from-problem-to-possibility.vercel.app/success?id=${encodeURIComponent(c.p2pTicket)}`;
 
-    // 1. Generate Separate QR Code
-    // The QR contains complete ticket verification data and web verification URL
-    const qrData = JSON.stringify({
-      event: 'From Problem to Possibility 2026',
-      host: 'KMCTCEEM Kasaragod',
-      ticketNumber: c.ticketNumber,
-      ticketId: c.p2pTicket,
-      name: c.fullName,
-      dept: c.course,
-      year: c.year,
-      phone: c.phone,
-      email: c.email,
-      paymentId: c.utr,
-      verified: true,
-      verificationUrl: `https://from-problem-to-possibility.vercel.app/success?registrationId=${encodeURIComponent(c.p2pTicket)}`,
-    });
-
-    const qrBuffer = await QRCode.toBuffer(qrData, {
-      width: 320,
-      margin: 1,
+    // 1. Generate 800x800 Standalone Ultra-HD QR Code PNG
+    const standaloneQrBuffer = await QRCode.toBuffer(scanUrl, {
+      width: 800,
+      margin: 2,
       color: {
-        dark: '#1e0508',
+        dark: '#000000',
         light: '#ffffff',
       },
-      errorCorrectionLevel: 'H',
+      errorCorrectionLevel: 'M',
+    });
+    fs.writeFileSync(qrFilePath, standaloneQrBuffer);
+
+    // 2. Generate 292x292 Crisp Pass QR Code
+    const passQrBuffer = await QRCode.toBuffer(scanUrl, {
+      width: 292,
+      margin: 2,
+      color: {
+        dark: '#000000',
+        light: '#ffffff',
+      },
+      errorCorrectionLevel: 'M',
     });
 
-    // Write separate standalone QR code image
-    fs.writeFileSync(qrFilePath, qrBuffer);
-
-    // Resize QR buffer to 142x142 for the pass template
-    const resizedQr = await sharp(qrBuffer).resize(142, 142).toBuffer();
-
-    // 2. Prepare SVG overlay with Ticket ID and Candidate Info
+    // 3. Prepare 2x SVG Overlay for the Ticket ID capsule and Candidate Details
     const displayShortP2p = c.p2pTicket.startsWith('P2P-KMCT-')
       ? c.p2pTicket.split('-').slice(2).join('-')
       : c.p2pTicket;
 
     const svgOverlay = `
-      <svg width="682" height="1024" xmlns="http://www.w3.org/2000/svg">
+      <svg width="1364" height="2048" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <style>
             @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&amp;display=swap');
             .ticket-title {
               font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
-              font-size: 15px;
+              font-size: 28px;
               font-weight: 900;
               fill: #3b0712;
               letter-spacing: 0.5px;
             }
             .candidate-sub {
               font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
-              font-size: 11px;
+              font-size: 21px;
               font-weight: 700;
               fill: #5c141e;
             }
           </style>
         </defs>
 
-        <!-- Clean capsule cover with rounded corners -->
-        <rect x="276" y="622" width="318" height="42" rx="21" fill="#FAF5EE" />
+        <!-- 2x Clean capsule cover with rounded corners -->
+        <rect x="552" y="1244" width="636" height="84" rx="42" fill="#FAF5EE" />
 
         <!-- Ticket Number & Hash -->
-        <text x="296" y="642" class="ticket-title">${escapeXml(c.ticketNumber)} • ${escapeXml(displayShortP2p)}</text>
+        <text x="588" y="1282" class="ticket-title">${escapeXml(c.ticketNumber)} • ${escapeXml(displayShortP2p)}</text>
         <!-- Participant Name & Dept -->
-        <text x="296" y="656" class="candidate-sub">${escapeXml(c.fullName)} (${escapeXml(c.course)})</text>
+        <text x="588" y="1312" class="candidate-sub">${escapeXml(c.fullName)} (${escapeXml(c.course)})</text>
       </svg>
     `;
 
-    // 3. Composite onto the Official Pass Template
-    const passBuffer = await sharp('public/pass-template.jpg')
+    // 4. Composite onto 2x Ultra-HD Pass Template
+    const passBuffer = await sharp(base2xBuffer)
       .composite([
         {
-          input: resizedQr,
-          left: 270,
-          top: 673,
+          input: passQrBuffer,
+          left: 536,
+          top: 1344,
         },
         {
           input: Buffer.from(svgOverlay),
@@ -204,10 +203,27 @@ async function main() {
           top: 0,
         },
       ])
-      .png({ quality: 95 })
+      .png({ quality: 100 })
       .toBuffer();
 
     fs.writeFileSync(passFilePath, passBuffer);
+
+    // 5. Automated Verification Test: Ensure the QR code inside the pass scans with 100% accuracy!
+    const crop = await sharp(passBuffer)
+      .extract({ left: 520, top: 1330, width: 330, height: 330 })
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+
+    const scanResult = jsQR(new Uint8ClampedArray(crop.data), crop.info.width, crop.info.height);
+    const isValidScan = scanResult && scanResult.data === scanUrl;
+
+    if (!isValidScan) {
+      console.error(`❌ Scan failed for ${c.ticketNumber} (${c.fullName})`);
+      allScanPassed = false;
+    } else {
+      console.log(`[${c.index}/${candidates.length}] ✅ Verified Scannable Pass: ${c.ticketNumber} • ${c.fullName}`);
+    }
 
     manifest.push({
       index: c.index,
@@ -222,16 +238,22 @@ async function main() {
       qrImageUrl: `/generated-passes/qrcodes/${qrFilename}`,
       passFilename,
       qrFilename,
+      scannable: isValidScan,
+      scanUrl,
     });
   }
 
-  // Write manifest file for the website and passesqr page
+  // Write manifest file for website
   fs.writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2), 'utf-8');
 
   console.log('\n===========================================================');
-  console.log(`🎉 SUCCESS: Generated ${manifest.length} Official Passes and ${manifest.length} QR Codes!`);
-  console.log(`Passes Directory: ${PASSES_DIR}`);
-  console.log(`QR Codes Directory: ${QRCODES_DIR}`);
+  if (allScanPassed) {
+    console.log(`🎉 100% SCAN VERIFICATION SUCCESS: All ${manifest.length} passes scanned and decoded perfectly!`);
+  } else {
+    console.warn(`⚠️ Some passes failed verification.`);
+  }
+  console.log(`Passes Directory: ${PASSES_DIR} (1364 x 2048 Ultra-HD)`);
+  console.log(`QR Codes Directory: ${QRCODES_DIR} (800 x 800 Ultra-HD)`);
   console.log(`Manifest File: ${MANIFEST_PATH}`);
   console.log('===========================================================');
 }
