@@ -96,6 +96,7 @@ async function run() {
   const args = process.argv.slice(2);
   let trialEmail = '';
   let sendAll = args.includes('--send-all');
+  let resendFailed = args.includes('--resend-failed') || args.includes('--retry-failed');
   let user = process.env.GMAIL_USER || '';
   let pass = process.env.GMAIL_APP_PASSWORD || '';
 
@@ -138,19 +139,43 @@ async function run() {
     return;
   }
 
-  const transporter = nodemailer.createTransport({
+  const createTransporter = () => nodemailer.createTransport({
     service: 'gmail',
     auth: { user, pass }
   });
 
   // Verify SMTP connection
   try {
-    await transporter.verify();
+    const testTransporter = createTransporter();
+    await testTransporter.verify();
+    testTransporter.close();
     console.log(`✅ Connected successfully to Gmail SMTP as: ${user}\n`);
   } catch (err) {
     console.error('❌ Gmail SMTP authentication failed:', err.message);
     console.log('Make sure 2-Step Verification is ON and you generated an App Password at: https://myaccount.google.com/apppasswords');
     return;
+  }
+
+  async function sendWithAutoRetry(mailOptions, maxRetries = 3) {
+    let attempt = 0;
+    while (attempt < maxRetries) {
+      attempt++;
+      let tp = null;
+      try {
+        tp = createTransporter();
+        const info = await tp.sendMail(mailOptions);
+        try { tp.close(); } catch (_) {}
+        return { success: true, info };
+      } catch (err) {
+        try { if (tp) tp.close(); } catch (_) {}
+        if (attempt < maxRetries) {
+          console.warn(`    ⚠️ Socket error (${err.message}). Retrying in 3.5s (attempt ${attempt + 1}/${maxRetries})...`);
+          await new Promise(r => setTimeout(r, 3500));
+        } else {
+          return { success: false, error: err };
+        }
+      }
+    }
   }
 
   const passes = JSON.parse(fs.readFileSync(PASSES_FILE, 'utf-8'));
@@ -168,35 +193,87 @@ async function run() {
 
     const htmlBody = buildHtml('Trial Participant (Organizer)', 'KMCT-WS-TRIAL-0001', 'CSE Innovation Lab', '1st Year');
 
-    try {
-      const info = await transporter.sendMail({
+    const result = await sendWithAutoRetry({
+      from: `"KMCT CEETM - Problem to Possibility" <${user}>`,
+      to: trialEmail,
+      subject: `🎟️ [TRIAL] Entry Pass: From Problem to Possibility Workshop [KMCT-WS-TRIAL-0001]`,
+      html: htmlBody,
+      attachments: [
+        {
+          filename: `Workshop_Pass_KMCT-WS-TRIAL-0001.png`,
+          path: imagePath,
+          cid: 'passAttachment'
+        }
+      ]
+    });
+
+    if (result.success) {
+      console.log('✅ Trial email sent successfully!');
+      console.log(`   Message ID: ${result.info.messageId}`);
+      console.log(`   Recipient:  ${trialEmail}`);
+      console.log(`   Attached:   ${sample.passFilename}`);
+      console.log('\n🎉 Check your inbox (or Promotions/Updates) to see the pass!');
+    } else {
+      console.error('❌ Failed to send trial email:', result.error.message);
+    }
+    return;
+  }
+
+  // Resend Failed Mode (Targets only the 9 failed students)
+  if (resendFailed) {
+    const failedFile = path.resolve(process.cwd(), 'public/generated-passes/failed-to-resend.json');
+    if (!fs.existsSync(failedFile)) {
+      console.error('❌ failed-to-resend.json not found. Run audit first.');
+      return;
+    }
+    const failedList = JSON.parse(fs.readFileSync(failedFile, 'utf-8'));
+    console.log(`🎯 TARGETED DISPATCH: Sending to ${failedList.length} failed participants only...\n`);
+
+    let sent = 0;
+    let failed = 0;
+
+    for (let i = 0; i < failedList.length; i++) {
+      const p = failedList[i];
+      const imagePath = path.join(PASSES_DIR, p.passFilename);
+      const htmlBody = buildHtml(p.fullName, p.ticketNumber, p.course, p.year);
+
+      const result = await sendWithAutoRetry({
         from: `"KMCT CEETM - Problem to Possibility" <${user}>`,
-        to: trialEmail,
-        subject: `🎟️ [TRIAL] Entry Pass: From Problem to Possibility Workshop [KMCT-WS-TRIAL-0001]`,
+        to: p.email,
+        subject: `🎟️ Entry Pass: From Problem to Possibility Workshop [${p.ticketNumber}]`,
         html: htmlBody,
         attachments: [
           {
-            filename: `Workshop_Pass_KMCT-WS-TRIAL-0001.png`,
+            filename: `Workshop_Pass_${p.ticketNumber}.png`,
             path: imagePath,
             cid: 'passAttachment'
           }
         ]
       });
 
-      console.log('✅ Trial email sent successfully!');
-      console.log(`   Message ID: ${info.messageId}`);
-      console.log(`   Recipient:  ${trialEmail}`);
-      console.log(`   Attached:   ${sample.passFilename}`);
-      console.log('\n🎉 Check your inbox (or Promotions/Updates) to see the pass!');
-    } catch (err) {
-      console.error('❌ Failed to send trial email:', err.message);
+      if (result.success) {
+        sent++;
+        console.log(`[${sent}/${failedList.length}] ✅ Successfully Sent ${p.ticketNumber} to ${p.email} (${p.fullName})`);
+      } else {
+        failed++;
+        console.error(`[${i + 1}/${failedList.length}] ❌ Failed ${p.ticketNumber} to ${p.email}:`, result.error.message);
+      }
+
+      // Gentle pause to protect socket
+      await new Promise(r => setTimeout(r, 1500));
     }
+
+    console.log('\n====================================================');
+    console.log(`🎉 Resend Operation Finished!`);
+    console.log(`   Successfully Delivered: ${sent}/${failedList.length}`);
+    console.log(`   Remaining Failed:       ${failed}`);
+    console.log('====================================================');
     return;
   }
 
   // Batch Send All Mode
   if (sendAll) {
-    console.log(`🚀 Starting batch dispatch to ALL ${passes.length} participants...\n`);
+    console.log(`🚀 Starting batch dispatch to ALL ${passes.length} participants with Auto-Retry...\n`);
     let sent = 0;
     let failed = 0;
 
@@ -205,28 +282,30 @@ async function run() {
       const imagePath = path.join(PASSES_DIR, p.passFilename);
       const htmlBody = buildHtml(p.fullName, p.ticketNumber, p.course, p.year);
 
-      try {
-        await transporter.sendMail({
-          from: `"KMCT CEETM - Problem to Possibility" <${user}>`,
-          to: p.email,
-          subject: `🎟️ Entry Pass: From Problem to Possibility Workshop [${p.ticketNumber}]`,
-          html: htmlBody,
-          attachments: [
-            {
-              filename: `Workshop_Pass_${p.ticketNumber}.png`,
-              path: imagePath,
-              cid: 'passAttachment'
-            }
-          ]
-        });
+      const result = await sendWithAutoRetry({
+        from: `"KMCT CEETM - Problem to Possibility" <${user}>`,
+        to: p.email,
+        subject: `🎟️ Entry Pass: From Problem to Possibility Workshop [${p.ticketNumber}]`,
+        html: htmlBody,
+        attachments: [
+          {
+            filename: `Workshop_Pass_${p.ticketNumber}.png`,
+            path: imagePath,
+            cid: 'passAttachment'
+          }
+        ]
+      });
+
+      if (result.success) {
         sent++;
         console.log(`[${sent}/${passes.length}] ✅ Sent ${p.ticketNumber} to ${p.email} (${p.fullName})`);
-        // Pause 300ms between emails to prevent Gmail rate limits
-        await new Promise(r => setTimeout(r, 300));
-      } catch (err) {
+      } else {
         failed++;
-        console.error(`[${i + 1}/${passes.length}] ❌ Failed ${p.ticketNumber} to ${p.email}:`, err.message);
+        console.error(`[${i + 1}/${passes.length}] ❌ Failed ${p.ticketNumber} to ${p.email}:`, result.error.message);
       }
+
+      // Safe 1.5s delay to keep socket healthy
+      await new Promise(r => setTimeout(r, 1500));
     }
 
     console.log('\n====================================================');
@@ -238,8 +317,9 @@ async function run() {
   }
 
   console.log('Usage:');
-  console.log('  Send Trial:   node scripts/send-email-direct.mjs --trial your_email@gmail.com');
-  console.log('  Send to All:  node scripts/send-email-direct.mjs --send-all');
+  console.log('  Send Trial:     node scripts/send-email-direct.mjs --trial your_email@gmail.com');
+  console.log('  Resend Failed:  node scripts/send-email-direct.mjs --resend-failed');
+  console.log('  Send to All:    node scripts/send-email-direct.mjs --send-all');
 }
 
 run();
