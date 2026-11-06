@@ -404,13 +404,8 @@ export const PaymentService = {
 
     const regId = registration.id;
 
-    // Idempotency check: if already verified, return success without duplicate processing
+    // Idempotency check: if already verified, return success without duplicate processing or re-syncing
     if (registration.paymentStatus === 'verified') {
-      try {
-        await syncCandidateToGoogleSheet(registration);
-      } catch (sheetErr) {
-        console.warn('Idempotent Google Sheet sync warning:', sheetErr);
-      }
       return {
         success: true,
         message: 'Payment already verified',

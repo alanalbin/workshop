@@ -67,6 +67,7 @@ async function main() {
 
   const candidates = [];
   const seenEmails = new Set();
+  const seenPayments = new Set();
 
   for (let i = 1; i < lines.length; i++) {
     const cols = parseCsvLine(lines[i]);
@@ -93,7 +94,9 @@ async function main() {
     }
 
     if (!email || seenEmails.has(email)) continue;
+    if (utr && utr.startsWith('pay_') && seenPayments.has(utr)) continue;
     seenEmails.add(email);
+    if (utr && utr.startsWith('pay_')) seenPayments.add(utr);
 
     candidates.push({
       index: candidates.length + 1,

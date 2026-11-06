@@ -60,6 +60,8 @@ export const GOOGLE_SHEET_DEPLOYMENT_ID =
   'AKfycbx2l5e8mo6ul32UJXW6ZUGpoKILI964H5jpb2OY_eTSjPUPjfPArCP32-QJJB3wmVKqzQ';
 export const DEFAULT_WEBHOOK_URL = `https://script.google.com/macros/s/${GOOGLE_SHEET_DEPLOYMENT_ID}/exec`;
 
+const syncedPaymentsCache = new Set<string>();
+
 /**
  * Sends candidate record to the connected Google Sheet via Google Apps Script Webhook
  */
@@ -99,6 +101,23 @@ export async function syncCandidateToGoogleSheet(
   const formatted = formatCandidateForSheet(registration, payment);
   const utrVal = registration.manualUtr || formatted.transactionOrUtr;
 
+  // Blacklist check
+  if (
+    utrVal === 'pay_TwkHug9cRRmVHo' ||
+    emailLower === 'kadeejathmashmooma@gmail.com' ||
+    nameLower.includes('kadeejath mashmooma')
+  ) {
+    console.info(`[Google Sheets Sync Skipped] Skipping blacklisted candidate (${emailLower}).`);
+    return { success: true };
+  }
+
+  // In-memory deduplication guard: never send duplicate payment ID or registration number
+  const dedupeKey = utrVal && utrVal.startsWith('pay_') ? utrVal : formatted.registrationNumber;
+  if (dedupeKey && syncedPaymentsCache.has(dedupeKey)) {
+    console.info(`[Google Sheets Sync Skipped] Candidate payment ${dedupeKey} already synced in this session.`);
+    return { success: true };
+  }
+
   const payload = {
     ...formatted,
     utr: utrVal,
@@ -135,6 +154,10 @@ export async function syncCandidateToGoogleSheet(
 
     if (!res.ok) {
       return { success: false, error: `Webhook returned status ${res.status}` };
+    }
+
+    if (dedupeKey) {
+      syncedPaymentsCache.add(dedupeKey);
     }
 
     return { success: true };
