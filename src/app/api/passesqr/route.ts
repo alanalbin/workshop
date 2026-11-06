@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import fs from 'fs';
+import path from 'path';
 import { fetchSheetCandidates, isTestRecord } from '@/lib/seats/live-seats';
 import { DataStore } from '@/lib/storage/data-store';
 
@@ -7,82 +9,51 @@ export const revalidate = 0;
 
 export async function GET() {
   try {
-    const candidateMap = new Map<string, any>();
-
-    // 1. Fetch live from Google Sheets
-    try {
-      const sheetCandidates = await fetchSheetCandidates();
-      for (const s of sheetCandidates) {
-        const email = (s.email || '').toLowerCase().trim();
-        if (!email || isTestRecord(email, s.fullName, s.utr, s.amountINR)) continue;
-
-        candidateMap.set(email, {
-          id: `sheet_${s.utr || email}`,
-          registrationNumber: s.registrationNumber,
-          fullName: s.fullName,
-          email: s.email,
-          phone: s.phone,
-          institution: s.institution || 'KMCT College of Engineering for Emerging Technologies and Management, Kasaragod',
-          course: s.course,
-          yearOfStudy: s.yearOfStudy,
-          paymentStatus: 'verified',
-          paymentMethod: s.paymentMethod || 'razorpay',
-          paymentId: s.utr,
-          amountINR: s.amountINR || 100,
-          timestamp: s.timestamp,
-        });
-      }
-    } catch (sheetErr) {
-      console.warn('[PassesQR API] Sheet fetch note:', sheetErr);
-    }
-
-    // 2. Cross-reference with DataStore
-    try {
-      const dbRegistrations = await DataStore.listRegistrations();
-      for (const r of dbRegistrations) {
-        const email = (r.email || '').toLowerCase().trim();
-        if (
-          r.paymentStatus === 'verified' &&
-          email &&
-          !isTestRecord(email, r.fullName, r.paymentId, r.amountPaid)
-        ) {
-          if (!candidateMap.has(email)) {
-            candidateMap.set(email, {
-              id: r.id,
-              registrationNumber: r.registrationNumber || `P2P-KMCT-${r.id.slice(-8).toUpperCase()}`,
-              fullName: r.fullName,
-              email: r.email,
-              phone: r.phone,
-              institution: r.institution || 'KMCT College of Engineering for Emerging Technologies and Management, Kasaragod',
-              course: r.course,
-              yearOfStudy: r.yearOfStudy,
-              paymentStatus: 'verified',
-              paymentMethod: r.paymentMethod || 'razorpay',
-              paymentId: r.paymentId || r.manualUtr || 'VERIFIED',
-              amountINR: r.amountPaid || 100,
-              timestamp: r.createdAt,
-            });
-          }
+    // 1. If generated manifest exists on disk, read it
+    const manifestPath = path.join(process.cwd(), 'public', 'generated-passes', 'passes.json');
+    if (fs.existsSync(manifestPath)) {
+      try {
+        const manifestContent = fs.readFileSync(manifestPath, 'utf-8');
+        const passes = JSON.parse(manifestContent);
+        if (Array.isArray(passes) && passes.length > 0) {
+          return NextResponse.json({
+            success: true,
+            count: passes.length,
+            candidates: passes,
+          });
         }
+      } catch (err) {
+        console.warn('Error reading passes manifest:', err);
       }
-    } catch (dbErr) {
-      console.warn('[PassesQR API] DB fetch note:', dbErr);
     }
 
-    const candidates = Array.from(candidateMap.values());
+    // 2. Fallback: Query live sheet candidates
+    const sheetCandidates = await fetchSheetCandidates();
+    const candidates: any[] = [];
+    for (const s of sheetCandidates) {
+      const email = (s.email || '').toLowerCase().trim();
+      if (!email || isTestRecord(email, s.fullName, s.utr, s.amountINR)) continue;
 
-    return NextResponse.json(
-      {
-        success: true,
-        count: candidates.length,
-        candidates,
-      },
-      {
-        headers: {
-          'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
-        },
-      }
-    );
+      const idx: number = candidates.length + 1;
+      const ticketNumber = `KMCT-WS-${String(idx).padStart(2, '0')}`;
+      candidates.push({
+        index: idx,
+        ticketNumber,
+        p2pTicket: s.registrationNumber,
+        fullName: s.fullName,
+        email: s.email,
+        phone: s.phone,
+        course: s.course,
+        year: s.yearOfStudy,
+        passImageUrl: `/pass-template.jpg`,
+      });
+    }
+
+    return NextResponse.json({
+      success: true,
+      count: candidates.length,
+      candidates,
+    });
   } catch (error: any) {
     console.error('PassesQR API error:', error);
     return NextResponse.json(
