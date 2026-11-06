@@ -92,31 +92,47 @@ function PaymentContent() {
           targetId = user.email;
         }
 
+        let resolvedCandidate: Registration | null = null;
+
         if (targetId) {
-          const regRes = await fetch(`/api/registrations/${encodeURIComponent(targetId)}`);
-          if (regRes.ok) {
-            const regData = await regRes.json();
-            if (regData.registration && isMounted) {
-              setRegistration(regData.registration);
-              if (typeof window !== 'undefined') {
-                sessionStorage.setItem('p2p_registration_id', regData.registration.id);
-                localStorage.setItem('p2p_last_registration_id', regData.registration.id);
-              }
-              if (regData.registration.paymentStatus === 'verified') {
-                router.push(`/success?registrationId=${regData.registration.id}`);
-                return;
+          try {
+            const regRes = await fetch(`/api/registrations/${encodeURIComponent(targetId)}`);
+            if (regRes.ok) {
+              const regData = await regRes.json();
+              if (regData.registration) {
+                resolvedCandidate = regData.registration;
               }
             }
+          } catch (e) {
+            console.warn('API lookup note:', e);
           }
-        } else if (typeof window !== 'undefined' && isMounted) {
+        }
+
+        // CRITICAL FALLBACK: If serverless lambda has an empty /tmp filesystem or 404s,
+        // ALWAYS fallback to client cached registration!
+        if (!resolvedCandidate && typeof window !== 'undefined') {
           const cachedStr = localStorage.getItem('p2p_registration_cache');
           if (cachedStr) {
             try {
               const cached = JSON.parse(cachedStr);
-              if (cached && (cached.id === targetId || !targetId || targetId === 'latest')) {
-                setRegistration(cached);
+              if (cached && (cached.id === targetId || !targetId || cached.email || cached.fullName)) {
+                resolvedCandidate = cached;
               }
             } catch {}
+          }
+        }
+
+        if (resolvedCandidate && isMounted) {
+          setRegistration(resolvedCandidate);
+          if (typeof window !== 'undefined') {
+            sessionStorage.setItem('p2p_registration_id', resolvedCandidate.id);
+            localStorage.setItem('p2p_last_registration_id', resolvedCandidate.id);
+            localStorage.setItem('p2p_registration_cache', JSON.stringify(resolvedCandidate));
+          }
+
+          if (resolvedCandidate.paymentStatus === 'verified') {
+            router.push(`/success?registrationId=${resolvedCandidate.id}`);
+            return;
           }
         }
       } catch (err: any) {
@@ -180,6 +196,20 @@ function PaymentContent() {
     try {
       let activeReg = registration;
 
+      // Check client localStorage cache if activeReg state is not yet set
+      if (!activeReg && typeof window !== 'undefined') {
+        const cachedStr = localStorage.getItem('p2p_registration_cache');
+        if (cachedStr) {
+          try {
+            const cached = JSON.parse(cachedStr);
+            if (cached && (cached.email || cached.fullName)) {
+              activeReg = cached;
+              setRegistration(cached);
+            }
+          } catch {}
+        }
+      }
+
       // If user came directly to /payment without registration, create registration on the fly
       if (!activeReg) {
         if (!quickFullName.trim()) {
@@ -208,7 +238,7 @@ function PaymentContent() {
             phone: cleanedPhone.slice(-10),
             institution: quickInstitution.trim() || 'KMCT College of Engineering',
             course: quickCourse.trim() || 'Engineering & Technology',
-            yearOfStudy: '3rd Year',
+            yearOfStudy: '1st Year',
             privacyConsent: true,
           }),
         });
@@ -220,13 +250,24 @@ function PaymentContent() {
           return;
         }
 
-        const getRes = await fetch(`/api/registrations/${regData.registrationId}`);
-        const getData = await getRes.json();
-        activeReg = getData.registration;
+        activeReg = regData.registration || {
+          id: regData.registrationId,
+          fullName: quickFullName.trim(),
+          email: quickEmail.trim().toLowerCase(),
+          phone: cleanedPhone.slice(-10),
+          institution: quickInstitution.trim() || 'KMCT College of Engineering',
+          course: quickCourse.trim() || 'Engineering & Technology',
+          yearOfStudy: '1st Year',
+          status: 'pending',
+          paymentStatus: 'unpaid',
+          amountPaid: 100,
+          amountPaise: 10000,
+        };
         setRegistration(activeReg);
         if (typeof window !== 'undefined' && activeReg) {
           sessionStorage.setItem('p2p_registration_id', activeReg.id);
           localStorage.setItem('p2p_last_registration_id', activeReg.id);
+          localStorage.setItem('p2p_registration_cache', JSON.stringify(activeReg));
         }
       }
 
@@ -313,7 +354,7 @@ function PaymentContent() {
         prefill: {
           name: activeReg.fullName,
           email: activeReg.email,
-          contact: activeReg.phone,
+          contact: (activeReg.phone || '').replace(/\D/g, '').slice(-10),
         },
         notes: {
           registrationId: activeReg.id,

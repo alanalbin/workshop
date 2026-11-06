@@ -124,9 +124,6 @@ export default function EventDetailsSection({ event }: EventDetailsSectionProps)
                         <span className="text-3xl font-black text-slate-900">₹{fee}</span>
                         <span className="text-xs text-slate-500">per participant</span>
                       </div>
-                      <div className="mt-2.5 p-3 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-900">
-                        <span className="font-bold text-amber-800">All-Inclusive:</span> Workshop entry, stationery (chart papers, markers, worksheets), morning tea with fresh canteen samosas, and official IIC certificate.
-                      </div>
                     </div>
 
                     <div>

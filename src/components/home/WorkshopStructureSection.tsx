@@ -9,8 +9,6 @@ import {
   Presentation,
   CheckCircle,
   Clock,
-  Coffee,
-  Utensils,
   Sparkles,
   Palette,
   Target,
@@ -60,16 +58,7 @@ const AGENDA: AgendaItem[] = [
     tag: 'User Empathy',
   },
   {
-    time: '11:15 – 11:30',
-    title: 'Morning Refreshment Break',
-    format: 'Tea & Fresh Canteen Samosas',
-    description: 'Informal networking and discussion with mentors over tea and hot snacks provided at the venue.',
-    type: 'break',
-    icon: Coffee,
-    tag: 'Refreshment Break',
-  },
-  {
-    time: '11:30 – 12:15',
+    time: '11:15 – 12:15',
     title: 'Generate Ideas (Ideation Sprint)',
     format: 'Crazy 8s, Yes-And & Worst-Idea Reversal',
     description:
@@ -89,16 +78,7 @@ const AGENDA: AgendaItem[] = [
     tag: 'Evaluation & Filter',
   },
   {
-    time: '13:00 – 13:30',
-    title: 'Lunch Break',
-    format: 'Campus Canteen & Networking',
-    description: 'Midday recharge and informal strategy sync with team members and facilitators.',
-    type: 'break',
-    icon: Utensils,
-    tag: 'Lunch Break',
-  },
-  {
-    time: '13:30 – 14:30',
+    time: '13:00 – 14:15',
     title: 'Visualise the Solution (Prototyping)',
     format: 'Hand-Drawn Chart-Paper Concept & Storyboard',
     description:
