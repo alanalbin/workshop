@@ -57,7 +57,7 @@ function parseCsvLine(line: string): string[] {
 /**
  * Parses Google Sheet CSV export to read verified registered candidates
  */
-async function fetchSheetCandidates(): Promise<SheetCandidate[]> {
+export async function fetchSheetCandidates(): Promise<SheetCandidate[]> {
   try {
     const csvUrl = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/export?format=csv`;
     const res = await fetch(csvUrl, {
@@ -158,7 +158,7 @@ async function fetchSheetCandidates(): Promise<SheetCandidate[]> {
 /**
  * Fetches captured live payments directly from Razorpay strictly for this workshop
  */
-async function fetchRazorpayCaptured(): Promise<any[]> {
+export async function fetchRazorpayCaptured(): Promise<any[]> {
   if (!isRazorpayConfigured()) return [];
   try {
     const client = new Razorpay({
@@ -182,7 +182,7 @@ async function fetchRazorpayCaptured(): Promise<any[]> {
   }
 }
 
-function isTestRecord(email?: string, fullName?: string, paymentId?: string, amount?: number): boolean {
+export function isTestRecord(email?: string, fullName?: string, paymentId?: string, amount?: number): boolean {
   const em = (email || '').toLowerCase().trim();
   const fn = (fullName || '').toLowerCase().trim();
   const pid = (paymentId || '').trim();
@@ -201,7 +201,7 @@ function isTestRecord(email?: string, fullName?: string, paymentId?: string, amo
   );
 }
 
-function formatCandidateTicketId(regId?: string, paymentId?: string): string {
+export function formatCandidateTicketId(regId?: string, paymentId?: string): string {
   if (regId && regId.startsWith('reg_')) {
     const parts = regId.split('_');
     const ts = Number(parts[1]);
@@ -364,6 +364,17 @@ export async function syncAllMissingCapturedPaymentsToSheet(): Promise<{
       };
 
       try {
+        await DataStore.saveRegistrationDirect(reg);
+        await DataStore.recordPayment({
+          registrationId: reg.id,
+          provider: 'razorpay',
+          providerOrderId: p.order_id || '',
+          providerPaymentId: p.id,
+          amountPaise: p.amount || 10000,
+          currency: 'INR',
+          status: 'captured',
+          verifiedAt: new Date(p.created_at * 1000).toISOString(),
+        });
         const res = await syncCandidateToGoogleSheet(reg, {
           registrationId: reg.id,
           provider: 'razorpay',

@@ -577,12 +577,12 @@ function PaymentContent() {
             {showLookupBox && (
               <form onSubmit={handleLookup} className="p-3.5 rounded-2xl bg-purple-50/60 border border-purple-200 space-y-2">
                 <span className="text-xs font-semibold text-slate-700 block">
-                  Search by Ticket ID (ILM-KMCT-...) or Email:
+                  Search by Email, WhatsApp Number, or Ticket ID (P2P-KMCT-...):
                 </span>
                 <div className="flex gap-2">
                   <input
                     type="text"
-                    placeholder="e.g. ILM-KMCT-... or your@email.com"
+                    placeholder="e.g. your@email.com, 9876543210, or P2P-KMCT-..."
                     value={lookupQuery}
                     onChange={(e) => setLookupQuery(e.target.value)}
                     className="flex-1 px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs font-mono focus:border-purple-600 focus:outline-none shadow-2xs"
@@ -749,6 +749,16 @@ function PaymentContent() {
             <span className="text-[11px] text-slate-500">
               Ticket pass is issued immediately upon payment completion
             </span>
+          </div>
+
+          <div className="pt-2 text-center">
+            <Link
+              href="/success"
+              className="inline-flex items-center gap-1.5 text-xs text-sky-700 hover:text-sky-900 font-semibold underline decoration-sky-300"
+            >
+              <Search className="w-3.5 h-3.5" />
+              <span>Already completed payment via UPI? Retrieve your Workshop Pass here</span>
+            </Link>
           </div>
 
         </div>
