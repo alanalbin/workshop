@@ -37,39 +37,37 @@ export default function Scroll3DPopup({
     offset: ['start end', 'end start'],
   });
 
-  // Critically-damped butter-smooth spring for ultra-fluid, zero-jitter 3D scrolling
+  // Fast, responsive spring for mobile (low mass, high stiffness) and elegant cinematic spring for desktop
   const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 95,
-    damping: 28,
-    mass: 0.35,
+    stiffness: isMobile ? 135 : 95,
+    damping: isMobile ? 26 : 28,
+    mass: isMobile ? 0.2 : 0.35,
     restDelta: 0.0001,
   });
 
-  const activeProgress = isMobile ? scrollYProgress : smoothProgress;
-
   // Ultra-smooth 3D depth emergence: subtle, elegant, and readable without jarring jumps
   const scrollRotateX = useTransform(
-    activeProgress,
+    smoothProgress,
     [0, 0.22, 0.82, 1],
-    [isMobile ? 2.5 : rotateX, 0, 0, isMobile ? -1 : -2]
+    [isMobile ? 2 : rotateX, 0, 0, isMobile ? -1 : -2]
   );
 
   const scrollScale = useTransform(
-    activeProgress,
+    smoothProgress,
     [0, 0.22, 0.82, 1],
-    [isMobile ? 0.96 : 0.94, 1, 1, isMobile ? 0.98 : 0.97]
+    [isMobile ? 0.97 : 0.94, 1, 1, isMobile ? 0.98 : 0.97]
   );
 
   const scrollOpacity = useTransform(
-    activeProgress,
+    smoothProgress,
     [0, 0.18, 0.86, 1],
-    [isMobile ? 0.65 : 0.45, 1, 1, isMobile ? 0.92 : 0.88]
+    [isMobile ? 0.75 : 0.45, 1, 1, isMobile ? 0.95 : 0.88]
   );
 
   const scrollY = useTransform(
-    activeProgress,
+    smoothProgress,
     [0, 0.22, 0.82, 1],
-    [isMobile ? 20 : 32, 0, 0, isMobile ? -6 : -12]
+    [isMobile ? 16 : 32, 0, 0, isMobile ? -5 : -12]
   );
 
   return (
@@ -77,7 +75,7 @@ export default function Scroll3DPopup({
       ref={ref}
       className={`relative ${className}`}
       style={{
-        perspective: isMobile ? 950 : 1400,
+        perspective: isMobile ? 850 : 1400,
         perspectiveOrigin: '50% 40%',
       }}
     >
@@ -87,9 +85,9 @@ export default function Scroll3DPopup({
           scale: enableContinuous3D ? scrollScale : 1,
           opacity: enableContinuous3D ? scrollOpacity : 1,
           y: enableContinuous3D ? scrollY : 0,
-          transformStyle: 'preserve-3d',
+          transformStyle: isMobile ? 'flat' : 'preserve-3d',
           transformOrigin: '50% 50%',
-          willChange: 'transform, opacity',
+          willChange: isMobile ? undefined : 'transform, opacity',
         }}
       >
         {children}

@@ -91,15 +91,28 @@ export default function BackgroundCanvas3D({ onReplayIntro }: BackgroundCanvas3D
             minHeight: 200.0,
             minWidth: 200.0,
             scale: 1.0,
-            scaleMobile: 1.5, // 1.5x resolution downscaling on high-DPI mobile screens (buttery 60-120fps)
+            scaleMobile: 2.0, // 2.0x buffer scaling keeps clouds soft while reducing fragment shader load by 75%
             skyColor: 0x68b8d7,
             cloudColor: 0xadc1de,
             cloudShadowColor: 0x183550,
             sunColor: 0xff9919,
             sunGlareColor: 0xff6633,
             sunlightColor: 0xff9933,
-            speed: isMobileDevice ? 0.8 : 1.0,
+            speed: isMobileDevice ? 0.7 : 1.0,
           });
+
+          // Clamp WebGL pixel ratio to 1.0 on mobile to prevent 3x/4x Retina display fill-rate overload
+          if (vantaEffectRef.current?.renderer && isMobileDevice) {
+            try {
+              vantaEffectRef.current.renderer.setPixelRatio(1.0);
+              if (typeof vantaEffectRef.current.resize === 'function') {
+                vantaEffectRef.current.resize();
+              }
+            } catch {
+              // Safe fallback
+            }
+          }
+
           setIsVantaLoaded(true);
         }
       } catch (err) {

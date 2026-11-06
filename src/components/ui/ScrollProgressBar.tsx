@@ -7,11 +7,17 @@ export default function ScrollProgressBar() {
 
   useEffect(() => {
     let ticking = false;
+    let cachedTotalHeight = 1;
+
+    const measure = () => {
+      cachedTotalHeight = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    };
+
+    measure();
 
     const updateProgress = () => {
-      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
-      if (totalHeight > 0 && barRef.current) {
-        const progress = Math.min(1, Math.max(0, window.scrollY / totalHeight));
+      if (barRef.current) {
+        const progress = Math.min(1, Math.max(0, window.scrollY / cachedTotalHeight));
         barRef.current.style.transform = `scaleX(${progress})`;
       }
       ticking = false;
@@ -25,8 +31,13 @@ export default function ScrollProgressBar() {
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', measure, { passive: true });
     updateProgress();
-    return () => window.removeEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', measure);
+    };
   }, []);
 
   return (

@@ -27,13 +27,20 @@ export default function ScrollFloatingPopup({ fee = 100, registrationsClosed }: 
     }
 
     let ticking = false;
+    let cachedTotalHeight = 1;
+
+    const measure = () => {
+      cachedTotalHeight = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    };
+
+    measure();
+
     const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
           const scrollY = window.scrollY;
-          const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
           const isPastHero = scrollY > 320;
-          const isNearFooter = scrollY > totalHeight - 200;
+          const isNearFooter = scrollY > cachedTotalHeight - 200;
 
           setIsVisible(isPastHero && !isNearFooter && !isDismissed);
           ticking = false;
@@ -43,8 +50,13 @@ export default function ScrollFloatingPopup({ fee = 100, registrationsClosed }: 
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', measure, { passive: true });
     handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', measure);
+    };
   }, [isDismissed]);
 
   const handleDismiss = (e: React.MouseEvent) => {
