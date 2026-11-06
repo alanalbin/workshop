@@ -186,7 +186,14 @@ export function isTestRecord(email?: string, fullName?: string, paymentId?: stri
   const em = (email || '').toLowerCase().trim();
   const fn = (fullName || '').toLowerCase().trim();
   const pid = (paymentId || '').trim();
-  if (pid === 'pay_TjQSIYw4J4tPTW') return true;
+  if (pid === 'pay_TjQSIYw4J4tPTW' || pid === 'pay_TwkHug9cRRmVHo') return true;
+  if (
+    em.includes('kadeejathmashmooma@gmail.com') ||
+    fn.includes('kadeejath mashmooma') ||
+    fn.includes('kadeejath mashmooma gulzar')
+  ) {
+    return true;
+  }
   if (amount !== undefined && amount !== 100 && amount !== 10000) return true;
   return (
     em.includes('test_') ||

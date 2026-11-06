@@ -86,7 +86,9 @@ export async function syncCandidateToGoogleSheet(
     emailLower.startsWith('phantom_') ||
     emailLower.includes('example.com') ||
     nameLower.includes('test participant') ||
-    nameLower.includes('restored candidate')
+    nameLower.includes('restored candidate') ||
+    emailLower.includes('kadeejathmashmooma@gmail.com') ||
+    nameLower.includes('kadeejath mashmooma')
   ) {
     console.info(`[Google Sheets Sync Skipped] Skipping test candidate (${emailLower}) from syncing to live sheet.`);
     return { success: true };
