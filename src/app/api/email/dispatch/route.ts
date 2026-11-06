@@ -90,8 +90,8 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const action = body.action || 'trial';
     const toEmail = body.toEmail || body.email;
-    const user = body.smtpUser || process.env.GMAIL_USER;
-    const pass = body.smtpPass || process.env.GMAIL_APP_PASSWORD;
+    const user = (body.smtpUser || process.env.GMAIL_USER || '').replace(/^["']|["']$/g, '').trim();
+    const pass = (body.smtpPass || process.env.GMAIL_APP_PASSWORD || '').replace(/^["']|["']$/g, '').trim();
 
     if (!user || !pass) {
       return NextResponse.json(
@@ -185,3 +185,4 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
+

@@ -116,6 +116,10 @@ async function run() {
     }
   }
 
+  // Sanitize user and pass (strip surrounding quotes or whitespace)
+  if (user) user = user.replace(/^["']|["']$/g, '').trim();
+  if (pass) pass = pass.replace(/^["']|["']$/g, '').trim();
+
   console.log('====================================================');
   console.log('✉️ DIRECT GMAIL PASS SENDER (NODEMAILER - NO GSHEET)');
   console.log('====================================================\n');
@@ -239,3 +243,4 @@ async function run() {
 }
 
 run();
+
