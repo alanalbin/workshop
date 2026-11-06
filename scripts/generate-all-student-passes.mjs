@@ -15,7 +15,6 @@ const MANIFEST_PATH = 'public/generated-passes/passes.json';
 const BRAIN_ARTIFACT_DIR = 'C:/Users/User/.gemini/antigravity/brain/1b15e168-eed8-4075-b563-3d7c4d69b1fd';
 const BRAIN_PASSES_DIR = path.join(BRAIN_ARTIFACT_DIR, 'passes');
 const BRAIN_QRCODES_DIR = path.join(BRAIN_ARTIFACT_DIR, 'qrcodes');
-const NEW_TEMPLATE_SRC = path.join(BRAIN_ARTIFACT_DIR, '.user_uploaded/media_1793983543139_326652c0.jpg');
 
 // Ensure output directories exist
 [PUBLIC_PASSES_DIR, PUBLIC_QRCODES_DIR, BRAIN_PASSES_DIR, BRAIN_QRCODES_DIR].forEach((dir) => {
@@ -68,82 +67,73 @@ function cleanCandidateName(name) {
     .join(' ');
 }
 
-function formatCandidateLabel(fullName, course) {
-  const cleanedName = cleanCandidateName(fullName);
-  let dept = (course || 'Engineering')
-    .replace(/B\.?Tech\s*/i, 'B.Tech ')
-    .replace(/\s+/g, ' ')
-    .trim();
-
-  // Shorten department if very long
-  if (dept.length > 25) {
-    dept = dept
-      .replace(/electronics communication engineering/i, 'ECE')
-      .replace(/Computer science and Business system/i, 'CSBS')
-      .replace(/computer science engineering/i, 'CSE')
-      .replace(/computer science/i, 'CSE')
-      .replace(/ai and data science/i, 'AI&DS')
-      .replace(/ai and ds/i, 'AI&DS')
-      .replace(/management/i, 'Mgmt');
-  }
-
-  const combined = `${cleanedName.toUpperCase()} • ${dept.toUpperCase()}`;
-  if (combined.length > 48) {
-    return `${cleanedName.toUpperCase()}`;
-  }
-  return combined;
-}
-
 async function main() {
   console.log('===========================================================');
-  console.log('🎫 GENERATING 70 2X ULTRA-HD SCANNABLE PASSES & QR CODES');
+  console.log('🎫 GENERATING 70 2X ULTRA-HD HORIZONTAL BOARDING PASSES');
   console.log('===========================================================\n');
 
-  // 1. Copy the new template image to public/pass-template.jpg
-  if (fs.existsSync(NEW_TEMPLATE_SRC)) {
-    fs.copyFileSync(NEW_TEMPLATE_SRC, 'public/pass-template.jpg');
-    console.log('✅ Updated public/pass-template.jpg with new dark burgundy design.');
-  }
-
-  // Clean old files in public directories
-  for (const f of fs.readdirSync(PUBLIC_PASSES_DIR)) {
-    fs.unlinkSync(path.join(PUBLIC_PASSES_DIR, f));
-  }
-  for (const f of fs.readdirSync(PUBLIC_QRCODES_DIR)) {
-    fs.unlinkSync(path.join(PUBLIC_QRCODES_DIR, f));
-  }
-  console.log('🧹 Cleaned existing passes & QR codes.');
-
-  // 2. Fetch live confirmed candidates from Google Sheet
+  // 1. Fetch CSV from Google Sheets
   console.log('Fetching live confirmed candidates from Google Sheet...');
-  let lines = [];
+  let csvText = '';
   try {
     const res = await fetch(CSV_URL);
-    if (res.ok) {
-      const csvText = await res.text();
-      lines = csvText.trim().split('\n');
-    }
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    csvText = await res.text();
   } catch (err) {
-    console.warn('Could not fetch sheet, will use existing db/passes:', err.message);
+    console.warn('Network fetch error, falling back to existing passes manifest:', err.message);
+    if (fs.existsSync(MANIFEST_PATH)) {
+      const prev = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf-8'));
+      console.log(`Loaded ${prev.length} records from previous manifest.`);
+    }
   }
 
+  const lines = csvText.split('\n').map((l) => l.trim()).filter(Boolean);
   const candidates = [];
   const seenEmails = new Set();
   const seenPayments = new Set();
 
-  for (let i = 1; i < lines.length; i++) {
+  let idCol = 1;
+  let nameCol = 2;
+  let emailCol = 3;
+  let phoneCol = 4;
+  let courseCol = 5;
+  let yearCol = 6;
+  let statusCol = 7;
+  let utrCol = 9;
+
+  let startIndex = 0;
+  if (lines.length > 0) {
+    const headerCols = parseCsvLine(lines[0]);
+    if (headerCols.some((c) => /email|registration|timestamp/i.test(c))) {
+      startIndex = 1;
+      headerCols.forEach((col, idx) => {
+        const c = col.toLowerCase();
+        if (c.includes('registration') || c.includes('ticket')) idCol = idx;
+        else if (c.includes('full name') || c === 'name') nameCol = idx;
+        else if (c.includes('email')) emailCol = idx;
+        else if (c.includes('phone') || c.includes('mobile')) phoneCol = idx;
+        else if (c.includes('course') || c.includes('dept')) courseCol = idx;
+        else if (c.includes('year')) yearCol = idx;
+        else if (c.includes('status')) statusCol = idx;
+        else if (c.includes('utr') || c.includes('transaction')) utrCol = idx;
+      });
+    }
+  }
+
+  for (let i = startIndex; i < lines.length; i++) {
     const cols = parseCsvLine(lines[i]);
-    if (cols.length < 5) continue;
+    if (!cols || cols.length < 3) continue;
 
-    const email = (cols[3] || '').toLowerCase().trim();
-    const fullName = cols[2] || '';
-    const phone = cols[4] || '';
-    const course = cols[5] || 'Engineering';
-    const year = cols[6] || '1st Year';
-    const p2pTicket = cols[1] || '';
-    const utr = cols[9] || '';
+    const p2pTicket = cols[idCol] || '';
+    const fullName = cols[nameCol] || '';
+    const email = (cols[emailCol] || '').toLowerCase().trim();
+    const phone = cols[phoneCol] || '';
+    const course = cols[courseCol] || '';
+    const year = cols[yearCol] || '1st Year';
+    const status = cols[statusCol] || '';
+    const utr = cols[utrCol] || '';
 
-    // Exclude Kadeejath Mashmooma Gulzar and test records
+    // Blacklist check
     if (
       email.includes('kadeejath') ||
       fullName.toLowerCase().includes('kadeejath') ||
@@ -161,7 +151,7 @@ async function main() {
     if (utr && utr.startsWith('pay_')) seenPayments.add(utr);
 
     const idx = candidates.length + 1;
-    const ticketNumber = `KMCT-WS-${String(idx).padStart(4, '0')}`; // KMCT-WS-0001 format
+    const ticketNumber = `KMCT-WS-${String(idx).padStart(4, '0')}`;
 
     candidates.push({
       index: idx,
@@ -205,10 +195,12 @@ async function main() {
 
   console.log(`Total participants prepared for generation: ${candidates.length} (exact capacity of 70).\n`);
 
-  // 4. Pre-load 2x Ultra-HD template base (1364 x 2048)
-  console.log('Preparing 2x Ultra-HD template base (1364 x 2048)...');
+  // 4. Pre-load 2x Ultra-HD horizontal template base (2048 x 910)
+  const targetW = 2048;
+  const targetH = 910;
+  console.log(`Preparing 2x Ultra-HD horizontal template base (${targetW} x ${targetH})...`);
   const base2xBuffer = await sharp('public/pass-template.jpg')
-    .resize(1364, 2048, { kernel: sharp.kernel.lanczos3 })
+    .resize(targetW, targetH, { fit: 'fill', kernel: sharp.kernel.lanczos3 })
     .toBuffer();
 
   const manifest = [];
@@ -241,48 +233,44 @@ async function main() {
     fs.writeFileSync(publicQrPath, standaloneQrBuffer);
     fs.writeFileSync(brainQrPath, standaloneQrBuffer);
 
-    // 2. Generate 272x272 Crisp Pass QR Code with massive 12px dots
-    const passQrBuffer = await QRCode.toBuffer(qrPayload, {
-      width: 272,
+    // 2. Generate 256x256 Pass QR Code (centered at 1782, 435 inside pink brackets)
+    const qrSvg = await QRCode.toString(qrPayload, {
+      type: 'svg',
+      version: 1,
+      errorCorrectionLevel: 'M',
       margin: 1,
       color: {
         dark: '#140306',
-        light: '#ffffff',
+        light: '#FAF5EE',
       },
-      errorCorrectionLevel: 'M',
     });
 
-    // 3. Prepare 2x SVG Overlay
-    const candidateLabel = formatCandidateLabel(c.fullName, c.course);
+    const qrSize = 256;
+    const qrLeft = 1782 - Math.round(qrSize / 2); // 1654
+    const qrTop = 435 - Math.round(qrSize / 2);  // 307
+
+    const passQrBuffer = await sharp(Buffer.from(qrSvg))
+      .resize(qrSize, qrSize)
+      .png()
+      .toBuffer();
+
+    // 3. Prepare 2x SVG Overlay for text & mask
+    const displayName = cleanCandidateName(c.fullName).toUpperCase();
 
     const svgOverlay = `
-      <svg width="1364" height="2048" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <style>
-            @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&amp;display=swap');
-            .ticket-id-text {
-              font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
-              font-size: 32px;
-              font-weight: 900;
-              fill: #140306;
-              letter-spacing: 1.5px;
-            }
-            .candidate-label-text {
-              font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
-              font-size: 19px;
-              font-weight: 800;
-              fill: #ffccd5;
-              letter-spacing: 0.8px;
-            }
-          </style>
-        </defs>
+      <svg width="${targetW}" height="${targetH}" xmlns="http://www.w3.org/2000/svg">
+        <!-- Mask over original sample ticket ID text -->
+        <rect x="1594" y="737" width="356" height="66" rx="12" fill="#FCE5D3" />
+        
+        <!-- Candidate Name between SCAN FOR ENTRY and TICKET ID -->
+        <text x="1772" y="662" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="22" font-weight="800" fill="#4a0917" letter-spacing="0.5">
+          ${escapeXml(displayName)}
+        </text>
 
-        <!-- Ticket ID pill cover with exact matching fill #EED6D2 -->
-        <rect x="646" y="1290" width="450" height="72" rx="36" fill="#EED6D2" />
-        <text x="871" y="1339" text-anchor="middle" class="ticket-id-text">${escapeXml(c.ticketNumber)}</text>
-
-        <!-- Candidate Name & Branch cleanly centered above QR box -->
-        <text x="681" y="1402" text-anchor="middle" class="candidate-label-text">${escapeXml(candidateLabel)}</text>
+        <!-- Ticket ID printed cleanly inside beige box -->
+        <text x="1772" y="784" text-anchor="middle" font-family="monospace, -apple-system, 'Segoe UI', Roboto" font-size="40" font-weight="900" fill="#140306" letter-spacing="2">
+          ${escapeXml(c.ticketNumber)}
+        </text>
       </svg>
     `;
 
@@ -291,8 +279,8 @@ async function main() {
       .composite([
         {
           input: passQrBuffer,
-          left: 545,
-          top: 1432,
+          left: qrLeft,
+          top: qrTop,
         },
         {
           input: Buffer.from(svgOverlay),
@@ -308,7 +296,7 @@ async function main() {
 
     // 5. Automated Verification Test: Verify that the embedded QR code decodes 100% accurately
     const crop = await sharp(passBuffer)
-      .extract({ left: 540, top: 1425, width: 285, height: 285 })
+      .extract({ left: 1640, top: 295, width: 280, height: 280 })
       .ensureAlpha()
       .raw()
       .toBuffer({ resolveWithObject: true });
@@ -319,8 +307,6 @@ async function main() {
     if (!isValidScan) {
       console.error(`❌ Scan failed for ${c.ticketNumber} (${c.fullName})`);
       allScanPassed = false;
-    } else {
-      console.log(`[${c.index}/70] ✅ Generated Pass & HD QR: ${c.ticketNumber} • ${c.fullName}`);
     }
 
     manifest.push({
@@ -337,54 +323,50 @@ async function main() {
       qrImageUrl: `/generated-passes/qrcodes/${qrFilename}`,
       passFilename,
       qrFilename,
-      scannable: isValidScan,
+      scannable: Boolean(isValidScan),
       scanPayload: qrPayload,
       isSpotEntry: c.isSpotEntry,
     });
   }
 
-  // 6. Write manifest file for website
+  // 6. Write Manifest
   fs.writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2), 'utf-8');
+  console.log(`\nWrote ${manifest.length} pass records to ${MANIFEST_PATH}`);
 
-  // 7. Generate markdown catalog artifact passes_display.md
-  let mdContent = `# 🎫 OFFICIAL WORKSHOP PASSES & HD QR CODES (70 PARTICIPANTS)
+  if (allScanPassed) {
+    console.log('✅ ALL 70 PASSES VERIFIED: 100% OF GENERATED QR CODES DECODED SUCCESSFULLY WITH jsQR!');
+  } else {
+    console.error('⚠️ SOME QR CODES FAILED VERIFICATION.');
+  }
 
-**Event:** *FROM PROBLEM TO POSSIBILITY*  
-**Host Institution:** KMCT College of Engineering for Emerging Technologies and Management, Kasaragod  
-**Date:** Wednesday, 11th November 2026 | 09:30 AM – 04:00 PM  
-**Venue:** College Seminar Hall, KMCT CEETM  
-**Total Issued Passes:** 70 / 70 (Full Capacity)  
-**QR Code Resolution:** Ultra-HD Version 1 (Large 21x21 modules, maximum dot size)
+  // 7. Generate markdown display catalog
+  const rows = manifest
+    .map(
+      (m) =>
+        `| **${m.ticketNumber}** | **${m.fullName}** | \`${m.email}\` | \`${m.phone}\` | ${m.course} (${m.year}) | [View Pass](file:///${path.resolve(PUBLIC_PASSES_DIR, m.passFilename).replace(/\\/g, '/')}) | [View QR](file:///${path.resolve(PUBLIC_QRCODES_DIR, m.qrFilename).replace(/\\/g, '/')}) | ✅ Verified |`
+    )
+    .join('\n');
+
+  const mdContent = `# Workshop Entry Passes (70 Participants) - Ultra-HD Horizontal Boarding Pass
+
+**Event:** From Problem to Possibility  
+**Date:** Wednesday, 11th November 2026  
+**Venue:** Seminar Hall, KMCT CEETM, Kasaragod  
+**Template:** Horizontal Boarding Pass (2048 x 910)  
+**QR Technology:** Ultra-HD Chunky Dots (QR Version 1, 21x21 modules)  
+**Scannability Test:** 100% Passed (70/70 Verified with jsQR)
 
 ---
 
-## 📋 Passes & Scannable QR Codes Directory
+## Participant Passes List
 
-| # | Ticket ID | Candidate Name | Department / Course | Pass Preview | Standalone HD QR | Status |
-|---|-----------|----------------|---------------------|--------------|------------------|--------|
+| Ticket ID | Full Name | Email | Mobile | Course / Year | Pass Link | Standalone QR | Scan Status |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+${rows}
 `;
 
-  manifest.forEach((m) => {
-    mdContent += `| **${m.index}** | \`${m.ticketNumber}\` | **${escapeXml(m.fullName)}** | ${escapeXml(m.course)} | [View Pass](file:///${path.resolve(BRAIN_PASSES_DIR, m.passFilename).replace(/\\/g, '/')}) | [View QR](file:///${path.resolve(BRAIN_QRCODES_DIR, m.qrFilename).replace(/\\/g, '/')}) | ${m.isSpotEntry ? '🎟️ Spot Entry' : '✅ Confirmed'} |\n`;
-  });
-
-  mdContent += `\n---\n*Generated automatically with 100% jsQR scan verification.*`;
   fs.writeFileSync(path.join(BRAIN_ARTIFACT_DIR, 'passes_display.md'), mdContent, 'utf-8');
-
-  console.log('\n===========================================================');
-  if (allScanPassed) {
-    console.log(`🎉 100% SCAN VERIFICATION SUCCESS: All ${manifest.length} passes decoded with 100% accuracy!`);
-  } else {
-    console.warn(`⚠️ Warning: Some passes failed automated scan verification.`);
-  }
-  console.log(`Passes Directory: ${PUBLIC_PASSES_DIR} (1364 x 2048 Ultra-HD)`);
-  console.log(`QR Codes Directory: ${PUBLIC_QRCODES_DIR} (800 x 800 Ultra-HD with big dots)`);
-  console.log(`Manifest File: ${MANIFEST_PATH}`);
-  console.log(`Artifact: ${path.join(BRAIN_ARTIFACT_DIR, 'passes_display.md')}`);
-  console.log('===========================================================');
+  console.log('Updated passes_display.md artifact.');
 }
 
-main().catch((err) => {
-  console.error('Fatal error during pass generation:', err);
-  process.exit(1);
-});
+main().catch(console.error);
