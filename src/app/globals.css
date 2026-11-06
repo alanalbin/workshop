@@ -56,10 +56,13 @@ body {
 }
 
 /* Ensure background 3D canvas never intercepts mobile touch scrolling */
+#dynamic-3d-background,
+#dynamic-3d-background canvas,
 #vanta-clouds-container,
 #vanta-clouds-container canvas {
   pointer-events: none !important;
   user-select: none !important;
+  touch-action: none !important;
 }
 
 /* Eliminate 300ms mobile tap delay without blocking page scroll */

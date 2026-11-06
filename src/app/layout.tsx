@@ -79,22 +79,14 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
           rel="stylesheet"
         />
-        {/* Vanta Clouds & Three.js r134 Runtime Scripts */}
-        <Script
-          src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"
-          strategy="beforeInteractive"
-        />
-        <Script
-          src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.clouds.min.js"
-          strategy="afterInteractive"
-        />
+        {/* Razorpay Standard Checkout Runtime Script */}
         <Script
           src="https://checkout.razorpay.com/v1/checkout.js"
           strategy="afterInteractive"
         />
       </head>
       <body className={`min-h-screen flex flex-col bg-transparent text-slate-900 ${spaceGrotesk.className} selection:bg-sky-600 selection:text-white antialiased relative`}>
-        {/* Full-Page Interactive 3D Vanta Clouds Background */}
+        {/* Full-Page High-Performance 3D Ideation Aurora & Constellation Background */}
         <BackgroundCanvas3D />
         <ScrollProgressBar />
         <AuthProvider>
