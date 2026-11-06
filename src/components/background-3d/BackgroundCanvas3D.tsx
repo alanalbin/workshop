@@ -126,13 +126,11 @@ export default function BackgroundCanvas3D({ onReplayIntro }: BackgroundCanvas3D
     <div
       ref={containerRef}
       id="vanta-clouds-container"
-      className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none will-change-transform"
+      className="fixed inset-0 pointer-events-none -z-10 overflow-hidden select-none"
       style={{
-        width: '100vw',
-        height: '100vh',
+        width: '100%',
+        height: '100%',
         background: 'linear-gradient(180deg, #68b8d7 0%, #adc1de 50%, #e0f2fe 100%)',
-        transform: 'translate3d(0, 0, 0)',
-        contain: 'strict',
       }}
       aria-hidden="true"
     />

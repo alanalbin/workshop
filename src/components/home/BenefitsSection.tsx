@@ -49,7 +49,7 @@ export default function BenefitsSection({ benefits }: BenefitsSectionProps) {
     },
     {
       id: 'outcome-6',
-      title: 'Official IIC Certificate & Refreshments',
+      title: 'Official IIC Certificate',
       description: 'Activity-endorsed certificate of participation issued under IIC Quarter 1 Activities framework included in the ₹100 pass.',
       icon: Award,
       highlight: 'Credentials & Takeaways',
