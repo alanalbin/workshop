@@ -34,8 +34,8 @@ export default function Footer() {
               className="p-3 rounded-xl bg-white/90 border border-slate-200 hover:border-sky-300 transition-all flex flex-col items-center justify-center h-20 shadow-2xs group"
               title="KMCT College of Engineering for Emerging Technologies and Management, Kasaragod"
             >
-              <img src="/logos/kmct-college.png" alt="KMCT College" className="h-6 w-auto max-w-[130px] object-contain group-hover:scale-105 transition-transform" />
-              <span className="text-[9px] text-slate-600 mt-1.5 font-medium">Host Institution</span>
+              <img src="/logos/kmct-college.png" alt="KMCT College" className="h-7 w-auto max-w-[155px] object-contain group-hover:scale-105 transition-transform" />
+              <span className="text-[9px] text-slate-600 mt-1 font-medium">Host Institution</span>
             </a>
 
             {/* IIC Logo */}
@@ -66,11 +66,18 @@ export default function Footer() {
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
           
-          {/* Col 1: Brand & Mission (Logo removed) */}
+          {/* Col 1: Brand & Mission with Round Blue Emblem */}
           <div className="md:col-span-1 space-y-3">
-            <span className="font-extrabold text-sm tracking-wider text-slate-950 uppercase block">
-              FROM PROBLEM TO POSSIBILITY
-            </span>
+            <div className="flex items-center gap-2.5">
+              <img
+                src="/logos/kmct-icon.png"
+                alt="KMCT Emblem"
+                className="w-7 h-7 object-contain shrink-0"
+              />
+              <span className="font-extrabold text-sm tracking-wider text-slate-950 uppercase block">
+                FROM PROBLEM TO POSSIBILITY
+              </span>
+            </div>
             <p className="text-slate-700 leading-relaxed text-xs font-medium">
               A hands-on, activity-driven offline workshop on Problem Solving, Ideation &amp; Pitching conducted at KMCT College of Engineering for Emerging Technologies and Management, Kasaragod under Institution&apos;s Innovation Council (IIC).
             </p>

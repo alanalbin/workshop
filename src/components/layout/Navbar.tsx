@@ -36,14 +36,21 @@ export default function Navbar() {
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-white/60 shadow-xs">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         
-        {/* Brand Wordmark (Logo removed per user specification) */}
-        <Link href="/" className="flex flex-col group">
-          <span className="font-extrabold text-sm sm:text-base tracking-wider text-slate-950 uppercase group-hover:text-sky-600 transition-colors">
-            PROBLEM TO POSSIBILITY
-          </span>
-          <span className="text-[10px] text-slate-600 font-semibold tracking-tight">
-            KMCT Kasaragod • IIC Quarter 1 Workshop
-          </span>
+        {/* Brand Logo with Official KMCT Emblem */}
+        <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group">
+          <img
+            src="/logos/kmct-icon.png"
+            alt="KMCT Emblem"
+            className="w-8 h-8 sm:w-9 sm:h-9 object-contain drop-shadow-xs group-hover:scale-105 transition-transform shrink-0"
+          />
+          <div className="flex flex-col">
+            <span className="font-extrabold text-xs sm:text-sm md:text-base tracking-wider text-slate-950 uppercase group-hover:text-sky-600 transition-colors leading-tight">
+              PROBLEM TO POSSIBILITY
+            </span>
+            <span className="text-[9px] sm:text-[10px] text-slate-600 font-semibold tracking-tight">
+              KMCT Kasaragod • IIC Quarter 1 Workshop
+            </span>
+          </div>
         </Link>
 
         {/* Desktop Navigation */}
