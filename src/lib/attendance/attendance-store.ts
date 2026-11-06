@@ -226,6 +226,13 @@ export function findCandidate(
     if (it.p2pTicket && it.p2pTicket.toUpperCase() === qClean) return { item: it, index: i };
     if (it.ticketNumber && it.ticketNumber.toUpperCase() === query.toUpperCase().trim()) return { item: it, index: i };
     if (it.p2pTicket && it.p2pTicket.toUpperCase() === query.toUpperCase().trim()) return { item: it, index: i };
+
+    // Match normalized ticket number (e.g. KMCT-WS-01 vs KMCT-WS-0001)
+    const itNum = it.ticketNumber ? parseInt(it.ticketNumber.replace(/\D/g, ''), 10) : NaN;
+    const qNum = parseInt(qClean.replace(/\D/g, ''), 10);
+    if (!isNaN(itNum) && !isNaN(qNum) && itNum === qNum && (qClean.startsWith('KMCT-WS') || query.toUpperCase().startsWith('KMCT-WS'))) {
+      return { item: it, index: i };
+    }
     if (it.email && it.email.toLowerCase() === qRaw) return { item: it, index: i };
     if (it.phone && it.phone.replace(/\D/g, '').endsWith(query.replace(/\D/g, '')) && query.replace(/\D/g, '').length >= 6) {
       return { item: it, index: i };
