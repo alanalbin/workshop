@@ -383,6 +383,7 @@ function PaymentContent() {
           name: activeReg.fullName,
           email: activeReg.email,
           contact: (activeReg.phone || '').replace(/\D/g, '').slice(-10),
+          vpa: keyId.startsWith('rzp_test_') ? 'success@razorpay' : undefined,
         },
         notes: {
           registrationId: activeReg.id,
@@ -690,6 +691,25 @@ function PaymentContent() {
             </div>
           </div>
         )}
+
+        {/* Test Mode UPI Guidance Banner */}
+        <div className="mb-6 p-4 sm:p-5 rounded-2xl bg-amber-50/90 border border-amber-300 text-xs text-amber-950 space-y-2 shadow-sm">
+          <div className="flex items-center gap-2 font-bold text-amber-900 text-sm">
+            <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+            <span>Why does Razorpay say &quot;UPI is invalid&quot;?</span>
+          </div>
+          <p className="text-slate-700 leading-relaxed">
+            Your Razorpay gateway is currently running in <strong>Test Sandbox Mode</strong> (<code className="bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded font-mono font-bold">rzp_test_...</code>).
+          </p>
+          <div className="p-3 rounded-xl bg-white/80 border border-amber-200 text-xs space-y-1.5 text-slate-800">
+            <p>
+              • <strong>To test the checkout flow:</strong> In the Razorpay modal, select <strong>UPI</strong> and use the test VPA <strong className="text-purple-700 font-mono">success@razorpay</strong> (pre-filled automatically) or choose <strong>Netbanking &gt; State Bank of India &gt; Success</strong>. Personal UPI apps/IDs cannot charge real money in Test Mode.
+            </p>
+            <p>
+              • <strong>To collect real ₹100 payments:</strong> Switch to <strong>Live Mode</strong> in your Razorpay Dashboard (toggle top-left switch from Test to Live) and generate your <code className="bg-slate-100 px-1 py-0.5 rounded font-mono font-bold text-slate-900">rzp_live_...</code> keys. Real PhonePe, GPay, and UPI QR codes activate instantly in Live Mode.
+            </p>
+          </div>
+        </div>
 
         {/* Razorpay Checkout Card */}
         <div className="bg-white rounded-3xl p-6 sm:p-9 border border-purple-200 shadow-xl space-y-6 relative overflow-hidden">
