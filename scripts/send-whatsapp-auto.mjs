@@ -4,11 +4,22 @@ import qrcode from 'qrcode-terminal';
 import QRCode from 'qrcode';
 import fs from 'fs';
 import path from 'path';
+import { execSync } from 'child_process';
 
 const PASSES_FILE = path.resolve(process.cwd(), 'public/generated-passes/passes.json');
 const PASSES_DIR = path.resolve(process.cwd(), 'public/generated-passes/passes');
 const STATUS_FILE = path.resolve(process.cwd(), 'public/generated-passes/whatsapp-dispatch-status.json');
 const CHROME_PATH = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
+
+function cleanupStaleChromeProcesses() {
+  if (process.platform === 'win32') {
+    try {
+      execSync('powershell -NoProfile -Command "Get-CimInstance Win32_Process -Filter \\"Name = \'chrome.exe\'\\" | Where-Object { $_.CommandLine -like \'*wwebjs_auth*\' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }"', { stdio: 'ignore' });
+    } catch (_) {}
+  }
+}
+
+cleanupStaleChromeProcesses();
 
 function ensureUtilsPatch() {
   const utilsPath = path.resolve(process.cwd(), 'node_modules/whatsapp-web.js/src/util/Injected/Utils.js');
