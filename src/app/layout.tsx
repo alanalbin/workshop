@@ -48,6 +48,14 @@ export const metadata: Metadata = {
     title: 'FROM PROBLEM TO POSSIBILITY | KMCT Kasaragod',
     description: 'Hands-on Workshop on Problem Solving, Ideation & Pitching with Mr. Muhammed Shayiz K P.',
   },
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', sizes: 'any' },
+    ],
+    apple: '/icon-192.png',
+    shortcut: '/icon.svg',
+  },
 };
 
 export const viewport: Viewport = {
