@@ -249,19 +249,18 @@ a, button, input, select, textarea, [role="button"] {
 
 /* Mobile GPU Performance Optimization (Maintains all visuals & animations at 60-120 FPS) */
 @media (max-width: 768px) {
-  /* On mobile GPUs, clamp 150px Gaussian filter to 36px with GPU compositing to prevent fillrate frame drops */
+  /* On mobile GPUs, disable oversized 500-800px Gaussian filter elements */
   [class*="blur-[130px]"],
   [class*="blur-[140px]"],
   [class*="blur-[150px]"] {
-    filter: blur(36px) !important;
-    transform: translate3d(0, 0, 0);
+    display: none !important;
   }
 
-  /* Optimize full-section background blurs on mobile: sections already have translucent white backing */
+  /* Make sections clean, high-performance solid translucency on mobile */
   section[class*="backdrop-blur"] {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-    background-color: rgba(255, 255, 255, 0.72) !important;
+    background-color: rgba(255, 255, 255, 0.92) !important;
   }
 
   .backdrop-blur-\[2px\] {
@@ -269,17 +268,13 @@ a, button, input, select, textarea, [role="button"] {
     -webkit-backdrop-filter: none !important;
   }
 
+  /* Eliminate costly multi-pass Gaussian shader evaluations during mobile scroll */
   .glass-card,
   [class*="backdrop-blur-xl"],
   [class*="backdrop-blur-2xl"] {
-    backdrop-filter: blur(8px) !important;
-    -webkit-backdrop-filter: blur(8px) !important;
-    transform: translateZ(0);
-  }
-
-  [class*="backdrop-blur"] {
-    transform: translateZ(0);
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.08) !important;
   }
 }

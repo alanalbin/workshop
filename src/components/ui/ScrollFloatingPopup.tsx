@@ -84,7 +84,7 @@ export default function ScrollFloatingPopup({ fee = 100, registrationsClosed }: 
             damping: 24,
             mass: 0.8,
           }}
-          className="fixed bottom-5 right-4 sm:right-6 z-50 max-w-[calc(100vw-2rem)] sm:max-w-md pointer-events-auto will-change-transform"
+          className="hidden sm:block fixed bottom-5 right-4 sm:right-6 z-50 max-w-[calc(100vw-2rem)] sm:max-w-md pointer-events-auto will-change-transform"
           style={{ transform: 'translate3d(0, 0, 0)' }}
         >
           <div className="relative group">
