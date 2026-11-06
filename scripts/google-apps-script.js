@@ -1,23 +1,29 @@
 /**
  * =========================================================================
- * FROM PROBLEM TO POSSIBILITY - WORKSHOP REGISTRATION SYNC & TABLE FORMATTER
+ * FROM PROBLEM TO POSSIBILITY - WORKSHOP PASS DISPATCH & SHEET AUTOMATION
  * KMCT College of Engineering for Emerging Technologies and Management
  * Target Sheet ID: 1ooc3SoHQbKIeCFhaNGm5_qoRSKuC41PDVp_tcodRi4Q
  * =========================================================================
  * 
- * SETUP & DEDUPLICATION INSTRUCTIONS:
+ * INSTRUCTIONS TO UPDATE APPS SCRIPT:
  * 1. Open your Google Sheet:
  *    https://docs.google.com/spreadsheets/d/1ooc3SoHQbKIeCFhaNGm5_qoRSKuC41PDVp_tcodRi4Q/edit
- * 2. Click on "Extensions" > "Apps Script" in the top menu.
- * 3. Replace the existing code with THIS ENTIRE SCRIPT.
- * 4. In the toolbar dropdown, select "deduplicateAndCleanSheet" and click "Run".
- *    -> This will automatically delete all double entries and remove blacklisted records!
- * 5. Click "Deploy" > "Manage deployments" > Edit (pencil icon) > Version: "New version" > Click "Deploy".
+ * 2. Click "Extensions" > "Apps Script".
+ * 3. Replace all existing code with THIS ENTIRE FILE.
+ * 4. Click "Save" (disk icon).
+ * 5. Refresh your Google Sheet. You will now see a new menu: "🎟️ Workshop Passes"!
+ *    - Click "🎟️ Workshop Passes" > "🧪 1. Send Test Pass (Email & WhatsApp)" to test first!
+ *    - Click "🎟️ Workshop Passes" > "📲 2. Populate Ticket IDs & WhatsApp Links" to create 1-click send links.
+ *    - Click "🎟️ Workshop Passes" > "✉️ 3. Send All Passes via Email" to send to all 70 students.
+ * 6. (Optional) Click "Deploy" > "Manage deployments" > Edit > Version: "New version" > "Deploy" to update webhook.
  * =========================================================================
  */
 
 const TARGET_SPREADSHEET_ID = '1ooc3SoHQbKIeCFhaNGm5_qoRSKuC41PDVp_tcodRi4Q';
 const SHEET_NAME = 'Registrations';
+const PASSES_JSON_URL = 'https://workshop-khaki-zeta.vercel.app/generated-passes/passes.json';
+const BASE_PASS_URL = 'https://workshop-khaki-zeta.vercel.app';
+const GITHUB_RAW_BASE = 'https://raw.githubusercontent.com/alanalbin/workshop/main/public';
 
 const HEADERS = [
   'Timestamp',
@@ -30,12 +36,32 @@ const HEADERS = [
   'Payment Status',
   'Payment Method',
   'Transaction / UTR Number',
-  'Amount (₹)'
+  'Amount (₹)',
+  'Ticket ID',
+  'Pass URL',
+  'Email Status',
+  'WhatsApp Action'
 ];
 
 /**
- * Helper to obtain the target spreadsheet instance
+ * Creates custom menu in Google Sheets on document open
  */
+function onOpen() {
+  try {
+    SpreadsheetApp.getUi()
+      .createMenu('🎟️ Workshop Passes')
+      .addItem('🧪 1. Send Test Pass (Email & WhatsApp)', 'sendTestPassInteractive')
+      .addItem('📲 2. Populate Ticket IDs & WhatsApp Links', 'populateWhatsAppAndTicketColumns')
+      .addItem('✉️ 3. Send All Passes via Email (Gmail)', 'sendAllStudentPasses')
+      .addSeparator()
+      .addItem('🧹 4. Deduplicate & Clean Sheet', 'deduplicateAndCleanSheet')
+      .addItem('📊 5. View Dispatch Status', 'showDispatchStatus')
+      .addToUi();
+  } catch (err) {
+    Logger.log('onOpen UI skipped (running in non-interactive mode): ' + err);
+  }
+}
+
 function getActiveSheetInstance() {
   try {
     return SpreadsheetApp.openById(TARGET_SPREADSHEET_ID);
@@ -45,8 +71,465 @@ function getActiveSheetInstance() {
 }
 
 /**
- * Removes duplicate payment entries and removes blacklisted candidate (Kadeejath)
- * Run this function directly from the Apps Script toolbar!
+ * Loads the 70 verified passes catalog from Vercel / GitHub
+ */
+function fetchPassesCatalog() {
+  try {
+    const res = UrlFetchApp.fetch(PASSES_JSON_URL, { muteHttpExceptions: true });
+    if (res.getResponseCode() === 200) {
+      return JSON.parse(res.getContentText());
+    }
+  } catch (e) {
+    Logger.log('Failed to fetch from Vercel, trying GitHub: ' + e);
+  }
+  const ghUrl = GITHUB_RAW_BASE + '/generated-passes/passes.json';
+  const resGh = UrlFetchApp.fetch(ghUrl, { muteHttpExceptions: true });
+  return JSON.parse(resGh.getContentText());
+}
+
+/**
+ * Formats a standardized WhatsApp message for a participant
+ */
+function buildWhatsAppMessage(name, ticketId, passUrl) {
+  return (
+    '🎉 *FROM PROBLEM TO POSSIBILITY - ENTRY PASS CONFIRMED!* 🎉\n' +
+    'KMCT College of Engineering for Emerging Technologies and Management, Kasaragod\n\n' +
+    'Dear *' + name + '*,\n\n' +
+    'Your registration and payment have been verified. Here is your official workshop entry pass!\n\n' +
+    '🎟️ *Ticket ID:* ' + ticketId + '\n' +
+    '📅 *Date:* Wednesday, 11th November 2026\n' +
+    '⏰ *Reporting Time:* 09:00 AM (Workshop starts at 09:30 AM)\n' +
+    '📍 *Venue:* Seminar Hall, KMCT CEETM, Kasaragod\n' +
+    '🎙️ *Resource Person:* Mr. Muhammed Shayiz K P\n\n' +
+    '🔗 *Download / View Your Official Pass:*\n' + passUrl + '\n\n' +
+    '📲 *Entry Instructions:*\n' +
+    '• Please keep this pass or your Ticket ID ready at the entrance.\n' +
+    '• Scan the QR code at the check-in desk to record your attendance.\n' +
+    '• Chart paper, sketch pens, and problem worksheets will be provided.\n\n' +
+    'See you at the workshop!\n\n' +
+    '_Institution’s Innovation Council (IIC), KMCT CEETM_'
+  );
+}
+
+/**
+ * Builds rich HTML email body with embedded dark wine pass
+ */
+function buildEmailHtml(name, ticketId, course, year, passUrl) {
+  return `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 620px; margin: 0 auto; background-color: #120307; color: #fdf2f4; border-radius: 16px; overflow: hidden; border: 1px solid #7f1d2d; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+      
+      <!-- Top Burgundy Header -->
+      <div style="background: linear-gradient(135deg, #2b050d 0%, #4a0917 50%, #1f0208 100%); padding: 28px 24px; text-align: center; border-bottom: 2px solid #991b1b;">
+        <p style="margin: 0; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: #fda4af; font-weight: 700;">KMCT College of Engineering for Emerging Technologies and Management</p>
+        <p style="margin: 4px 0 0 0; font-size: 10px; color: #fecdd3; letter-spacing: 1px;">Institution’s Innovation Council (IIC) &bull; Kasaragod</p>
+        <h1 style="margin: 16px 0 6px 0; font-size: 24px; color: #ffffff; letter-spacing: 1px; font-weight: 900;">FROM PROBLEM TO POSSIBILITY</h1>
+        <p style="margin: 0; font-size: 13px; color: #f43f5e; font-weight: 600;">Turn Real-World Challenges into Pitch-Ready Innovations!</p>
+      </div>
+
+      <!-- Verified Badge -->
+      <div style="background: #1c050a; padding: 16px; text-align: center; border-bottom: 1px solid #470814;">
+        <span style="display: inline-block; background: #064e3b; color: #6ee7b7; font-size: 12px; font-weight: bold; padding: 6px 14px; border-radius: 9999px; border: 1px solid #059669;">
+          &check; PAYMENT VERIFIED &bull; OFFICIAL ENTRY PASS ISSUED
+        </span>
+      </div>
+
+      <!-- Main Body -->
+      <div style="padding: 28px 24px;">
+        <p style="font-size: 16px; margin: 0 0 12px 0; color: #ffffff;">Dear <strong>${name}</strong>,</p>
+        <p style="font-size: 14px; line-height: 1.6; color: #fecdd3; margin: 0 0 20px 0;">
+          Congratulations! Your seat for the hands-on <strong>From Problem to Possibility</strong> workshop is officially reserved. Your unique digital entry pass with high-definition check-in QR code has been generated.
+        </p>
+
+        <!-- Ticket Summary Card -->
+        <div style="background: #20040b; border: 1px solid #881337; border-radius: 12px; padding: 18px 20px; margin-bottom: 24px;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+            <tr>
+              <td style="padding: 6px 0; color: #fda4af; font-weight: 600;">Ticket ID:</td>
+              <td style="padding: 6px 0; text-align: right; font-family: monospace; font-size: 16px; font-weight: bold; color: #ffffff; letter-spacing: 1px;">${ticketId}</td>
+            </tr>
+            <tr>
+              <td style="padding: 6px 0; color: #fda4af;">Participant:</td>
+              <td style="padding: 6px 0; text-align: right; font-weight: 600; color: #ffe4e6;">${name}</td>
+            </tr>
+            <tr>
+              <td style="padding: 6px 0; color: #fda4af;">Department:</td>
+              <td style="padding: 6px 0; text-align: right; color: #ffe4e6;">${course} (${year})</td>
+            </tr>
+            <tr>
+              <td style="padding: 6px 0; color: #fda4af;">Event Date:</td>
+              <td style="padding: 6px 0; text-align: right; font-weight: 600; color: #ffffff;">Wednesday, 11th November 2026</td>
+            </tr>
+            <tr>
+              <td style="padding: 6px 0; color: #fda4af;">Timing:</td>
+              <td style="padding: 6px 0; text-align: right; color: #ffe4e6;">09:30 AM &ndash; 04:00 PM (Report by 09:00 AM)</td>
+            </tr>
+            <tr>
+              <td style="padding: 6px 0; color: #fda4af;">Venue:</td>
+              <td style="padding: 6px 0; text-align: right; font-weight: 600; color: #ffffff;">Seminar Hall, KMCT CEETM, Kasaragod</td>
+            </tr>
+            <tr>
+              <td style="padding: 6px 0; color: #fda4af;">Resource Person:</td>
+              <td style="padding: 6px 0; text-align: right; color: #ffe4e6;">Mr. Muhammed Shayiz K P</td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- Inline Pass Banner -->
+        <div style="text-align: center; margin: 24px 0;">
+          <p style="font-size: 12px; color: #fda4af; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 1px;">Official Entry Pass Preview (Attached as High-Res File):</p>
+          <img src="${passUrl}" alt="Workshop Entry Pass" style="max-width: 100%; width: 440px; height: auto; border-radius: 12px; border: 2px solid #be123c; box-shadow: 0 8px 24px rgba(0,0,0,0.6);" />
+        </div>
+
+        <!-- Download Button -->
+        <div style="text-align: center; margin: 28px 0;">
+          <a href="${passUrl}" target="_blank" style="display: inline-block; background: linear-gradient(135deg, #e11d48, #9f1239); color: #ffffff; text-decoration: none; padding: 14px 28px; font-size: 14px; font-weight: bold; border-radius: 9999px; box-shadow: 0 4px 14px rgba(225, 29, 72, 0.4);">
+            &darr; View &amp; Download Full HD Pass
+          </a>
+        </div>
+
+        <!-- Instructions -->
+        <div style="background: #190308; border-left: 4px solid #f43f5e; padding: 14px 16px; border-radius: 6px; margin: 20px 0;">
+          <h4 style="margin: 0 0 6px 0; font-size: 13px; color: #ffffff;">Entry &amp; Check-In Guidelines:</h4>
+          <ul style="margin: 0; padding-left: 18px; font-size: 12px; line-height: 1.6; color: #fecdd3;">
+            <li>Please show this digital pass on your phone or quote your Ticket ID (<strong>${ticketId}</strong>) at the venue registration counter.</li>
+            <li>Scan the QR code at the desk for instant automated attendance logging.</li>
+            <li>Multidisciplinary innovation teams will be formed at 09:30 AM sharp.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div style="background: #090103; padding: 20px 24px; text-align: center; font-size: 11px; color: #9f1239; border-top: 1px solid #4c0519;">
+        <p style="margin: 0;">Organized by Institution’s Innovation Council (IIC)</p>
+        <p style="margin: 4px 0 0 0;">KMCT College of Engineering for Emerging Technologies and Management, Kasaragod</p>
+        <p style="margin: 8px 0 0 0; color: #881337;">Contact: abdulmujeeb@kmct.edu.in | +91 94474 38228</p>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Interactively prompts organizer for email and phone to send a test pass
+ */
+function sendTestPassInteractive() {
+  const ui = SpreadsheetApp.getUi();
+  const emailPrompt = ui.prompt(
+    '🧪 Send Test Pass - Step 1 of 2',
+    'Enter the TEST EMAIL address to send the pass to:',
+    ui.ButtonSet.OK_CANCEL
+  );
+
+  if (emailPrompt.getSelectedButton() !== ui.Button.OK) return;
+  const testEmail = emailPrompt.getResponseText().trim();
+  if (!testEmail || testEmail.indexOf('@') === -1) {
+    ui.alert('Invalid email address entered.');
+    return;
+  }
+
+  const phonePrompt = ui.prompt(
+    '🧪 Send Test Pass - Step 2 of 2',
+    'Enter your WhatsApp Mobile Number (10 digits, e.g. 9876543210):',
+    ui.ButtonSet.OK_CANCEL
+  );
+
+  if (phonePrompt.getSelectedButton() !== ui.Button.OK) return;
+  let testPhone = phonePrompt.getResponseText().replace(/[^0-9]/g, '').trim();
+  if (testPhone.length === 10) testPhone = '91' + testPhone;
+
+  const result = executeTestPass(testEmail, testPhone);
+  
+  if (result.success) {
+    const htmlOutput = HtmlService.createHtmlOutput(
+      '<div style="font-family: sans-serif; padding: 10px;">' +
+      '<h3 style="color: #15803d;">✅ Test Email Dispatched!</h3>' +
+      '<p>A test pass email has been sent to: <strong>' + testEmail + '</strong></p>' +
+      '<p>Ticket ID: <strong>' + result.ticketId + '</strong></p>' +
+      '<hr/>' +
+      '<h4>📱 WhatsApp Test Message:</h4>' +
+      '<p>Click the button below to test opening WhatsApp with the pre-filled message:</p>' +
+      '<a href="' + result.whatsappUrl + '" target="_blank" style="display:inline-block;background:#25D366;color:white;padding:12px 20px;text-decoration:none;font-weight:bold;border-radius:8px;">Open WhatsApp Test Chat</a>' +
+      '<p style="font-size:12px;color:#666;margin-top:12px;">URL: ' + result.whatsappUrl + '</p>' +
+      '</div>'
+    ).setWidth(500).setHeight(360);
+    ui.showModalDialog(htmlOutput, 'Test Pass Sent Successfully');
+  } else {
+    ui.alert('Error sending test pass: ' + result.error);
+  }
+}
+
+/**
+ * Core test pass executor callable programmatically or via Webhook
+ */
+function executeTestPass(testEmail, testPhone) {
+  try {
+    const passes = fetchPassesCatalog();
+    const samplePass = (passes && passes.length > 0) ? passes[0] : null;
+    
+    const ticketId = 'KMCT-WS-TEST-0001';
+    const candidateName = 'Test Participant (Organizer Preview)';
+    const course = 'CSE / IIC Innovation Lab';
+    const year = '1st Year';
+    const passUrl = samplePass 
+      ? (BASE_PASS_URL + samplePass.passImageUrl) 
+      : (BASE_PASS_URL + '/generated-passes/passes/KMCT-WS-0001_nafeesath_saja.png');
+
+    // 1. Fetch pass image blob for attachment
+    let passBlob = null;
+    try {
+      const imgRes = UrlFetchApp.fetch(passUrl, { muteHttpExceptions: true });
+      if (imgRes.getResponseCode() === 200) {
+        passBlob = imgRes.getBlob().setName('Workshop_Pass_' + ticketId + '.png');
+      }
+    } catch (err) {
+      Logger.log('Could not fetch image blob: ' + err);
+    }
+
+    // 2. Build email content
+    const subject = '🎟️ [TEST] Entry Pass: From Problem to Possibility Workshop [' + ticketId + ']';
+    const htmlBody = buildEmailHtml(candidateName, ticketId, course, year, passUrl);
+
+    const emailOptions = {
+      htmlBody: htmlBody,
+      name: 'KMCT CEETM - Problem to Possibility'
+    };
+    if (passBlob) {
+      emailOptions.attachments = [passBlob];
+    }
+
+    // 3. Send email via Gmail
+    GmailApp.sendEmail(testEmail, subject, 'Please view this email in an HTML-compatible client.', emailOptions);
+
+    // 4. Generate WhatsApp direct URL
+    const cleanPhone = (testPhone || '').replace(/[^0-9]/g, '');
+    const waText = buildWhatsAppMessage(candidateName, ticketId, passUrl);
+    const waUrl = 'https://api.whatsapp.com/send?phone=' + cleanPhone + '&text=' + encodeURIComponent(waText);
+
+    Logger.log('Test pass sent to email: ' + testEmail + ', WhatsApp: ' + waUrl);
+    return {
+      success: true,
+      ticketId: ticketId,
+      email: testEmail,
+      phone: testPhone,
+      passUrl: passUrl,
+      whatsappUrl: waUrl
+    };
+  } catch (error) {
+    Logger.log('executeTestPass Error: ' + error);
+    return { success: false, error: error.toString() };
+  }
+}
+
+/**
+ * Populates Ticket IDs, Pass URLs, and 1-Click WhatsApp links in Sheet
+ */
+function populateWhatsAppAndTicketColumns() {
+  const ss = getActiveSheetInstance();
+  const sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) return 'No sheet found';
+
+  // Ensure header row has all 15 columns
+  const headerRange = sheet.getRange(1, 1, 1, HEADERS.length);
+  headerRange.setValues([HEADERS]);
+  headerRange
+    .setFontFamily('Roboto')
+    .setFontSize(10)
+    .setFontWeight('bold')
+    .setFontColor('#FFFFFF')
+    .setBackground('#0f172a')
+    .setHorizontalAlignment('center')
+    .setVerticalAlignment('middle');
+
+  sheet.setColumnWidth(12, 140); // Ticket ID
+  sheet.setColumnWidth(13, 240); // Pass URL
+  sheet.setColumnWidth(14, 160); // Email Status
+  sheet.setColumnWidth(15, 180); // WhatsApp Action
+
+  const passes = fetchPassesCatalog();
+  const passByEmail = {};
+  const passByPhone = {};
+  const passByName = {};
+
+  passes.forEach(function(p) {
+    if (p.email) passByEmail[p.email.toLowerCase().trim()] = p;
+    if (p.phone) passByPhone[p.phone.replace(/[^0-9]/g, '').slice(-10)] = p;
+    if (p.fullName) passByName[p.fullName.toLowerCase().trim()] = p;
+  });
+
+  const lastRow = sheet.getLastRow();
+  if (lastRow <= 1) return 'No candidates to populate';
+
+  const rows = sheet.getRange(2, 1, lastRow - 1, HEADERS.length).getValues();
+  let assignedCount = 0;
+
+  for (let i = 0; i < rows.length; i++) {
+    const rowIdx = i + 2;
+    const name = String(rows[i][2] || '').trim();
+    const email = String(rows[i][3] || '').toLowerCase().trim();
+    const phone = String(rows[i][4] || '').replace(/[^0-9]/g, '').slice(-10);
+
+    // Find matching pass or assign index-based pass
+    let matchedPass = passByEmail[email] || passByPhone[phone] || passByName[name.toLowerCase()];
+    if (!matchedPass && i < passes.length) {
+      matchedPass = passes[i];
+    }
+
+    if (matchedPass) {
+      const ticketId = matchedPass.ticketNumber;
+      const passUrl = BASE_PASS_URL + matchedPass.passImageUrl;
+      const cleanPhone = '91' + (phone || matchedPass.phone || '');
+      const waMsg = buildWhatsAppMessage(name || matchedPass.fullName, ticketId, passUrl);
+      const waUrl = 'https://api.whatsapp.com/send?phone=' + cleanPhone + '&text=' + encodeURIComponent(waMsg);
+      const waFormula = '=HYPERLINK("' + waUrl + '", "📲 Send WhatsApp")';
+
+      sheet.getRange(rowIdx, 12).setValue(ticketId).setHorizontalAlignment('center').setFontWeight('bold');
+      sheet.getRange(rowIdx, 13).setValue(passUrl);
+      
+      const currentEmailStatus = sheet.getRange(rowIdx, 14).getValue();
+      if (!currentEmailStatus) {
+        sheet.getRange(rowIdx, 14).setValue('Ready to send').setHorizontalAlignment('center');
+      }
+
+      sheet.getRange(rowIdx, 15).setFormula(waFormula).setHorizontalAlignment('center');
+      assignedCount++;
+    }
+  }
+
+  Logger.log('Populated ' + assignedCount + ' passes with Ticket IDs & WhatsApp links.');
+  try {
+    SpreadsheetApp.getUi().alert('✅ Success: Populated ' + assignedCount + ' Ticket IDs and 1-Click WhatsApp links in columns 12-15!');
+  } catch(e) {}
+  return 'Populated ' + assignedCount + ' passes';
+}
+
+/**
+ * Sends official passes to all confirmed participants via Gmail
+ */
+function sendAllStudentPasses() {
+  const ui = SpreadsheetApp.getUi();
+  const confirm = ui.alert(
+    '⚠️ Confirmation: Send Passes to ALL Students',
+    'Are you sure you want to send official workshop passes via email to all confirmed students in this sheet? (Students with "SENT" status will be safely skipped)',
+    ui.ButtonSet.YES_NO
+  );
+
+  if (confirm !== ui.Button.YES) return;
+
+  const ss = getActiveSheetInstance();
+  const sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) return;
+
+  const passes = fetchPassesCatalog();
+  const passByEmail = {};
+  passes.forEach(function(p) {
+    if (p.email) passByEmail[p.email.toLowerCase().trim()] = p;
+  });
+
+  const lastRow = sheet.getLastRow();
+  const rows = sheet.getRange(2, 1, lastRow - 1, HEADERS.length).getValues();
+  let sentCount = 0;
+  let skippedCount = 0;
+
+  for (let i = 0; i < rows.length; i++) {
+    const rowIdx = i + 2;
+    const name = String(rows[i][2] || '').trim();
+    const email = String(rows[i][3] || '').toLowerCase().trim();
+    const course = String(rows[i][5] || 'CSE').trim();
+    const year = String(rows[i][6] || '1st Year').trim();
+    const paymentStatus = String(rows[i][7] || '').toUpperCase();
+    const currentStatus = String(rows[i][13] || '');
+
+    // Skip unpaid or already sent
+    if (currentStatus.indexOf('SENT') !== -1) {
+      skippedCount++;
+      continue;
+    }
+    if (paymentStatus.indexOf('PAID') === -1 && paymentStatus.indexOf('CONFIRMED') === -1) {
+      skippedCount++;
+      continue;
+    }
+    if (!email || email.indexOf('@') === -1) {
+      skippedCount++;
+      continue;
+    }
+
+    let matchedPass = passByEmail[email] || (i < passes.length ? passes[i] : null);
+    if (!matchedPass) continue;
+
+    const ticketId = matchedPass.ticketNumber;
+    const passUrl = BASE_PASS_URL + matchedPass.passImageUrl;
+
+    try {
+      let passBlob = null;
+      try {
+        const imgRes = UrlFetchApp.fetch(passUrl, { muteHttpExceptions: true });
+        if (imgRes.getResponseCode() === 200) {
+          passBlob = imgRes.getBlob().setName('Workshop_Pass_' + ticketId + '.png');
+        }
+      } catch (imgErr) {}
+
+      const subject = '🎟️ Entry Pass: From Problem to Possibility Workshop [' + ticketId + ']';
+      const htmlBody = buildEmailHtml(name, ticketId, course, year, passUrl);
+
+      const opts = {
+        htmlBody: htmlBody,
+        name: 'KMCT CEETM - Problem to Possibility'
+      };
+      if (passBlob) opts.attachments = [passBlob];
+
+      GmailApp.sendEmail(email, subject, 'Please view this email in an HTML client.', opts);
+
+      // Update Sheet Status
+      const timestamp = Utilities.formatDate(new Date(), 'Asia/Kolkata', 'dd/MM/yyyy HH:mm');
+      sheet.getRange(rowIdx, 12).setValue(ticketId);
+      sheet.getRange(rowIdx, 13).setValue(passUrl);
+      sheet.getRange(rowIdx, 14).setValue('SENT: ' + timestamp).setFontColor('#15803d').setFontWeight('bold');
+      sentCount++;
+
+      // Pause briefly between sends
+      Utilities.sleep(400);
+    } catch (err) {
+      Logger.log('Failed to send to ' + email + ': ' + err);
+      sheet.getRange(rowIdx, 14).setValue('ERROR: ' + err.message).setFontColor('#dc2626');
+    }
+  }
+
+  ui.alert('🎉 Batch Send Complete!\nSent: ' + sentCount + ' emails\nSkipped / Already Sent: ' + skippedCount);
+}
+
+/**
+ * Displays summary status of dispatch
+ */
+function showDispatchStatus() {
+  const ss = getActiveSheetInstance();
+  const sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) return;
+
+  const lastRow = sheet.getLastRow();
+  if (lastRow <= 1) {
+    SpreadsheetApp.getUi().alert('No candidate records in sheet.');
+    return;
+  }
+
+  const statuses = sheet.getRange(2, 14, lastRow - 1, 1).getValues();
+  let sent = 0;
+  let pending = 0;
+
+  for (let i = 0; i < statuses.length; i++) {
+    const s = String(statuses[i][0] || '');
+    if (s.indexOf('SENT') !== -1) sent++;
+    else pending++;
+  }
+
+  SpreadsheetApp.getUi().alert(
+    '📊 Workshop Pass Dispatch Status\n\n' +
+    'Total Verified Students: ' + (lastRow - 1) + '\n' +
+    'Passes Emailed: ' + sent + '\n' +
+    'Passes Pending: ' + pending
+  );
+}
+
+/**
+ * Removes duplicate payment entries and removes blacklisted candidate
  */
 function deduplicateAndCleanSheet() {
   const ss = getActiveSheetInstance();
@@ -60,15 +543,13 @@ function deduplicateAndCleanSheet() {
   const seenPayments = {};
   let deletedCount = 0;
 
-  // Iterate backwards from the bottom so row deletion indices remain valid
   for (let r = lastRow; r >= 2; r--) {
     const rowValues = data[r - 1];
-    const regId = String(rowValues[1] || '').trim();
     const fullName = String(rowValues[2] || '').trim().toLowerCase();
     const email = String(rowValues[3] || '').trim().toLowerCase();
     const paymentId = String(rowValues[9] || '').trim();
 
-    // 1. Remove blacklisted candidate (Kadeejath Mashmooma Gulzar)
+    // 1. Remove blacklisted candidate (Kadeejath)
     if (
       email.indexOf('kadeejath') !== -1 ||
       fullName.indexOf('kadeejath') !== -1 ||
@@ -92,7 +573,6 @@ function deduplicateAndCleanSheet() {
     }
   }
 
-  // Re-apply alternating colors and styling
   const updatedLastRow = sheet.getLastRow();
   for (let r = 2; r <= updatedLastRow; r++) {
     const range = sheet.getRange(r, 1, 1, HEADERS.length);
@@ -101,63 +581,10 @@ function deduplicateAndCleanSheet() {
   }
 
   Logger.log('Cleaned ' + deletedCount + ' rows. Final confirmed candidates: ' + (updatedLastRow - 1));
+  try {
+    SpreadsheetApp.getUi().alert('🧹 Cleaned ' + deletedCount + ' duplicate rows. Final confirmed count: ' + (updatedLastRow - 1));
+  } catch(e) {}
   return 'Cleaned ' + deletedCount + ' rows. Final verified count: ' + (updatedLastRow - 1);
-}
-
-/**
- * Run this function once from the Apps Script editor to format the sheet table
- */
-function setupTableFormatting() {
-  const ss = getActiveSheetInstance();
-  let sheet = ss.getSheetByName(SHEET_NAME);
-  
-  if (!sheet) {
-    sheet = ss.insertSheet(SHEET_NAME, 0);
-  }
-
-  // Header Row Setup
-  const headerRange = sheet.getRange(1, 1, 1, HEADERS.length);
-  headerRange.setValues([HEADERS]);
-
-  // Modern Dark Institutional Styling for Table Header
-  headerRange
-    .setFontFamily('Roboto')
-    .setFontSize(10)
-    .setFontWeight('bold')
-    .setFontColor('#FFFFFF')
-    .setBackground('#0f172a')
-    .setHorizontalAlignment('center')
-    .setVerticalAlignment('middle')
-    .setWrap(false);
-
-  sheet.setRowHeight(1, 40);
-  sheet.setFrozenRows(1);
-
-  // Optimized Column Widths
-  sheet.setColumnWidth(1, 175); // Timestamp
-  sheet.setColumnWidth(2, 240); // Registration ID
-  sheet.setColumnWidth(3, 220); // Full Name
-  sheet.setColumnWidth(4, 250); // Email Address
-  sheet.setColumnWidth(5, 150); // Mobile
-  sheet.setColumnWidth(6, 260); // Course / Dept
-  sheet.setColumnWidth(7, 120); // Year
-  sheet.setColumnWidth(8, 160); // Payment Status
-  sheet.setColumnWidth(9, 130); // Method
-  sheet.setColumnWidth(10, 220); // Transaction / UTR
-  sheet.setColumnWidth(11, 110); // Amount (₹)
-
-  // Alignments & Number Formats
-  const maxRows = Math.max(sheet.getMaxRows() - 1, 100);
-  sheet.getRange(2, 1, maxRows, 1).setHorizontalAlignment('center');
-  sheet.getRange(2, 2, maxRows, 1).setHorizontalAlignment('center');
-  sheet.getRange(2, 5, maxRows, 1).setHorizontalAlignment('center');
-  sheet.getRange(2, 7, maxRows, 1).setHorizontalAlignment('center');
-  sheet.getRange(2, 8, maxRows, 1).setHorizontalAlignment('center');
-  sheet.getRange(2, 9, maxRows, 1).setHorizontalAlignment('center');
-  sheet.getRange(2, 11, maxRows, 1).setHorizontalAlignment('right').setNumberFormat('₹#,##0');
-
-  Logger.log('Table formatting applied successfully to sheet: ' + SHEET_NAME);
-  return 'Table formatted successfully!';
 }
 
 /**
@@ -186,7 +613,7 @@ function doGet(e) {
 }
 
 /**
- * Webhook receiver for candidate registration sync (POST)
+ * Webhook receiver for candidate registration sync & remote actions (POST)
  */
 function doPost(e) {
   try {
@@ -198,49 +625,53 @@ function doPost(e) {
     const rawData = e.postData.contents;
     const data = JSON.parse(rawData);
 
-    // Optional remote cleanup action
+    // 1. Remote Send Test Pass Action
+    if (data.action === 'send_test' || data.action === 'send_test_pass') {
+      const testEmail = data.testEmail || data.email;
+      const testPhone = data.testPhone || data.phone;
+      const res = executeTestPass(testEmail, testPhone);
+      return ContentService.createTextOutput(JSON.stringify(res))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // 2. Remote Cleanup Action
     if (data.action === 'cleanup' || data.action === 'deduplicate') {
       const res = deduplicateAndCleanSheet();
       return ContentService.createTextOutput(JSON.stringify({ status: 'success', result: res }))
         .setMimeType(ContentService.MimeType.JSON);
     }
 
+    // 3. Remote Populate WhatsApp & Ticket IDs Action
+    if (data.action === 'populate_whatsapp' || data.action === 'populate') {
+      const res = populateWhatsAppAndTicketColumns();
+      return ContentService.createTextOutput(JSON.stringify({ status: 'success', result: res }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // 4. Default: Sync candidate registration to sheet
     const ss = getActiveSheetInstance();
     let sheet = ss.getSheetByName(SHEET_NAME);
     if (!sheet) {
-      setupTableFormatting();
-      sheet = ss.getSheetByName(SHEET_NAME);
+      sheet = ss.insertSheet(SHEET_NAME, 0);
     }
 
     const regId = data.registrationNumber || data['Registration ID'] || data['Registration Number'] || data.id || 'N/A';
     const email = (data.email || data['Email Address'] || data['Email'] || '').toLowerCase().trim();
     const utr = data.utr || data.transactionOrUtr || data['Transaction / UTR Number'] || data.paymentId || 'N/A';
 
-    // Strict Deduplication check: Avoid double-inserting by Payment ID or Registration ID
     const lastRow = sheet.getLastRow();
     if (lastRow > 1) {
-      const existingData = sheet.getRange(2, 1, lastRow - 1, HEADERS.length).getValues();
+      const existingData = sheet.getRange(2, 1, lastRow - 1, Math.min(10, HEADERS.length)).getValues();
       for (let i = 0; i < existingData.length; i++) {
-        const rowRegId = String(existingData[i][1]).trim();
-        const rowEmail = String(existingData[i][3]).toLowerCase().trim();
-        const rowUtr = String(existingData[i][9]).trim();
-
-        // 1. Skip if same Payment ID already exists in sheet!
+        const rowUtr = String(existingData[i][9] || '').trim();
+        const rowRegId = String(existingData[i][1] || '').trim();
         if (utr !== 'N/A' && utr.indexOf('pay_') === 0 && rowUtr === utr) {
-          return ContentService.createTextOutput(JSON.stringify({
-            status: 'duplicate_skipped',
-            message: 'Payment ID already recorded in sheet: ' + utr,
-            id: regId
-          })).setMimeType(ContentService.MimeType.JSON);
+          return ContentService.createTextOutput(JSON.stringify({ status: 'duplicate_skipped', message: 'Payment ID already recorded: ' + utr }))
+            .setMimeType(ContentService.MimeType.JSON);
         }
-
-        // 2. Skip if same Ticket ID already exists
         if (regId !== 'N/A' && rowRegId === regId) {
-          return ContentService.createTextOutput(JSON.stringify({
-            status: 'duplicate_skipped',
-            message: 'Registration ID already recorded in sheet',
-            id: regId
-          })).setMimeType(ContentService.MimeType.JSON);
+          return ContentService.createTextOutput(JSON.stringify({ status: 'duplicate_skipped', message: 'Registration ID already recorded' }))
+            .setMimeType(ContentService.MimeType.JSON);
         }
       }
     }
@@ -269,37 +700,18 @@ function doPost(e) {
     ];
 
     sheet.appendRow(newRow);
-
     const newRowNum = sheet.getLastRow();
-    const appendedRange = sheet.getRange(newRowNum, 1, 1, HEADERS.length);
+    const appendedRange = sheet.getRange(newRowNum, 1, 1, newRow.length);
     appendedRange.setFontFamily('Roboto').setFontSize(10).setVerticalAlignment('middle');
     sheet.setRowHeight(newRowNum, 28);
+    appendedRange.setBackground(newRowNum % 2 === 0 ? '#f8fafc' : '#ffffff');
+    sheet.getRange(newRowNum, 8).setFontColor('#15803d').setFontWeight('bold');
+    sheet.getRange(newRowNum, 11).setNumberFormat('₹#,##0');
 
-    // Subtle alternating row shading
-    if (newRowNum % 2 === 0) {
-      appendedRange.setBackground('#f8fafc');
-    } else {
-      appendedRange.setBackground('#ffffff');
-    }
-
-    // Bold Green text for Confirmed / Paid status
-    const statusCell = sheet.getRange(newRowNum, 8);
-    statusCell.setFontColor('#15803d').setFontWeight('bold');
-
-    // Amount column formatting
-    const amountCell = sheet.getRange(newRowNum, 11);
-    amountCell.setNumberFormat('₹#,##0');
-
-    return ContentService.createTextOutput(JSON.stringify({
-      status: 'success',
-      row: newRowNum,
-      id: regId,
-      email: email
-    })).setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput(JSON.stringify({ status: 'success', row: newRowNum, id: regId }))
+      .setMimeType(ContentService.MimeType.JSON);
   } catch (error) {
-    return ContentService.createTextOutput(JSON.stringify({
-      status: 'error',
-      message: error.toString()
-    })).setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput(JSON.stringify({ status: 'error', message: error.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
   }
 }
