@@ -245,8 +245,14 @@ async function main() {
       }
 
       try {
-        const isRegistered = await client.isRegisteredUser(chatId);
-        if (!isRegistered) {
+        let isRegistered = true;
+        try {
+          isRegistered = await client.isRegisteredUser(chatId);
+        } catch (_) {
+          // If isRegisteredUser IQ query fails due to socket busy, continue to sendMessage
+        }
+
+        if (isRegistered === false) {
           console.warn(`[${i + 1}/${queue.length}] ⚠️ +${phone} (${p.fullName}) is not on WhatsApp!`);
           status.failed[ticketId] = { error: 'Not on WhatsApp', phone, time: new Date().toISOString() };
           saveStatus(status);
@@ -257,7 +263,23 @@ async function main() {
         const media = MessageMedia.fromFilePath(imagePath);
         const caption = buildMessage(p.fullName, ticketId, p.course, p.year);
 
-        await client.sendMessage(chatId, media, { caption });
+        // Send with up to 3 retries on socket hiccup
+        let sentOk = false;
+        let lastError = null;
+        for (let attempt = 1; attempt <= 3; attempt++) {
+          try {
+            await client.sendMessage(chatId, media, { caption });
+            sentOk = true;
+            break;
+          } catch (sendErr) {
+            lastError = sendErr;
+            console.warn(`    ⚠️ Send attempt ${attempt} failed (${sendErr.message}). Waiting 4s before retry...`);
+            await new Promise(r => setTimeout(r, 4000));
+          }
+        }
+
+        if (!sentOk) throw lastError;
+
         successCount++;
         status.delivered[ticketId] = { phone, name: p.fullName, time: new Date().toISOString() };
         delete status.failed[ticketId];
