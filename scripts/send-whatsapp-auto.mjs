@@ -10,6 +10,23 @@ const PASSES_DIR = path.resolve(process.cwd(), 'public/generated-passes/passes')
 const STATUS_FILE = path.resolve(process.cwd(), 'public/generated-passes/whatsapp-dispatch-status.json');
 const CHROME_PATH = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
 
+function ensureUtilsPatch() {
+  const utilsPath = path.resolve(process.cwd(), 'node_modules/whatsapp-web.js/src/util/Injected/Utils.js');
+  if (fs.existsSync(utilsPath)) {
+    let content = fs.readFileSync(utilsPath, 'utf-8');
+    if (!content.includes('delete message.__x_id;')) {
+      content = content.replace(
+        'if (botOptions) {\n            delete message.canonicalUrl;\n        }',
+        'if (botOptions) {\n            delete message.canonicalUrl;\n        }\n\n        delete message.__x_id;\n        message.id = newMsgKey;'
+      );
+      fs.writeFileSync(utilsPath, content, 'utf-8');
+      console.log('✅ Applied WhatsApp Web memoization fix to Utils.js');
+    }
+  }
+}
+
+ensureUtilsPatch();
+
 function cleanPhone(raw) {
   const digits = (raw || '').replace(/[^0-9]/g, '');
   if (digits.length === 10) return '91' + digits;
@@ -281,3 +298,4 @@ main().catch(err => {
   console.error('Fatal dispatch error:', err);
   process.exit(1);
 });
+
