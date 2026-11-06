@@ -36,7 +36,9 @@ export const DEFAULT_EVENT_CONFIG: EventConfig = {
   // UPI & Payment Defaults
   upiId: 'abdulmujeeb@kmct',
   upiMerchantName: 'KMCT IIC Workshop',
-  googleSheetWebhookUrl: process.env.GOOGLE_SHEET_WEBHOOK_URL || '',
+  googleSheetWebhookUrl:
+    process.env.GOOGLE_SHEET_WEBHOOK_URL ||
+    'https://script.google.com/macros/s/AKfycbx2l5e8mo6ul32UJXW6ZUGpoKILI964H5jpb2OY_eTSjPUPjfPArCP32-QJJB3wmVKqzQ/exec',
 
   // Coordinators & Approvals
   officialContact: {

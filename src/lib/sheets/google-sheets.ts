@@ -57,7 +57,7 @@ export function formatCandidateForSheet(
 }
 
 export const GOOGLE_SHEET_DEPLOYMENT_ID =
-  'AKfycbxjXc24ovEYwjPYPWT5cQQwLE3Q2qkO7_sp1krEWDH65_5RhuCAhpR2kKlwBbiRJXeBJQ';
+  'AKfycbx2l5e8mo6ul32UJXW6ZUGpoKILI964H5jpb2OY_eTSjPUPjfPArCP32-QJJB3wmVKqzQ';
 export const DEFAULT_WEBHOOK_URL = `https://script.google.com/macros/s/${GOOGLE_SHEET_DEPLOYMENT_ID}/exec`;
 
 /**
