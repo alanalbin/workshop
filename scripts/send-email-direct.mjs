@@ -95,6 +95,7 @@ function buildHtml(name, ticketId, course, year) {
 async function run() {
   const args = process.argv.slice(2);
   let trialEmail = '';
+  let singleTarget = '';
   let sendAll = args.includes('--send-all');
   let resendFailed = args.includes('--resend-failed') || args.includes('--retry-failed');
   let user = process.env.GMAIL_USER || '';
@@ -102,6 +103,7 @@ async function run() {
 
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--trial' && args[i + 1]) trialEmail = args[i + 1];
+    if (args[i] === '--single' && args[i + 1]) singleTarget = args[i + 1];
     if (args[i] === '--user' && args[i + 1]) user = args[i + 1];
     if (args[i] === '--pass' && args[i + 1]) pass = args[i + 1];
   }
@@ -179,6 +181,54 @@ async function run() {
   }
 
   const passes = JSON.parse(fs.readFileSync(PASSES_FILE, 'utf-8'));
+
+  // Single Target Mode (Send to a specific participant by name, email, or ticket)
+  if (singleTarget) {
+    const query = singleTarget.toLowerCase().trim();
+    const p = passes.find(
+      x =>
+        x.ticketNumber.toLowerCase() === query ||
+        x.email.toLowerCase() === query ||
+        x.fullName.toLowerCase().includes(query)
+    );
+
+    if (!p) {
+      console.error(`❌ Could not find participant matching: "${singleTarget}"`);
+      return;
+    }
+
+    const imagePath = path.join(PASSES_DIR, p.passFilename);
+    console.log(`🚀 Sending official workshop pass to: ${p.fullName} (${p.email})...`);
+    console.log(`   Ticket ID:  ${p.ticketNumber}`);
+    console.log(`   Department: ${p.course} (${p.year})`);
+    console.log(`   Attachment: ${p.passFilename}`);
+
+    const htmlBody = buildHtml(p.fullName, p.ticketNumber, p.course, p.year);
+
+    const result = await sendWithAutoRetry({
+      from: `"KMCT CEETM - Problem to Possibility" <${user}>`,
+      to: p.email,
+      subject: `🎟️ Entry Pass: From Problem to Possibility Workshop [${p.ticketNumber}]`,
+      html: htmlBody,
+      attachments: [
+        {
+          filename: `Workshop_Pass_${p.ticketNumber}.png`,
+          path: imagePath,
+          cid: 'passAttachment'
+        }
+      ]
+    });
+
+    if (result.success) {
+      console.log('\n✅ Official pass email successfully sent!');
+      console.log(`   Recipient:  ${p.email}`);
+      console.log(`   Ticket ID:  ${p.ticketNumber}`);
+      console.log(`   Message ID: ${result.info.messageId}`);
+    } else {
+      console.error('❌ Failed to send email:', result.error.message);
+    }
+    return;
+  }
 
   // Trial Mode
   if (trialEmail) {
