@@ -64,7 +64,7 @@ function buildMessage(name, ticketId, course, year) {
     `• Scan the QR code at the check-in desk to record your attendance.\n` +
     `• Problem worksheets, chart materials, and lunch/refreshments will be provided.\n\n` +
     `See you at the workshop!\n\n` +
-    `_For inquiries: Mr. Abdul Mujeeb MS (+91 94474 38228)_`
+    `_For inquiries: Alan Albin (+91 8848563266)_`
   );
 }
 

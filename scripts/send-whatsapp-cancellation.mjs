@@ -96,8 +96,7 @@ function buildCancellationMessage(name, ticketId) {
     `• *Venue:* Seminar Hall, KMCT CEETM, Kasaragod\n\n` +
     `Please be informed that your seat/booking for this workshop has been **cancelled**. Any previously issued entry pass or QR code for this ticket is no longer active for event entry.\n\n` +
     `If you have any queries, require assistance, or believe this was done in error, please contact the coordinator directly:\n` +
-    `📞 *Mr. Abdul Mujeeb MS:* +91 94474 38228\n` +
-    `✉️ *Email:* abdulmujeeb@kmct.edu.in\n\n` +
+    `📞 *Alan Albin:* +91 8848563266\n\n` +
     `Thank you,\n` +
     `_Institution’s Innovation Council (IIC), KMCT CEETM_`
   );
@@ -346,3 +345,4 @@ main().catch(err => {
   console.error('Fatal dispatch error:', err);
   process.exit(1);
 });
+

@@ -62,7 +62,7 @@ function buildReminderMessage(name, ticketId) {
     `4. Laptops / notebooks are optional but welcome for team ideation.\n\n` +
     `See you tomorrow morning! 🚀\n\n` +
     `📞 *Helpdesk / Queries:*\n` +
-    `Mr. Abdul Mujeeb MS: +91 94474 38228 | abdulmujeeb@kmct.edu.in\n` +
+    `Alan Albin: +91 8848563266\n` +
     `_Institution’s Innovation Council (IIC), KMCT CEETM_`
   );
 }
@@ -281,3 +281,4 @@ main().catch(err => {
   console.error('Fatal dispatch error:', err);
   process.exit(1);
 });
+
