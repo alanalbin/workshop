@@ -59,8 +59,10 @@ function onOpen() {
       .addItem('🧪 2. Send Test Pass (Email & WhatsApp)', 'sendTestPassInteractive')
       .addItem('📲 3. Populate Ticket IDs & WhatsApp Links', 'populateWhatsAppAndTicketColumns')
       .addSeparator()
-      .addItem('🧹 4. Deduplicate & Clean Sheet', 'deduplicateAndCleanSheet')
-      .addItem('📊 5. View Dispatch Status', 'showDispatchStatus')
+      .addItem('🔀 4. Sort Sheet by Course (BCA, BBA, B.Tech)', 'sortSheetByCourse')
+      .addItem('✨ 5. Standardize Course Names & Sort', 'standardizeAndSortByCourse')
+      .addItem('🧹 6. Deduplicate & Clean Sheet', 'deduplicateAndCleanSheet')
+      .addItem('📊 7. View Dispatch Status', 'showDispatchStatus')
       .addToUi();
   } catch (err) {
     Logger.log('onOpen UI skipped (running in non-interactive mode): ' + err);
@@ -768,4 +770,115 @@ function doPost(e) {
     return ContentService.createTextOutput(JSON.stringify({ status: 'error', message: error.toString() }))
       .setMimeType(ContentService.MimeType.JSON);
   }
+}
+
+/**
+ * Normalizes a course string into an ordered sort key:
+ * 1. BCA
+ * 2. BBA
+ * 3. MBA / Management
+ * 4. B.Tech (AI&DS, CSBS, CSE, ECE, General)
+ */
+function getCourseSortKey(courseStr) {
+  const c = String(courseStr || '').toLowerCase().trim();
+  if (c.indexOf('bca') !== -1) return '1_BCA';
+  if (c.indexOf('bba') !== -1) return '2_BBA';
+  if (c.indexOf('mba') !== -1 || c.indexOf('management') !== -1) return '3_MBA';
+  if (c.indexOf('ai') !== -1 || c.indexOf('data science') !== -1 || c.indexOf('ds') !== -1) return '4_BTech_AIDS';
+  if (c.indexOf('csbs') !== -1 || c.indexOf('business') !== -1) return '4_BTech_CSBS';
+  if (c.indexOf('ec') !== -1 || c.indexOf('electronics') !== -1) return '4_BTech_ECE';
+  if (c.indexOf('cse') !== -1 || c.indexOf('computer') !== -1) return '4_BTech_CSE';
+  if (c.indexOf('btech') !== -1 || c.indexOf('b.tech') !== -1 || c.indexOf('tech') !== -1) return '4_BTech_General';
+  return '5_Other';
+}
+
+/**
+ * Clean uniform standard label for display
+ */
+function getStandardizedCourseName(courseStr) {
+  const c = String(courseStr || '').toLowerCase().trim();
+  if (c.indexOf('bca') !== -1) return 'BCA';
+  if (c.indexOf('bba') !== -1) return 'BBA';
+  if (c.indexOf('mba') !== -1) return 'MBA';
+  if (c.indexOf('management') !== -1) return 'Management';
+  if (c.indexOf('ai') !== -1 || c.indexOf('data science') !== -1 || c.indexOf('ds') !== -1) return 'B.Tech AI & DS';
+  if (c.indexOf('csbs') !== -1 || c.indexOf('business') !== -1) return 'B.Tech CSBS';
+  if (c.indexOf('ec') !== -1 || c.indexOf('electronics') !== -1) return 'B.Tech ECE';
+  if (c.indexOf('cse') !== -1 || c.indexOf('computer') !== -1) return 'B.Tech CSE';
+  if (c.indexOf('btech') !== -1 || c.indexOf('b.tech') !== -1) return 'B.Tech';
+  return courseStr;
+}
+
+/**
+ * Sorts all student rows in Google Sheet by Course Group:
+ * BCA students first, then BBA/MBA, then B.Tech (AI&DS, CSBS, CSE, ECE)
+ */
+function sortSheetByCourse(standardizeNames) {
+  const ss = getActiveSheetInstance();
+  const sheet = ss.getSheetByName(SHEET_NAME) || ss.getActiveSheet();
+  const lastRow = sheet.getLastRow();
+  if (lastRow <= 2) return 'Not enough rows to sort';
+
+  const lastCol = sheet.getLastColumn();
+  const range = sheet.getRange(2, 1, lastRow - 1, lastCol);
+  const values = range.getValues();
+
+  // Find course column index (0-indexed, default 5)
+  const headerValues = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+  let courseCol = 5;
+  for (let c = 0; c < headerValues.length; c++) {
+    if (/course|dept|department/i.test(String(headerValues[c]))) {
+      courseCol = c;
+      break;
+    }
+  }
+
+  // Filter out empty rows (like accidental blank appends)
+  const validRows = values.filter(function(r) {
+    const regId = String(r[1] || '').trim();
+    const email = String(r[3] || '').trim();
+    return (regId !== '' && regId !== 'N/A') || (email !== '' && email !== 'N/A');
+  });
+
+  // Standardize course names if requested
+  if (standardizeNames) {
+    validRows.forEach(function(row) {
+      row[courseCol] = getStandardizedCourseName(row[courseCol]);
+    });
+  }
+
+  // Sort rows: first by Course Group, then alphabetically by Student Name
+  validRows.sort(function(a, b) {
+    const keyA = getCourseSortKey(a[courseCol]);
+    const keyB = getCourseSortKey(b[courseCol]);
+    if (keyA !== keyB) return keyA.localeCompare(keyB);
+
+    const nameA = String(a[2] || '').toLowerCase().trim();
+    const nameB = String(b[2] || '').toLowerCase().trim();
+    return nameA.localeCompare(nameB);
+  });
+
+  // Clear existing data rows and rewrite sorted rows
+  sheet.getRange(2, 1, lastRow - 1, lastCol).clearContent();
+  sheet.getRange(2, 1, validRows.length, lastCol).setValues(validRows);
+
+  // Re-apply alternating background colors
+  for (let r = 2; r <= validRows.length + 1; r++) {
+    sheet.getRange(r, 1, 1, lastCol).setBackground(r % 2 === 0 ? '#f8fafc' : '#ffffff');
+  }
+
+  Logger.log('✅ Sheet successfully sorted: ' + validRows.length + ' students grouped by Course.');
+  try {
+    SpreadsheetApp.getUi().alert(
+      '✅ Success',
+      'Successfully sorted ' + validRows.length + ' rows by Course!\n\nOrder:\n1. BCA Students\n2. BBA Students\n3. MBA / Management\n4. B.Tech Students (AI&DS, CSBS, CSE, ECE)',
+      SpreadsheetApp.getUi().ButtonSet.OK
+    );
+  } catch (_) {}
+
+  return 'Successfully sorted ' + validRows.length + ' rows by Course';
+}
+
+function standardizeAndSortByCourse() {
+  return sortSheetByCourse(true);
 }
