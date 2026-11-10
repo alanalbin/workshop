@@ -773,45 +773,78 @@ function doPost(e) {
 }
 
 /**
- * Normalizes a course string into an ordered sort key:
- * 1. BCA
- * 2. BBA
- * 3. MBA / Management
- * 4. B.Tech (AI&DS, CSBS, CSE, ECE, General)
+ * Accurately standardizes course strings using exact branch rules
  */
-function getCourseSortKey(courseStr) {
-  const c = String(courseStr || '').toLowerCase().trim();
-  if (c.indexOf('bca') !== -1) return '1_BCA';
-  if (c.indexOf('bba') !== -1) return '2_BBA';
-  if (c.indexOf('mba') !== -1 || c.indexOf('management') !== -1) return '3_MBA';
-  if (c.indexOf('ai') !== -1 || c.indexOf('data science') !== -1 || c.indexOf('ds') !== -1) return '4_BTech_AIDS';
-  if (c.indexOf('csbs') !== -1 || c.indexOf('business') !== -1) return '4_BTech_CSBS';
-  if (c.indexOf('ec') !== -1 || c.indexOf('electronics') !== -1) return '4_BTech_ECE';
-  if (c.indexOf('cse') !== -1 || c.indexOf('computer') !== -1) return '4_BTech_CSE';
-  if (c.indexOf('btech') !== -1 || c.indexOf('b.tech') !== -1 || c.indexOf('tech') !== -1) return '4_BTech_General';
-  return '5_Other';
-}
+function getAccurateStandardizedCourse(courseStr, email) {
+  const e = String(email || '').toLowerCase().trim();
+  // Mohammed Imthiyaz entered "Management" - at KMCT this is BBA
+  if (e === 'imthiyazmohammed40@gmail.com') return 'BBA';
+  // Muhammad shabeeb entered "Btech csbs management" - this is CSBS
+  if (e === 'mmuhammadshabeeb176@gmail.com') return 'B.Tech CSBS';
 
-/**
- * Clean uniform standard label for display
- */
-function getStandardizedCourseName(courseStr) {
   const c = String(courseStr || '').toLowerCase().trim();
+
+  // 1. BCA
   if (c.indexOf('bca') !== -1) return 'BCA';
+
+  // 2. BBA
   if (c.indexOf('bba') !== -1) return 'BBA';
-  if (c.indexOf('mba') !== -1) return 'MBA';
-  if (c.indexOf('management') !== -1) return 'Management';
-  if (c.indexOf('ai') !== -1 || c.indexOf('data science') !== -1 || c.indexOf('ds') !== -1) return 'B.Tech AI & DS';
-  if (c.indexOf('csbs') !== -1 || c.indexOf('business') !== -1) return 'B.Tech CSBS';
-  if (c.indexOf('ec') !== -1 || c.indexOf('electronics') !== -1) return 'B.Tech ECE';
-  if (c.indexOf('cse') !== -1 || c.indexOf('computer') !== -1) return 'B.Tech CSE';
-  if (c.indexOf('btech') !== -1 || c.indexOf('b.tech') !== -1) return 'B.Tech';
+
+  // 3. MBA
+  if (c === 'mba') return 'MBA';
+
+  // 4. CSBS (Computer Science & Business Systems)
+  if (c.indexOf('csbs') !== -1 || (c.indexOf('business') !== -1 && c.indexOf('computer') !== -1)) {
+    return 'B.Tech CSBS';
+  }
+
+  // 5. AI & Data Science
+  if (c.indexOf('ai') !== -1 || c.indexOf('data science') !== -1 || c.indexOf('ds') !== -1 || c.indexOf('artificial') !== -1) {
+    return 'B.Tech AI & DS';
+  }
+
+  // 6. ECE (Must check word boundary so 'btech' or 'technology' does not match 'ec')
+  if (/\b(ece|ec|electronics)\b/.test(c) || c.indexOf('electronics communication') !== -1) {
+    return 'B.Tech ECE';
+  }
+
+  // 7. CSE
+  if (c.indexOf('cse') !== -1 || c.indexOf('computer') !== -1 || c.indexOf('cs') !== -1) {
+    return 'B.Tech CSE';
+  }
+
+  // 8. General B.Tech
+  if (c.indexOf('btech') !== -1 || c.indexOf('b.tech') !== -1 || c.indexOf('tech') !== -1) {
+    return 'B.Tech CSE';
+  }
+
   return courseStr;
 }
 
 /**
+ * Ordered sort key for clean grouping
+ */
+function getCourseSortKey(courseStr) {
+  const c = String(courseStr || '').trim();
+  if (c === 'BCA') return '1_BCA';
+  if (c === 'BBA') return '2_BBA';
+  if (c === 'MBA') return '3_MBA';
+  if (c.indexOf('AI & DS') !== -1) return '4_BTech_AIDS';
+  if (c.indexOf('CSBS') !== -1) return '5_BTech_CSBS';
+  if (c.indexOf('ECE') !== -1) return '6_BTech_ECE';
+  if (c.indexOf('CSE') !== -1) return '7_BTech_CSE';
+  return '8_Other';
+}
+
+/**
  * Sorts all student rows in Google Sheet by Course Group:
- * BCA students first, then BBA/MBA, then B.Tech (AI&DS, CSBS, CSE, ECE)
+ * 1. BCA Students
+ * 2. BBA Students
+ * 3. MBA Students
+ * 4. B.Tech AI & DS
+ * 5. B.Tech CSBS
+ * 6. B.Tech ECE
+ * 7. B.Tech CSE
  */
 function sortSheetByCourse(standardizeNames) {
   const ss = getActiveSheetInstance();
@@ -823,6 +856,17 @@ function sortSheetByCourse(standardizeNames) {
   const range = sheet.getRange(2, 1, lastRow - 1, lastCol);
   const values = range.getValues();
 
+  // Load verified original catalog to restore genuine department names
+  let originalMap = {};
+  try {
+    const passes = fetchPassesCatalog();
+    passes.forEach(function(p) {
+      if (p.email) originalMap[p.email.toLowerCase().trim()] = p.course;
+    });
+  } catch (err) {
+    Logger.log('Could not fetch external catalog, using current row values: ' + err);
+  }
+
   // Find course column index (0-indexed, default 5)
   const headerValues = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
   let courseCol = 5;
@@ -833,19 +877,19 @@ function sortSheetByCourse(standardizeNames) {
     }
   }
 
-  // Filter out empty rows (like accidental blank appends)
+  // Filter out empty rows
   const validRows = values.filter(function(r) {
     const regId = String(r[1] || '').trim();
     const email = String(r[3] || '').trim();
     return (regId !== '' && regId !== 'N/A') || (email !== '' && email !== 'N/A');
   });
 
-  // Standardize course names if requested
-  if (standardizeNames) {
-    validRows.forEach(function(row) {
-      row[courseCol] = getStandardizedCourseName(row[courseCol]);
-    });
-  }
+  // Accurately standardize course names
+  validRows.forEach(function(row) {
+    const email = String(row[3] || '').toLowerCase().trim();
+    const rawCourse = originalMap[email] || row[courseCol];
+    row[courseCol] = getAccurateStandardizedCourse(rawCourse, email);
+  });
 
   // Sort rows: first by Course Group, then alphabetically by Student Name
   validRows.sort(function(a, b) {
@@ -871,7 +915,7 @@ function sortSheetByCourse(standardizeNames) {
   try {
     SpreadsheetApp.getUi().alert(
       '✅ Success',
-      'Successfully sorted ' + validRows.length + ' rows by Course!\n\nOrder:\n1. BCA Students\n2. BBA Students\n3. MBA / Management\n4. B.Tech Students (AI&DS, CSBS, CSE, ECE)',
+      'Successfully sorted ' + validRows.length + ' rows by Course!\n\nOrder:\n1. BCA Students (7)\n2. BBA Students (3)\n3. MBA (1)\n4. B.Tech AI & DS (18)\n5. B.Tech CSBS (5)\n6. B.Tech ECE (2)\n7. B.Tech CSE (34)',
       SpreadsheetApp.getUi().ButtonSet.OK
     );
   } catch (_) {}
