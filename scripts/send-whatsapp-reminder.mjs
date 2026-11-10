@@ -48,8 +48,7 @@ function buildReminderMessage(name, ticketId) {
     `📲 *Check-In & Entry Checklist:*\n` +
     `1. Keep your digital entry pass or Ticket ID ready on your phone at entry.\n` +
     `2. Please report by *09:00 AM* to complete registration & attendance verification.\n` +
-    `3. Problem worksheets, chart materials, and lunch/refreshments will be provided.\n` +
-    `4. Laptops / notebooks are optional but welcome for team ideation.\n\n` +
+    `3. Laptops / notebooks are optional but welcome for team ideation.\n\n` +
     `See you tomorrow morning! 🚀\n\n` +
     `📞 *Helpdesk / Queries:*\n` +
     `Alan Albin: +91 8848563266\n` +

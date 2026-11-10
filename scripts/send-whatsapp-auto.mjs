@@ -61,8 +61,7 @@ function buildMessage(name, ticketId, course, year) {
     `🎙️ *Resource Person:* Mr. Muhammed Shayiz K P\n\n` +
     `📲 *Entry Instructions:*\n` +
     `• Keep this attached image pass ready on your phone at entry.\n` +
-    `• Scan the QR code at the check-in desk to record your attendance.\n` +
-    `• Problem worksheets, chart materials, and lunch/refreshments will be provided.\n\n` +
+    `• Scan the QR code at the check-in desk to record your attendance.\n\n` +
     `See you at the workshop!\n\n` +
     `_For inquiries: Alan Albin (+91 8848563266)_`
   );
