@@ -773,6 +773,82 @@ function doPost(e) {
 }
 
 /**
+ * Verified 1-to-1 mapping of all 70 students to their correct, authentic courses.
+ */
+const EXACT_STUDENT_COURSE_MAP = {
+  "nafeesathsaja20@gmail.com": "B.Tech CSE",
+  "moideenrashid7@gmail.com": "BCA",
+  "nuzhakadeeja366@gmail.com": "BCA",
+  "muhammedjaseelba@gmail.com": "B.Tech ECE",
+  "fathimathmurshida634@gmail.com": "B.Tech CSE",
+  "hamrazakmal123@gmail.com": "B.Tech AI & DS",
+  "misbahalthaf7@gmail.com": "B.Tech AI & DS",
+  "shahlanmohammad0@gmail.com": "BCA",
+  "aysh.safa766@gmail.com": "BBA",
+  "faaathima.2007@gmail.com": "BBA",
+  "fadink434@gmail.com": "B.Tech AI & DS",
+  "fidhafathima3894@gmail.com": "B.Tech AI & DS",
+  "muhammedthwalhath216@gmail.com": "B.Tech AI & DS",
+  "jifrie18@gmail.com": "B.Tech AI & DS",
+  "nmaperla@gmail.com": "B.Tech CSBS",
+  "mhdfadhil167@gmail.com": "B.Tech AI & DS",
+  "ayasahammed443@gmail.com": "B.Tech AI & DS",
+  "firozmuhammed420@gmail.com": "B.Tech AI & DS",
+  "f91417923@gmail.com": "B.Tech CSE",
+  "faahizfarhaan@gmail.com": "B.Tech CSE",
+  "ranashada098@gmail.com": "B.Tech CSE",
+  "razilabdulla36@gmail.com": "B.Tech CSE",
+  "hibazaiba6@gmail.com": "B.Tech CSE",
+  "imthiyazmohammed40@gmail.com": "BBA",
+  "zihanhaamid@gmail.com": "B.Tech AI & DS",
+  "fazalpaju10@gmail.com": "B.Tech AI & DS",
+  "mmuhammadshabeeb176@gmail.com": "B.Tech CSBS",
+  "sheikmohammadathif@gmail.com": "B.Tech CSE",
+  "diyamanzoor06@gmail.com": "B.Tech CSBS",
+  "nihalanavas6@gmail.com": "BCA",
+  "hakibsheik96@gmail.com": "MBA",
+  "kadeejafahima123@gmail.com": "B.Tech CSE",
+  "ayshathsumayya96@gmail.com": "B.Tech CSE",
+  "ff7157128@gmail.com": "B.Tech CSE",
+  "waydh123@gmail.com": "B.Tech CSE",
+  "jaleelcha44@gmail.com": "B.Tech CSE",
+  "fahmaf125@gmail.com": "B.Tech CSE",
+  "shammushamla421@gmail.com": "B.Tech CSE",
+  "shamnaparveenkm@gmail.com": "B.Tech CSE",
+  "manarulhaqe315@gmail.com": "B.Tech CSE",
+  "salmanfariz4322@gmail.com": "B.Tech CSE",
+  "shanima2007@gmail.com": "B.Tech CSE",
+  "nidhashirin2220@gmail.com": "B.Tech AI & DS",
+  "thajudheenchithaari11@gmail.com": "B.Tech AI & DS",
+  "nadiyaabdullaa@gmail.com": "B.Tech CSE",
+  "akshaykumar242484@gmail.com": "B.Tech AI & DS",
+  "fathymsahlaa@gmail.com": "B.Tech CSE",
+  "aframahak@gmail.com": "B.Tech CSE",
+  "www.hibafathima123@gmail.com": "B.Tech AI & DS",
+  "chm6123@gmail.com": "B.Tech AI & DS",
+  "fathimashelbiya123@gmail.com": "BCA",
+  "fouzanibrahim00@gmail.com": "B.Tech CSE",
+  "soumyavelmurugan@gmail.com": "B.Tech CSBS",
+  "preethishajil6@gmail.com": "B.Tech AI & DS",
+  "nabeesathjuhada@gmail.com": "B.Tech AI & DS",
+  "muhammadmishab07@gmail.com": "B.Tech CSE",
+  "zainabathamana@gmail.com": "BCA",
+  "malavikav847@gmail.com": "B.Tech CSBS",
+  "rushaidarushi5@gmail.com": "B.Tech CSE",
+  "minnumiza6@gmail.com": "B.Tech CSE",
+  "hananaayshath@gmail.com": "B.Tech CSE",
+  "rahibm171@gmail.com": "BCA",
+  "abdulkhadershuhail@gmail.com": "B.Tech CSE",
+  "karthickumaranusha@gmail.com": "B.Tech CSE",
+  "kadhijathulasnabadrudeen@gmail.com": "B.Tech CSE",
+  "mohammadshahzad1045@gmail.com": "B.Tech AI & DS",
+  "ahsanmundol12@gmail.com": "B.Tech ECE",
+  "soudhaafra9088@gmail.com": "B.Tech CSE",
+  "zainshizan10@gmail.com": "B.Tech CSE",
+  "frostcodezz@gmail.com": "B.Tech CSE"
+};
+
+/**
  * Accurately standardizes course strings using exact branch rules
  */
 function getAccurateStandardizedCourse(courseStr, email) {
@@ -887,8 +963,12 @@ function sortSheetByCourse(standardizeNames) {
   // Accurately standardize course names
   validRows.forEach(function(row) {
     const email = String(row[3] || '').toLowerCase().trim();
-    const rawCourse = originalMap[email] || row[courseCol];
-    row[courseCol] = getAccurateStandardizedCourse(rawCourse, email);
+    if (EXACT_STUDENT_COURSE_MAP[email]) {
+      row[courseCol] = EXACT_STUDENT_COURSE_MAP[email];
+    } else {
+      const rawCourse = originalMap[email] || row[courseCol];
+      row[courseCol] = getAccurateStandardizedCourse(rawCourse, email);
+    }
   });
 
   // Sort rows: first by Course Group, then alphabetically by Student Name
