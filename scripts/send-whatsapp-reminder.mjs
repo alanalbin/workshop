@@ -23,16 +23,6 @@ function cleanupStaleChromeProcesses() {
 
 cleanupStaleChromeProcesses();
 
-// Cancelled tickets to exclude from tomorrow's reminder
-const CANCELLED_TICKETS = new Set([
-  'KMCT-WS-0040', // Manar Ul Haque
-  'KMCT-WS-0048', // afra mahak
-  'KMCT-WS-0025', // Haamid Zihan
-  'KMCT-WS-0021', // Fathimath Sa-ada B A
-  'KMCT-WS-0063', // Abdul khader Shuhail P.M
-  'KMCT-WS-0041'  // Salman Fariz
-]);
-
 function cleanPhone(raw) {
   const digits = (raw || '').replace(/[^0-9]/g, '');
   if (digits.length === 10) return '91' + digits;
@@ -100,10 +90,9 @@ async function main() {
   }
 
   const allPasses = JSON.parse(fs.readFileSync(PASSES_FILE, 'utf-8'));
-  const activeParticipants = allPasses.filter(p => !CANCELLED_TICKETS.has(p.ticketNumber));
+  const activeParticipants = allPasses;
 
   console.log(`Loaded ${allPasses.length} total participants.`);
-  console.log(`Excluded ${CANCELLED_TICKETS.size} cancelled registrations.`);
   console.log(`Active participants to notify: ${activeParticipants.length}\n`);
 
   if (!trialPhone && !sendAll) {
